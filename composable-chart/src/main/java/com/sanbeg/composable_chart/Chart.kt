@@ -79,6 +79,7 @@ fun previewChart() {
     Chart(maxX = 100f, dataInset = 6.dp, modifier = Modifier.size(100.dp)) {
         Scale(maxY = 100f, modifier = Modifier) {
             // drawScope.drawCircle(Color.Red, 4.dp.value)
+
             drawEach(
                 listOf(
                     Offset(25f, 25f),
