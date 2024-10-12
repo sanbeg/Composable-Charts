@@ -46,3 +46,11 @@ fun StableDataSet.plus(other: StableDataSet) = ImmutableDataSet(size + other.siz
         other[i - size]
     }
 }
+
+fun StableDataSet.map(transform: (Offset) -> Offset): List<Offset> =
+    mapStableDataSet(this, transform)
+
+private fun mapStableDataSet(data: StableDataSet, transform: (Offset) -> Offset): List<Offset> =
+    buildList {
+        data.forEach { add(transform(it)) }
+    }

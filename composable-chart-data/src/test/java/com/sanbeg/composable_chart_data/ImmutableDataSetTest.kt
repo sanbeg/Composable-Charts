@@ -11,14 +11,6 @@ class ImmutableDataSetTest {
         Offset(56f, 78f),
     )
 
-    private fun ImmutableDataSet.map(transform: (Offset) -> Offset): List<Offset> =
-        mds(this, transform)
-
-    private fun mds(data: ImmutableDataSet, transform: (Offset) -> Offset): List<Offset> =
-        buildList {
-            data.forEach { add(transform(it)) }
-        }
-
     @Test
     fun `it can round trip from a list by iteration`() {
         val sut = ImmutableDataSet(2) { i: Int ->
