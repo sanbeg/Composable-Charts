@@ -12,7 +12,7 @@ private fun toOffset(l: Long) = Offset(unpackFloat1(l), unpackFloat2(l))
 
 @JvmInline
 @Immutable
-value class ImmutableDataSet private constructor(private val array: LongArray): DataSet {
+value class ImmutableDataSet private constructor(private val array: LongArray): StableDataSet {
     @JvmInline
     private value class DataSetLongIterator(private val iterator: LongIterator) : OffsetIterator {
         override fun hasNext() = iterator.hasNext()
@@ -53,16 +53,6 @@ value class ImmutableDataSet private constructor(private val array: LongArray): 
     override fun get(index: Int) = toOffset(array[index])
 
     override fun iterator(): OffsetIterator = DataSetLongIterator(array.iterator())
-
-    /*
-    fun plus(other: DataSet) = LongArray(size + other.size).let {
-        array.copyInto(it)
-        other.indices.forEach{ i ->
-            it[size + i] = other[i].toLong()
-        }
-        ImmutableDataSet(it)
-    }
-    */
 
     operator fun plus(offset: Offset) = ImmutableDataSet(array + offset.toLong())
     operator fun plus(other: ImmutableDataSet) = ImmutableDataSet(array + other.array)
