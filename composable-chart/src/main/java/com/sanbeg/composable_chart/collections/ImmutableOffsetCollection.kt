@@ -73,8 +73,8 @@ class ImmutableOffsetCollection private constructor(private val array: LongArray
         size: Int,
         step: Int,
         partialWindows: Boolean = false,
-        transform: (ImmutableOffsetCollection) -> Unit
-    ) = (array.indices step step).forEach { start ->
+        action: (ImmutableOffsetCollection) -> Unit
+    ): Unit = (array.indices step step).forEach { start ->
         val slice = try {
             array.sliceArray(start.rangeUntil(start + size))
         } catch (e: IndexOutOfBoundsException) {
@@ -84,7 +84,7 @@ class ImmutableOffsetCollection private constructor(private val array: LongArray
                 longArrayOf()
         }
         if (slice.isNotEmpty()) {
-            transform(ImmutableOffsetCollection(slice))
+            action(ImmutableOffsetCollection(slice))
         }
     }
 
@@ -92,8 +92,8 @@ class ImmutableOffsetCollection private constructor(private val array: LongArray
         size: Int,
         step: Int,
         partialWindows: Boolean = false,
-        transform: (LongArray) -> Unit
-    ) = (array.indices step step).forEach { start ->
+        action: (LongArray) -> Unit
+    ): Unit = (array.indices step step).forEach { start ->
         val slice = try {
             array.sliceArray(start.rangeUntil(start + size))
         } catch (e: IndexOutOfBoundsException) {
@@ -103,7 +103,7 @@ class ImmutableOffsetCollection private constructor(private val array: LongArray
                 longArrayOf()
         }
         if (slice.isNotEmpty()) {
-            transform(slice)
+            action(slice)
         }
     }
 }

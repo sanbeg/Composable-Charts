@@ -22,4 +22,4 @@ dependencyResolutionManagement {
 rootProject.name = "Composable Charts"
 include(":app")
 include(":composable-chart")
-include(":composable_chart_data")
+include(":composable-chart-data")
