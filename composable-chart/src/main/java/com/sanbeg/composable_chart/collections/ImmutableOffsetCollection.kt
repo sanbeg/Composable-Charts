@@ -8,6 +8,7 @@ import androidx.compose.ui.util.unpackFloat2
 import kotlin.math.min
 
 private fun Offset.toLong() = packFloats(x, y)
+private fun toOffset(l: Long) = Offset(unpackFloat1(l), unpackFloat2(l))
 
 @Immutable
 class ImmutableOffsetCollection private constructor(private val array: LongArray): OffsetCollection {
@@ -53,9 +54,8 @@ class ImmutableOffsetCollection private constructor(private val array: LongArray
     override fun iterator(): Iterator<Offset> = OffsetIterator(array.iterator())
 
     private class OffsetIterator(private val li: LongIterator) : Iterator<Offset> {
-        private fun toOffset(l: Long) = Offset(unpackFloat1(l), unpackFloat2(l))
         override fun hasNext() = li.hasNext()
-        override fun next() = toOffset(li.next())
+        override fun next() = toOffset(li.nextLong())
     }
 
     fun mapOffset(transform: (Offset) -> Offset): ImmutableOffsetCollection {
@@ -87,6 +87,25 @@ class ImmutableOffsetCollection private constructor(private val array: LongArray
             transform(ImmutableOffsetCollection(slice))
         }
     }
+
+    fun windowedToArraySlice(
+        size: Int,
+        step: Int,
+        partialWindows: Boolean = false,
+        transform: (LongArray) -> Unit
+    ) = (array.indices step step).forEach { start ->
+        val slice = try {
+            array.sliceArray(start.rangeUntil(start + size))
+        } catch (e: IndexOutOfBoundsException) {
+            if (partialWindows)
+                array.sliceArray(start.rangeUntil(array.size))
+            else
+                longArrayOf()
+        }
+        if (slice.isNotEmpty()) {
+            transform(slice)
+        }
+    }
 }
 
 fun Iterable<Offset>.mapOffset(transform: (Offset) -> Offset): Collection<Offset> =
@@ -106,5 +125,17 @@ fun Iterable<Offset>.windowedOffset(
         windowed(size, step, partialWindows, transform)
     } else {
         windowed(size, step, partialWindows, transform)
+    }
+}
+
+fun Iterable<Offset>.foreachOffsetSegment(transform: (Offset, Offset) -> Unit) {
+    if (this is ImmutableOffsetCollection) {
+        windowedToArraySlice(2, 1, false) { (a, b) ->
+            transform(toOffset(a), toOffset(b))
+        }
+    } else {
+        windowed(2, 1, false) { (a, b) ->
+            transform(a, b)
+        }
     }
 }
