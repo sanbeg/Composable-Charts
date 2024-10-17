@@ -2,12 +2,21 @@ package com.sanbeg.composable_chart_data
 
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.isSpecified
 import androidx.compose.ui.util.packFloats
 import androidx.compose.ui.util.unpackFloat1
 import androidx.compose.ui.util.unpackFloat2
 import kotlin.math.min
 
-private fun Offset.toLong() = packFloats(x, y)
+private fun Offset.toLong() = if (this.isSpecified) packFloats(x, y) else packFloats(Float.NaN, Float.NaN)
+/*
+private fun Offset.toLong() = try {
+    packFloats(x, y)
+} catch (e: IllegalStateException) {
+    packFloats(Float.NaN, Float.NaN)
+}
+ */
+
 private fun toOffset(l: Long) = Offset(unpackFloat1(l), unpackFloat2(l))
 
 @JvmInline
@@ -58,4 +67,31 @@ value class ImmutableDataSet private constructor(private val array: LongArray): 
     operator fun plus(other: ImmutableDataSet) = ImmutableDataSet(array + other.array)
 
     fun contains(offset: Offset) = array.contains(offset.toLong())
+
+    fun mapOffsets(transform: (Offset) -> Offset): ImmutableDataSet {
+        val rv = LongArray(size)
+        forEachIndexed { i, offset ->
+            rv[i] = transform(offset).toLong()
+        }
+        return ImmutableDataSet(rv)
+    }
+
+    fun forEachOffsetWindow(
+        size: Int,
+        step: Int,
+        partialWindows: Boolean = false,
+        action: (ImmutableDataSet) -> Unit
+    ): Unit = (array.indices step step).forEach { start ->
+        val slice = try {
+            array.sliceArray(start.rangeUntil(start + size))
+        } catch (e: IndexOutOfBoundsException) {
+            if (partialWindows)
+                array.sliceArray(start.rangeUntil(array.size))
+            else
+                LongArray(0)
+        }
+        if (slice.isNotEmpty()) {
+            action(ImmutableDataSet(slice))
+        }
+    }
 }
