@@ -2,7 +2,15 @@ package com.sanbeg.composable_chart_data
 
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.isSpecified
 
+private fun Offset.copyToArray(dst: FloatArray,  start: Int) = if (isSpecified) {
+    dst[start] = x
+    dst[start+1] = y
+} else {
+    dst[start] = Float.NaN
+    dst[start+1] = Float.NaN
+}
 
 @JvmInline
 @Stable
@@ -22,6 +30,27 @@ value class FloatArrayDataSet(private val array: FloatArray) : StableDataSet {
             "Array must have an even number of elements"
         }
     }
+
+    constructor(size: Int, block: (Int) -> Offset) : this(
+        FloatArray(size).apply {
+            indices.forEach { i ->
+                block(i).copyToArray(this, i * 2)
+            }
+        }
+    )
+
+    constructor(x: FloatArray, y:FloatArray) : this(
+        require(x.size == y.size) { "x and y must have equal size" }.let {
+            FloatArray(x.size * 2 ).apply {
+                x.forEachIndexed { index, fl ->
+                    this[index * 2] = fl
+                }
+                y.forEachIndexed { index, fl ->
+                    this[index * 2 + 1] = fl
+                }
+            }
+        }
+    )
 
     override val size get() = array.size / 2
 

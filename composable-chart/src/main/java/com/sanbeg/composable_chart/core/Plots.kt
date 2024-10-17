@@ -15,10 +15,11 @@ import androidx.compose.ui.unit.dp
 import com.sanbeg.composable_chart.Chart
 import com.sanbeg.composable_chart.ComposableChartScaleScope
 import com.sanbeg.composable_chart.Scale
+import com.sanbeg.composable_chart_data.DataCollection
 import com.sanbeg.composable_chart_data.ImmutableDataSet
 import com.sanbeg.composable_chart_data.StableDataSet
 
-fun ComposableChartScaleScope.scatter(data: StableDataSet, radius: Dp, brush: Brush) {
+fun ComposableChartScaleScope.scatter(data: DataCollection, radius: Dp, brush: Brush) {
     drawAt(data) {
         drawCircle(brush, radius.value, Offset.Zero)
     }

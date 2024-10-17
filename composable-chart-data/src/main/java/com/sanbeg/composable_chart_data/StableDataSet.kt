@@ -39,6 +39,13 @@ fun StableDataSet.forEach(action: (Offset) -> Unit) = indices.forEach {
     action(get(it))
 }
 
+fun DataCollection.forEach(action: (Offset) -> Unit) {
+    val iterator = iterator()
+    while (iterator.hasNext()) {
+        action(iterator.nextOffset())
+    }
+}
+
 fun StableDataSet.forEachIndexed(action: (index: Int, Offset) -> Unit) = indices.forEachIndexed { i, o ->
     action(i, get(o))
 }
