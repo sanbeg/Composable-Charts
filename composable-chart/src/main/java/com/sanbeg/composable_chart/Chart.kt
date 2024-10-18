@@ -75,7 +75,7 @@ fun ComposableChartScope.Scale(
 
 @Preview(showBackground = true)
 @Composable
-fun previewChart() {
+private fun PreviewChart() {
     Chart(maxX = 100f, dataInset = 6.dp, modifier = Modifier.size(100.dp)) {
         Scale(maxY = 100f, modifier = Modifier) {
             // drawScope.drawCircle(Color.Red, 4.dp.value)
@@ -95,7 +95,7 @@ fun previewChart() {
 
 @Preview(showBackground = true)
 @Composable
-fun previewChartFlip() {
+private fun PreviewChartFlip() {
     Chart(maxX = 100f, modifier = Modifier.size(100.dp)) {
         Scale(minY = 100f, maxY = 0f) {
             // drawScope.drawCircle(Color.Red, 4.dp.value)

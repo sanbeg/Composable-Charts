@@ -4,7 +4,7 @@ import androidx.compose.runtime.Stable
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.isSpecified
 
-private fun Offset.copyToArray(dst: FloatArray,  start: Int) = if (isSpecified) {
+private fun Offset.copyIntoArray(dst: FloatArray, start: Int) = if (isSpecified) {
     dst[start] = x
     dst[start+1] = y
 } else {
@@ -34,7 +34,7 @@ value class FloatArrayDataSet(private val array: FloatArray) : StableDataSet {
     constructor(size: Int, block: (Int) -> Offset) : this(
         FloatArray(size).apply {
             indices.forEach { i ->
-                block(i).copyToArray(this, i * 2)
+                block(i).copyIntoArray(this, i * 2)
             }
         }
     )
@@ -61,8 +61,7 @@ value class FloatArrayDataSet(private val array: FloatArray) : StableDataSet {
     operator fun plus(offset: Offset) {
         val rv = FloatArray(array.size + 2)
         array.copyInto(rv)
-        rv[array.size] = offset.x
-        rv[array.size + 1] = offset.y
+        offset.copyIntoArray(rv, array.size)
     }
 
     operator fun plus(other: FloatArrayDataSet) = FloatArrayDataSet(array + other.array)

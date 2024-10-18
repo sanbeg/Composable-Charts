@@ -9,6 +9,8 @@ java {
 }
 
 dependencies {
+    dokkaPlugin("org.jetbrains.dokka:android-documentation-plugin:1.9.20")
+
 
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)

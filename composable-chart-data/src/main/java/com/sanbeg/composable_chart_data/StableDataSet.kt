@@ -4,36 +4,51 @@ package com.sanbeg.composable_chart_data
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.geometry.Offset
 
+/**
+ * An iterator over an entity that can be represented as a sequence of [Offset]s
+ */
 interface OffsetIterator : Iterator<Offset> {
     override fun hasNext(): Boolean
     override fun next(): Offset
+
+    /** Returns the next offset in the sequence without boxing.*/
     fun nextOffset(): Offset
 }
 
 /**
- * A possibly unordered group of offsets
+ * A possibly unordered collection of [Offset]s.
+ * Methods in this interface support read-only access to the collection.
  */
 @Stable
 interface DataCollection {
+    /** Returns the size of the collection.*/
     val size: Int
-    fun iterator() : OffsetIterator
+
+    /** Returns an iterator over the Offsets in this object.*/
+    fun iterator(): OffsetIterator
 }
 
 /**
- * An ordered group of offsets
+ * An ordered collection of offsets.
+ * Methods in this interface support read-only access to the collection.
  */
 @Stable
-interface StableDataSet: DataCollection {
+interface StableDataSet : DataCollection {
+    /** Returns the size of the collection. */
     override val size: Int
+
+    /** Returns the offset at the given index.  This method can be called using the index operator. */
     operator fun get(index: Int): Offset
-    override fun iterator() : OffsetIterator
+
+    /** Returns an iterator over the Offsets in this object.*/
+    override fun iterator(): OffsetIterator
 }
 
 val DataCollection.indices: IntRange
     get() = 0 until size
 
 val DataCollection.lastIndex: Int
-    get() = size -1
+    get() = size - 1
 
 fun StableDataSet.forEach(action: (Offset) -> Unit) = indices.forEach {
     action(get(it))
@@ -46,9 +61,15 @@ fun DataCollection.forEach(action: (Offset) -> Unit) {
     }
 }
 
-fun StableDataSet.forEachIndexed(action: (index: Int, Offset) -> Unit) = indices.forEachIndexed { i, o ->
-    action(i, get(o))
+fun DataCollection.onEach(action: (Offset) -> Unit): DataCollection {
+    forEach(action)
+    return this
 }
+
+fun StableDataSet.forEachIndexed(action: (index: Int, Offset) -> Unit) =
+    indices.forEachIndexed { i, o ->
+        action(i, get(o))
+    }
 
 fun StableDataSet.toImmutableDataSet(): ImmutableDataSet = if (this is ImmutableDataSet) {
     this
@@ -75,7 +96,7 @@ private fun mapStableDataSet(data: StableDataSet, transform: (Offset) -> Offset)
     }
 
 fun StableDataSet.firstOrNull() = if (size > 0) this[0] else null
-fun StableDataSet.lastOrNull() = if (size > 0) this[size-1] else null
+fun StableDataSet.lastOrNull() = if (size > 0) this[size - 1] else null
 
 fun StableDataSet.firstOrNull(predicate: (Offset) -> Boolean): Offset? {
     indices.forEach {

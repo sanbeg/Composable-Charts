@@ -111,7 +111,7 @@ fun ComposableChartScaleScope.drawEachSegment(
 
 @Preview(showBackground = true)
 @Composable
-fun previewChart() {
+private fun PreviewChart() {
     Chart(maxX = 100f, dataInset = 6.dp, modifier = Modifier.size(100.dp)) {
         Scale(maxY = 100f) {
             // drawScope.drawCircle(Color.Red, 4.dp.value)
@@ -131,7 +131,7 @@ fun previewChart() {
 
 @Preview(showBackground = true)
 @Composable
-fun previewDrawEachData() {
+private fun PreviewDrawEachData() {
     Chart(maxX = 100f, dataInset = 6.dp, modifier = Modifier.size(100.dp)) {
         val dataSet = ImmutableDataSet(
             listOf(
@@ -151,7 +151,7 @@ fun previewDrawEachData() {
 
 @Preview(showBackground = true)
 @Composable
-fun previewDrawAt() {
+private fun PreviewDrawAt() {
     Chart(maxX = 100f, dataInset = 6.dp, modifier = Modifier.size(100.dp)) {
         val dataSet = ImmutableDataSet(
             listOf(
