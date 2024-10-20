@@ -18,6 +18,8 @@ interface OffsetIterator : Iterator<Offset> {
 /**
  * A possibly unordered collection of [Offset]s.
  * Methods in this interface support read-only access to the collection.
+ *
+ * @see dataCollectionOf
  */
 @Stable
 interface DataCollection {
@@ -31,6 +33,8 @@ interface DataCollection {
 /**
  * An ordered collection of offsets.
  * Methods in this interface support read-only access to the collection.
+ *
+ * @see dataSetOf
  */
 @Stable
 interface StableDataSet : DataCollection {
