@@ -1,4 +1,4 @@
-package com.sanbeg.composable_chart.core
+package com.sanbeg.composable_chart.charts
 
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
@@ -15,6 +15,9 @@ import androidx.compose.ui.unit.dp
 import com.sanbeg.composable_chart.Chart
 import com.sanbeg.composable_chart.ComposableChartScaleScope
 import com.sanbeg.composable_chart.Scale
+import com.sanbeg.composable_chart.core.drawAt
+import com.sanbeg.composable_chart.core.drawEach
+import com.sanbeg.composable_chart.core.drawEachSegment
 import com.sanbeg.composable_chart_data.DataCollection
 import com.sanbeg.composable_chart_data.ImmutableDataSet
 import com.sanbeg.composable_chart_data.StableDataSet

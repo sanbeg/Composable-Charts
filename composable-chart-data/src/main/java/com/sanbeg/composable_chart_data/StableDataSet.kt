@@ -48,9 +48,11 @@ interface StableDataSet : DataCollection {
     override fun iterator(): OffsetIterator
 }
 
+@Stable
 val DataCollection.indices: IntRange
     get() = 0 until size
 
+@Stable
 val DataCollection.lastIndex: Int
     get() = size - 1
 
@@ -59,9 +61,8 @@ fun StableDataSet.forEach(action: (Offset) -> Unit) = indices.forEach {
 }
 
 fun DataCollection.forEach(action: (Offset) -> Unit) {
-    val iterator = iterator()
-    while (iterator.hasNext()) {
-        action(iterator.nextOffset())
+    for (offset in iterator()) {
+        action(offset)
     }
 }
 

@@ -9,15 +9,16 @@ import androidx.compose.ui.util.unpackFloat2
 import kotlin.math.min
 
 private fun Offset.toLong() = if (this.isSpecified) packFloats(x, y) else packFloats(Float.NaN, Float.NaN)
-/*
-private fun Offset.toLong() = try {
-    packFloats(x, y)
-} catch (e: IllegalStateException) {
-    packFloats(Float.NaN, Float.NaN)
-}
- */
-
 private fun toOffset(l: Long) = Offset(unpackFloat1(l), unpackFloat2(l))
+
+/*
+ * note - with composeBom = "2024.04.01", an unspecified Offset would throw an exception when
+ * trying to access either element, or with many other operations which at that time depended on
+ * the X & Y values. That logic seems to be gone from composeBom = "2024.10.00" (ui.geometry=1.7.4).
+ *
+ * As of 10/24, master may expose the constructor & packed long, if that comes to pass we can skip
+ * some of this pack/unpack translation/
+ */
 
 @JvmInline
 @Immutable

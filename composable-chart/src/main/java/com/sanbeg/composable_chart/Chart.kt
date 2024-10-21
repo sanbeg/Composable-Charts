@@ -1,19 +1,21 @@
 package com.sanbeg.composable_chart
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.isSpecified
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Matrix
-import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.sanbeg.composable_chart.core.drawEach
 
@@ -22,17 +24,6 @@ class ComposableChartScope internal constructor(
     internal val maxX: Float,
     ) {
     internal var dataInset: Float = 0f
-}
-
-class ComposableChartScaleScope internal constructor(
-    internal val matrix: Matrix,
-    internal val drawScope: DrawScope,
-) {
-    internal fun scale(offset: Offset) = if (offset.isSpecified) {
-        matrix.map(offset)
-    } else {
-        offset
-    }
 }
 
 @Composable
@@ -50,27 +41,39 @@ fun Chart(
     }
 }
 
+
 @Composable
-fun ComposableChartScope.Scale(
-    minY: Float = 0f,
-    maxY: Float = 1f,
+fun Chart2(
+    minX: Float = 0f,
+    maxX: Float = 1f,
+    dataInset: Dp = 0.dp,
     modifier: Modifier = Modifier,
-    content: ComposableChartScaleScope.() -> Unit
-    ) {
-    Spacer(modifier.fillMaxSize().drawBehind {
-        Matrix().apply {
-            translate(x = dataInset, y = dataInset)
-            val di2 = dataInset * 2
-            scale(
-                x = (size.width - di2) / (maxX - minX),
-                y = (size.height - di2) / -(maxY - minY),
-            )
-            translate(
-                y = -maxY
-            )
-        }.let { ComposableChartScaleScope(it, this) }
-            .content()
-    })
+    content: @Composable ComposableChartScope.() -> Unit
+) {
+    val layoutContent: @Composable () -> Unit = {
+        ComposableChartScope(minX, maxX).also {
+            it.dataInset = dataInset.value
+        }.content()
+    }
+    Layout(layoutContent, modifier) {measurables, constraints ->
+        val contentConstraints = constraints.copy(minWidth = 0, minHeight = 0)
+        val placeables = measurables.map { measurable ->
+            measurable.measure(contentConstraints)
+        }
+        layout(constraints.maxWidth, constraints.maxHeight) {
+            // Place children in the parent layout
+            placeables.forEach { placeable ->
+                // Position item on the screen
+                val position = Alignment.BottomStart.align(
+                    IntSize(placeable.width, placeable.height),
+                    IntSize(constraints.maxWidth, constraints.maxHeight),
+                    LayoutDirection.Ltr
+                )
+                //placeable.placeRelative(x = 0, y = 0)
+                placeable.place(position)
+            }
+        }
+    }
 }
 
 @Preview(showBackground = true)
@@ -90,6 +93,28 @@ private fun PreviewChart() {
                 drawCircle(Color.Blue, 6.dp.value, it)
             }
         }
+    }
+}
+
+
+@Preview(showBackground = true)
+@Composable
+private fun PreviewChart2() {
+    Chart2(maxX = 100f, dataInset = 6.dp, modifier = Modifier.size(100.dp)) {
+        Scale(maxY = 100f, modifier = Modifier) {
+            // drawScope.drawCircle(Color.Red, 4.dp.value)
+
+            drawEach(
+                listOf(
+                    Offset(25f, 25f),
+                    Offset(0f, 0f),
+                    Offset(100f, 100f),
+                )
+            ) {
+                drawCircle(Color.Blue, 6.dp.value, it)
+            }
+        }
+        Spacer(Modifier.fillMaxWidth().height(10.dp).background(Color.Red))
     }
 }
 
