@@ -94,7 +94,10 @@ private fun PreviewChartFlip() {
         Scale(minY = 100f, maxY = 0f) {
             // drawScope.drawCircle(Color.Red, 4.dp.value)
             drawEach(
-                listOf(Offset(25f, 25f))
+                listOf(
+                    Offset(25f, 25f),
+                    Offset(0f, 0f),
+                    Offset(100f, 100f),                )
             ) {
                 drawCircle(Color.Blue, 4.dp.value, it)
             }

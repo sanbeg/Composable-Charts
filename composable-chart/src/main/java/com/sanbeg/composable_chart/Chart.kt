@@ -72,6 +72,15 @@ fun Chart(
     dataInset: Dp = 0.dp,
     modifier: Modifier = Modifier,
     content: @Composable ComposableChartScope.() -> Unit
+) = ChartLayout(minX, maxX, dataInset, modifier, content)
+
+@Composable
+fun Chart1(
+    minX: Float = 0f,
+    maxX: Float = 1f,
+    dataInset: Dp = 0.dp,
+    modifier: Modifier = Modifier,
+    content: @Composable ComposableChartScope.() -> Unit
 ) {
     Box(modifier) {
         ComposableChartScope(minX, maxX).also {
