@@ -14,7 +14,6 @@ import androidx.compose.ui.unit.dp
 import com.sanbeg.composable_chart.Chart
 import com.sanbeg.composable_chart.ComposableChartScaleScope
 import com.sanbeg.composable_chart.Scale
-import com.sanbeg.composable_chart_data.DataCollection
 import com.sanbeg.composable_chart_data.ImmutableDataSet
 import com.sanbeg.composable_chart_data.StableDataSet
 import com.sanbeg.composable_chart_data.forEach
@@ -33,7 +32,7 @@ fun ComposableChartScaleScope.drawEach(
 }
 
 fun ComposableChartScaleScope.drawEach(
-    offsets: DataCollection,
+    offsets: StableDataSet,
     content: DrawScope.(offset: Offset) -> Unit
 ) {
     offsets.forEach { offset ->
@@ -43,7 +42,7 @@ fun ComposableChartScaleScope.drawEach(
 
 
 fun ComposableChartScaleScope.drawEachFinite(
-    offsets: DataCollection,
+    offsets: StableDataSet,
     content: DrawScope.(offset: Offset) -> Unit
 ) {
     offsets.forEach { offset ->
@@ -54,7 +53,7 @@ fun ComposableChartScaleScope.drawEachFinite(
 }
 
 fun ComposableChartScaleScope.drawAt(
-    offsets: DataCollection,
+    offsets: StableDataSet,
     content: DrawScope.() -> Unit
 ) {
     offsets.forEach { offset ->

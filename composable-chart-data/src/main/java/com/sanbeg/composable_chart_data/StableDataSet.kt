@@ -15,6 +15,14 @@ interface OffsetIterator : Iterator<Offset> {
     fun nextOffset(): Offset
 }
 
+class DataSetIterator(private val data: StableDataSet) : OffsetIterator {
+    private var index = 0
+
+    override fun hasNext() = index < data.size
+    override fun next() = data[index++]
+    override fun nextOffset() = data[index++]
+}
+
 /**
  * A possibly unordered collection of [Offset]s.
  * Methods in this interface support read-only access to the collection.
@@ -22,6 +30,7 @@ interface OffsetIterator : Iterator<Offset> {
  * @see dataCollectionOf
  */
 @Stable
+@Deprecated(message = "use StableDataSet")
 interface DataCollection {
     /** Returns the size of the collection.*/
     val size: Int
@@ -37,19 +46,23 @@ interface DataCollection {
  * @see dataSetOf
  */
 @Stable
-interface StableDataSet : DataCollection {
+interface StableDataSet {
     /** Returns the size of the collection. */
-    override val size: Int
+    val size: Int
 
     /** Returns the offset at the given index.  This method can be called using the index operator. */
     operator fun get(index: Int): Offset
 
     /** Returns an iterator over the Offsets in this object.*/
-    override fun iterator(): OffsetIterator
+    fun iterator(): OffsetIterator
 }
 
 @Stable
 val DataCollection.indices: IntRange
+    get() = 0 until size
+
+@Stable
+val StableDataSet.indices: IntRange
     get() = 0 until size
 
 @Stable
