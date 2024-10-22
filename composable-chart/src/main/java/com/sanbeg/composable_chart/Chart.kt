@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.Alignment
@@ -98,8 +99,8 @@ private class ChartMeasurePolicy : MeasurePolicy {
 
         if (measurables.size == 1) {
             val measurable = measurables[0]
-            val boxWidth: Int
-            val boxHeight: Int
+            var boxWidth: Int = constraints.minWidth
+            var boxHeight: Int = constraints.minHeight
             //val placeable: Placeable = measurable.measure(Constraints.fixed(constraints.minWidth, constraints.minHeight))
             val placeable = measurable.measure(contentConstraints)
             val alignment = measurable.axisAlignment ?: Alignment.Center
@@ -108,8 +109,11 @@ private class ChartMeasurePolicy : MeasurePolicy {
                 IntSize(constraints.maxWidth, constraints.maxHeight),
                 LayoutDirection.Ltr
             )
+            boxWidth = max(boxWidth, placeable.width)
+            boxHeight = max(boxHeight, placeable.height)
                 //placeable.placeRelative(x = 0, y = 0)
-            return layout(constraints.maxWidth, constraints.maxHeight) {
+            //return layout(constraints.minWidth, constraints.minHeight) {
+            return layout(boxWidth, boxHeight) {
                 placeable.place(position)
             }
 
@@ -120,6 +124,8 @@ private class ChartMeasurePolicy : MeasurePolicy {
 
         var topReservation = 0
         var bottomReservation = 0
+        var boxWidth: Int = constraints.minWidth
+        var boxHeight: Int = constraints.minHeight
         measurables.fastForEachIndexed{ index, measurable ->
             if (measurable.isAxis) {
                 val placeable = measurable.measure(contentConstraints)
@@ -136,7 +142,6 @@ private class ChartMeasurePolicy : MeasurePolicy {
                 } else {
                     bottomReservation = max(bottomReservation, reserve)
                 }
-
                 val position = alignment.align(
                     IntSize(placeable.width, placeable.height),
                     IntSize(constraints.maxWidth, constraints.maxHeight),
@@ -159,6 +164,8 @@ private class ChartMeasurePolicy : MeasurePolicy {
             if (! measurable.isAxis) {
                 val placeable = measurable.measure(chartAreaConstraints)
                 val alignment = measurable.axisAlignment ?: Alignment.TopStart
+                boxWidth = max(boxWidth, placeable.width)
+                boxHeight = max(boxHeight, placeable.height)
                 val position = alignment.align(
                     IntSize(placeable.width, placeable.height),
                     IntSize(constraints.maxWidth, constraints.maxHeight - totalReservation),
@@ -168,7 +175,11 @@ private class ChartMeasurePolicy : MeasurePolicy {
                 positions[index] = position
             }
         }
-        return layout(constraints.maxWidth, constraints.maxHeight ) {
+
+        val chartWidth = constraints.minWidth.takeIf { it > 0 } ?: boxWidth
+        val chartHeight = constraints.minHeight.takeIf { it > 0 } ?: (boxHeight + totalReservation)
+
+        return layout(chartWidth, chartHeight) {
             placeables.forEachIndexed { index, placeable ->
                 placeable?.place(positions[index] ?: IntOffset.Zero)
             }
@@ -193,6 +204,41 @@ private fun TestChartLayout() {
             .background(Color.Red))
     }
 }
+
+@Preview(showBackground = true)
+@Composable
+private fun TestChartWrap1() {
+    ChartLayout(modifier = Modifier.wrapContentSize()) {
+        Spacer(modifier = Modifier.size(50.dp).background(Color.Blue))
+    }
+}
+
+
+@Preview(showBackground = true)
+@Composable
+private fun TestChartWrap2() {
+    ChartLayout(modifier = Modifier.wrapContentSize()) {
+        Spacer(modifier = Modifier.size(50.dp).background(Color.Blue))
+        Spacer(modifier = Modifier.size(10.dp).background(Color.Red).asAxis(Alignment.BottomCenter))
+    }
+}
+
+
+
+
+@Preview(showBackground = true)
+@Composable
+private fun TestChartInBox() {
+    Box(Modifier.size(75.dp)) {
+        ChartLayout(modifier = Modifier.fillMaxSize()) {
+            Spacer(modifier = Modifier.fillMaxSize().background(Color.Blue))
+            Spacer(
+                modifier = Modifier.size(10.dp).background(Color.Red).asAxis(Alignment.BottomCenter)
+            )
+        }
+    }
+}
+
 
 private val Measurable.chartChildDataNode: ChartChildDataNode? get() = parentData as? ChartChildDataNode
 private val Measurable.isAxis: Boolean get() = chartChildDataNode?.isAxis ?: false
@@ -301,28 +347,6 @@ fun Chart2(
 
 
 
-
-@Preview(showBackground = true)
-@Composable
-private fun PreviewChart() {
-    Chart(maxX = 100f, dataInset = 6.dp, modifier = Modifier.size(100.dp)) {
-        Scale(maxY = 100f, modifier = Modifier) {
-            // drawScope.drawCircle(Color.Red, 4.dp.value)
-
-            drawEach(
-                listOf(
-                    Offset(25f, 25f),
-                    Offset(0f, 0f),
-                    Offset(100f, 100f),
-                )
-            ) {
-                drawCircle(Color.Blue, 6.dp.value, it)
-            }
-        }
-    }
-}
-
-
 @Preview(showBackground = true)
 @Composable
 private fun PreviewChart2() {
@@ -345,20 +369,5 @@ private fun PreviewChart2() {
                 .fillMaxWidth()
                 .height(10.dp)
                 .background(Color.Red))
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun PreviewChartFlip() {
-    Chart(maxX = 100f, modifier = Modifier.size(100.dp)) {
-        Scale(minY = 100f, maxY = 0f) {
-            // drawScope.drawCircle(Color.Red, 4.dp.value)
-            drawEach(
-                listOf(Offset(25f, 25f))
-            ) {
-                drawCircle(Color.Blue, 4.dp.value, it)
-            }
-        }
     }
 }
