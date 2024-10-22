@@ -84,7 +84,7 @@ fun Chart1(
 ) {
     Box(modifier) {
         ComposableChartScope(minX, maxX).also {
-            it.dataInset = dataInset.value
+            it.dataInset = with(LocalDensity.current) { dataInset.toPx() }
         }.content()
     }
 }
@@ -218,7 +218,9 @@ private fun TestChartLayout() {
 @Composable
 private fun TestChartWrap1() {
     ChartLayout(modifier = Modifier.wrapContentSize()) {
-        Spacer(modifier = Modifier.size(50.dp).background(Color.Blue))
+        Spacer(modifier = Modifier
+            .size(50.dp)
+            .background(Color.Blue))
     }
 }
 
@@ -227,8 +229,13 @@ private fun TestChartWrap1() {
 @Composable
 private fun TestChartWrap2() {
     ChartLayout(modifier = Modifier.wrapContentSize()) {
-        Spacer(modifier = Modifier.size(50.dp).background(Color.Blue))
-        Spacer(modifier = Modifier.size(10.dp).background(Color.Red).asAxis(Alignment.BottomCenter))
+        Spacer(modifier = Modifier
+            .size(50.dp)
+            .background(Color.Blue))
+        Spacer(modifier = Modifier
+            .size(10.dp)
+            .background(Color.Red)
+            .asAxis(Alignment.BottomCenter))
     }
 }
 
@@ -240,9 +247,14 @@ private fun TestChartWrap2() {
 private fun TestChartInBox() {
     Box(Modifier.size(75.dp)) {
         ChartLayout(modifier = Modifier.fillMaxSize()) {
-            Spacer(modifier = Modifier.fillMaxSize().background(Color.Blue))
+            Spacer(modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Blue))
             Spacer(
-                modifier = Modifier.size(10.dp).background(Color.Red).asAxis(Alignment.BottomCenter)
+                modifier = Modifier
+                    .size(10.dp)
+                    .background(Color.Red)
+                    .asAxis(Alignment.BottomCenter)
             )
         }
     }
@@ -311,7 +323,7 @@ fun ChartLayout(
 ) {
     val layoutContent: @Composable () -> Unit = {
         ComposableChartScope(minX, maxX).also {
-            it.dataInset = dataInset.value
+            it.dataInset = with(LocalDensity.current) { dataInset.toPx() }
         }.content()
     }
     Layout(measurePolicy = ChartMeasurePolicy(), content = layoutContent, modifier = modifier)
@@ -330,7 +342,7 @@ fun Chart2(
 ) {
     val layoutContent: @Composable () -> Unit = {
         ComposableChartScope(minX, maxX).also {
-            it.dataInset = dataInset.value
+            it.dataInset = with(LocalDensity.current) { dataInset.toPx() }
         }.content()
     }
     Layout(layoutContent, modifier) {measurables, constraints ->

@@ -1,10 +1,7 @@
 package com.sanbeg.composable_chart
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -14,6 +11,7 @@ import androidx.compose.ui.geometry.isSpecified
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Matrix
 import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.sanbeg.composable_chart.core.drawEach
@@ -50,6 +48,7 @@ fun ComposableChartScope.Scale(
     modifier: Modifier = Modifier,
     content: ComposableChartScaleScope.() -> Unit
     ) {
+    val density = LocalDensity.current
     Spacer(modifier.fillMaxSize().drawBehind {
         Matrix().apply {
             translate(x = dataInset, y = dataInset)
@@ -70,7 +69,7 @@ fun ComposableChartScope.Scale(
 @Preview(showBackground = true)
 @Composable
 private fun PreviewChart() {
-    Chart(maxX = 100f, dataInset = 6.dp, modifier = Modifier.size(100.dp)) {
+    Chart(maxX = 100f, dataInset = 3.dp, modifier = Modifier.size(100.dp)) {
         Scale(maxY = 100f, modifier = Modifier) {
             // drawScope.drawCircle(Color.Red, 4.dp.value)
 
@@ -81,7 +80,7 @@ private fun PreviewChart() {
                     Offset(100f, 100f),
                 )
             ) {
-                drawCircle(Color.Blue, 6.dp.value, it)
+                drawCircle(Color.Blue, 3.dp.toPx(), it)
             }
         }
     }
@@ -90,7 +89,7 @@ private fun PreviewChart() {
 @Preview(showBackground = true)
 @Composable
 private fun PreviewChartFlip() {
-    Chart(maxX = 100f, modifier = Modifier.size(100.dp)) {
+    Chart(maxX = 100f, dataInset = 4.dp, modifier = Modifier.size(100.dp)) {
         Scale(minY = 100f, maxY = 0f) {
             // drawScope.drawCircle(Color.Red, 4.dp.value)
             drawEach(
@@ -99,7 +98,7 @@ private fun PreviewChartFlip() {
                     Offset(0f, 0f),
                     Offset(100f, 100f),                )
             ) {
-                drawCircle(Color.Blue, 4.dp.value, it)
+                drawCircle(Color.Blue, 4.dp.toPx(), it)
             }
         }
     }

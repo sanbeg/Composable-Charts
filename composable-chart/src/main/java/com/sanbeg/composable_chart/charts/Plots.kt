@@ -18,22 +18,20 @@ import com.sanbeg.composable_chart.Scale
 import com.sanbeg.composable_chart.core.drawAt
 import com.sanbeg.composable_chart.core.drawEach
 import com.sanbeg.composable_chart.core.drawEachSegment
-import com.sanbeg.composable_chart_data.DataCollection
-import com.sanbeg.composable_chart_data.ImmutableDataSet
 import com.sanbeg.composable_chart_data.StableDataSet
+import com.sanbeg.composable_chart_data.dataSetOf
 
-fun ComposableChartScaleScope.scatter(data: DataCollection, radius: Dp, brush: Brush) {
+fun ComposableChartScaleScope.scatter(data: StableDataSet, radius: Dp, brush: Brush) {
     drawAt(data) {
-        drawCircle(brush, radius.value, Offset.Zero)
+        drawCircle(brush, radius.toPx(), Offset.Zero)
     }
 }
 
 fun ComposableChartScaleScope.line(data: StableDataSet, width: Dp = Dp.Hairline, brush: Brush) {
-    drawEachSegment(data) {a, b ->
-        drawLine(brush, a, b, width.value)
+    drawEachSegment(data) { a, b ->
+        drawLine(brush, a, b, width.toPx())
     }
 }
-
 
 fun ComposableChartScaleScope.area(data: StableDataSet, brush: Brush) {
     var prev: Offset? = null
@@ -66,7 +64,7 @@ fun ComposableChartScaleScope.area(data: StableDataSet, brush: Brush) {
 @Composable
 private fun PreviewScatter() {
     Chart(maxX = 100f, dataInset = 6.dp, modifier = Modifier.size(100.dp)) {
-        val dataSet = ImmutableDataSet(
+        val dataSet = dataSetOf(
             listOf(
                 Offset(0f, 0f),
                 Offset(25f, 15f),
@@ -84,7 +82,7 @@ private fun PreviewScatter() {
 @Composable
 private fun PreviewLine() {
     Chart(maxX = 100f, dataInset = 6.dp, modifier = Modifier.size(100.dp)) {
-        val dataSet = ImmutableDataSet(
+        val dataSet = dataSetOf(
             listOf(
                 Offset(0f, 0f),
                 Offset(25f, 20f),
@@ -103,7 +101,7 @@ private fun PreviewLine() {
 @Composable
 private fun PreviewArea() {
     Chart(maxX = 100f, dataInset = 6.dp, modifier = Modifier.size(100.dp)) {
-        val dataSet = ImmutableDataSet(
+        val dataSet = dataSetOf(
             listOf(
                 Offset(0f, 0f),
                 Offset(25f, 20f),
@@ -122,7 +120,7 @@ private fun PreviewArea() {
 @Composable
 private fun PreviewAreaGap() {
     Chart(maxX = 100f, dataInset = 6.dp, modifier = Modifier.size(100.dp)) {
-        val dataSet = ImmutableDataSet(
+        val dataSet = dataSetOf(
             listOf(
                 Offset(0f, 0f),
                 Offset(25f, 20f),
