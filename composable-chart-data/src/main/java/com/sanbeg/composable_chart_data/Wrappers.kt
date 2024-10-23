@@ -19,14 +19,6 @@ private value class ListWrapper(val list: List<Offset>) : StableDataSet {
 }
 
 @JvmInline
-private value class CollectionWrapper(val collection: Collection<Offset>) : DataCollection {
-    override val size
-        get() = collection.size
-
-    override fun iterator(): OffsetIterator = WrapperIterator(collection.iterator())
-}
-
-@JvmInline
 private value class ArrayWrapper(val array: Array<Offset>) : StableDataSet {
     override val size: Int
         get() = array.size
@@ -37,4 +29,4 @@ private value class ArrayWrapper(val array: Array<Offset>) : StableDataSet {
 
 fun dataSetOf(list: List<Offset>): StableDataSet = ListWrapper(list)
 fun dataSetOf(array: Array<Offset>): StableDataSet = ArrayWrapper(array)
-fun dataCollectionOf(collection: Collection<Offset>): DataCollection = CollectionWrapper(collection)
+fun dataSetOf(vararg elements: Float): FloatArrayDataSet = FloatArrayDataSet(elements)

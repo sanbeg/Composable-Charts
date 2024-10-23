@@ -24,22 +24,6 @@ class DataSetIterator(private val data: StableDataSet) : OffsetIterator {
 }
 
 /**
- * A possibly unordered collection of [Offset]s.
- * Methods in this interface support read-only access to the collection.
- *
- * @see dataCollectionOf
- */
-@Stable
-@Deprecated(message = "use StableDataSet")
-interface DataCollection {
-    /** Returns the size of the collection.*/
-    val size: Int
-
-    /** Returns an iterator over the Offsets in this object.*/
-    fun iterator(): OffsetIterator
-}
-
-/**
  * An ordered collection of offsets.
  * Methods in this interface support read-only access to the collection.
  *
@@ -58,28 +42,19 @@ interface StableDataSet {
 }
 
 @Stable
-val DataCollection.indices: IntRange
-    get() = 0 until size
-
-@Stable
 val StableDataSet.indices: IntRange
     get() = 0 until size
 
 @Stable
-val DataCollection.lastIndex: Int
+val StableDataSet.lastIndex: Int
     get() = size - 1
 
 fun StableDataSet.forEach(action: (Offset) -> Unit) = indices.forEach {
     action(get(it))
 }
 
-fun DataCollection.forEach(action: (Offset) -> Unit) {
-    for (offset in iterator()) {
-        action(offset)
-    }
-}
 
-fun DataCollection.onEach(action: (Offset) -> Unit): DataCollection {
+fun StableDataSet.onEach(action: (Offset) -> Unit): StableDataSet {
     forEach(action)
     return this
 }
@@ -89,22 +64,7 @@ fun StableDataSet.forEachIndexed(action: (index: Int, Offset) -> Unit) =
         action(i, get(o))
     }
 
-fun StableDataSet.toImmutableDataSet(): ImmutableDataSet = if (this is ImmutableDataSet) {
-    this
-} else {
-    ImmutableDataSet(size) { i ->
-        this[i]
-    }
-}
-
-fun StableDataSet.plus(other: StableDataSet) = ImmutableDataSet(size + other.size) { i ->
-    if (i < size) {
-        this[i]
-    } else {
-        other[i - size]
-    }
-}
-
+@Deprecated("use asList().map()")
 fun StableDataSet.map(transform: (Offset) -> Offset): List<Offset> =
     mapStableDataSet(this, transform)
 
