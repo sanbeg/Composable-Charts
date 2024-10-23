@@ -27,6 +27,19 @@ private value class ArrayWrapper(val array: Array<Offset>) : StableDataSet {
     override fun iterator(): OffsetIterator = WrapperIterator(array.iterator())
 }
 
+// maybe remove these?
+/** Creates a StableDataSet as a wrapped List of boxed Offsets. */
 fun dataSetOf(list: List<Offset>): StableDataSet = ListWrapper(list)
+/** Creates a StableDataSet as a wrapped Array of boxed Offsets. */
 fun dataSetOf(array: Array<Offset>): StableDataSet = ArrayWrapper(array)
+
+/** Creates a StableDataSet as a wrapped List of boxed Offsets. */
+fun List<Offset>.toDataSet(): StableDataSet = ListWrapper(this)
+/** Creates a StableDataSet as a wrapped Array of boxed Offsets. */
+fun Array<Offset>.toDataSet(): StableDataSet = ArrayWrapper(this)
+
+/**
+ * Creates a StableDataSet as a wrapped FloatArray, without boxing.
+ * @param[elements] alternating x and y elements; the number of arguments must be even.
+ */
 fun dataSetOf(vararg elements: Float): FloatArrayDataSet = FloatArrayDataSet(elements)

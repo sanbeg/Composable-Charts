@@ -15,6 +15,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.sanbeg.composable_chart.core.drawEach
+import com.sanbeg.composable_chart_data.toDataSet
 
 class ComposableChartScaleScope internal constructor(
     private val matrix: Matrix,
@@ -78,7 +79,7 @@ private fun PreviewChart() {
                     Offset(25f, 25f),
                     Offset(0f, 0f),
                     Offset(100f, 100f),
-                )
+                ).toDataSet()
             ) {
                 drawCircle(Color.Blue, 3.dp.toPx(), it)
             }
@@ -96,7 +97,8 @@ private fun PreviewChartFlip() {
                 listOf(
                     Offset(25f, 25f),
                     Offset(0f, 0f),
-                    Offset(100f, 100f),                )
+                    Offset(100f, 100f),
+                    )
             ) {
                 drawCircle(Color.Blue, 4.dp.toPx(), it)
             }

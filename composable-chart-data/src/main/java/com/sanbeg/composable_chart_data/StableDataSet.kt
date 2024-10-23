@@ -28,6 +28,7 @@ class DataSetIterator(private val data: StableDataSet) : OffsetIterator {
  * Methods in this interface support read-only access to the collection.
  *
  * @see dataSetOf
+ * @see toDataSet
  */
 @Stable
 interface StableDataSet {

@@ -16,9 +16,11 @@ import com.sanbeg.composable_chart.ComposableChartScaleScope
 import com.sanbeg.composable_chart.Scale
 import com.sanbeg.composable_chart_data.ImmutableDataSet
 import com.sanbeg.composable_chart_data.StableDataSet
+import com.sanbeg.composable_chart_data.dataSetOf
 import com.sanbeg.composable_chart_data.forEach
 import com.sanbeg.composable_chart_data.forEachIndexed
 
+@Deprecated("use drawEach(DataSet)")
 fun ComposableChartScaleScope.drawEach(
     offsets: List<Offset>,
     content: DrawScope.(offset: Offset) -> Unit
@@ -132,7 +134,7 @@ private fun PreviewChart() {
 @Composable
 private fun PreviewDrawEachData() {
     Chart(maxX = 100f, dataInset = 6.dp, modifier = Modifier.size(100.dp)) {
-        val dataSet = ImmutableDataSet(
+        val dataSet = dataSetOf(
             listOf(
                 Offset(25f, 25f),
                 Offset(0f, 0f),
@@ -152,7 +154,7 @@ private fun PreviewDrawEachData() {
 @Composable
 private fun PreviewDrawAt() {
     Chart(maxX = 100f, dataInset = 6.dp, modifier = Modifier.size(100.dp)) {
-        val dataSet = ImmutableDataSet(
+        val dataSet = dataSetOf(
             listOf(
                 Offset(25f, 25f),
                 Offset(0f, 0f),
