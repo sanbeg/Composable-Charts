@@ -58,10 +58,11 @@ value class FloatArrayDataSet(private val array: FloatArray) : StableDataSet {
 
     override fun iterator(): OffsetIterator = FloatArrayDataSetIterator(array)
 
-    operator fun plus(offset: Offset) {
+    operator fun plus(offset: Offset): FloatArrayDataSet {
         val rv = FloatArray(array.size + 2)
         array.copyInto(rv)
         offset.copyIntoArray(rv, array.size)
+        return FloatArrayDataSet(rv)
     }
 
     operator fun plus(other: FloatArrayDataSet) = FloatArrayDataSet(array + other.array)
