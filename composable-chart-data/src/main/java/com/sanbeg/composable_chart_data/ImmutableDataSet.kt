@@ -31,6 +31,7 @@ private fun toOffset(l: Long) = Offset(unpackFloat1(l), unpackFloat2(l))
  * some of this pack/unpack translation/
  */
 
+@ExperimentalStdlibApi
 @JvmInline
 @Immutable
 value class ImmutableDataSet private constructor(private val array: LongArray): StableDataSet {

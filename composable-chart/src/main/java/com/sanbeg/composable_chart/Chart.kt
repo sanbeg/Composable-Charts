@@ -3,10 +3,12 @@ package com.sanbeg.composable_chart
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
@@ -39,6 +41,10 @@ import androidx.compose.ui.util.fastForEachIndexed
 import com.sanbeg.composable_chart.core.drawEach
 import kotlin.math.max
 
+enum class Slot {
+    LEFT, RIGHT, TOP, BOTTOM, CENTER
+}
+
 class ComposableChartScope internal constructor(
     internal val minX: Float,
     internal val maxX: Float,
@@ -48,11 +54,11 @@ class ComposableChartScope internal constructor(
     @Composable
     @Stable
     fun Modifier.asAxis(
-        alignment: Alignment = Alignment.BottomCenter,
+        slot: Slot,
         reserve: Dp = Dp.Unspecified,
     ) : Modifier = this.then(ChartChildDataElement(
-        alignment = alignment,
-        isAxis = true,
+        slot = slot,
+        isAxis = (slot != Slot.CENTER),
         reserved = if (reserve.isSpecified) {
             with(LocalDensity.current) { reserve.roundToPx() }
         } else {
@@ -60,7 +66,7 @@ class ComposableChartScope internal constructor(
         },
         inspectorInfo = debugInspectorInfo {
             name = "asAxis"
-            value = alignment
+            value = slot
         }
     ))
 }
@@ -99,33 +105,16 @@ private class ChartMeasurePolicy : MeasurePolicy {
         constraints: Constraints
     ): MeasureResult {
         if (measurables.isEmpty()) {
-            return layout(
-                constraints.minWidth,
-                constraints.minHeight
-            ) {}
+            return layout(constraints.minWidth, constraints.minHeight) {}
         }
         val contentConstraints = constraints.copy(minWidth = 0, minHeight = 0)
 
         if (measurables.size == 1) {
             val measurable = measurables[0]
-            var boxWidth: Int = constraints.minWidth
-            var boxHeight: Int = constraints.minHeight
-            //val placeable: Placeable = measurable.measure(Constraints.fixed(constraints.minWidth, constraints.minHeight))
             val placeable = measurable.measure(contentConstraints)
-            val alignment = measurable.axisAlignment ?: Alignment.Center
-            val position = alignment.align(
-                IntSize(placeable.width, placeable.height),
-                IntSize(constraints.maxWidth, constraints.maxHeight),
-                LayoutDirection.Ltr
-            )
-            boxWidth = max(boxWidth, placeable.width)
-            boxHeight = max(boxHeight, placeable.height)
-                //placeable.placeRelative(x = 0, y = 0)
-            //return layout(constraints.minWidth, constraints.minHeight) {
-            return layout(boxWidth, boxHeight) {
-                placeable.place(position)
+            return layout(placeable.width, placeable.height) {
+                placeable.place(0, 0)
             }
-
         }
 
         val placeables = arrayOfNulls<Placeable>(measurables.size)
@@ -133,60 +122,84 @@ private class ChartMeasurePolicy : MeasurePolicy {
 
         var topReservation = 0
         var bottomReservation = 0
-        var boxWidth: Int = constraints.minWidth
-        var boxHeight: Int = constraints.minHeight
+        var leftReservation = 0
+        var rightReservation = 0
+
+        // pass 1 - measure edge slots, calculate reserve
         measurables.fastForEachIndexed{ index, measurable ->
             if (measurable.isAxis) {
                 val placeable = measurable.measure(contentConstraints)
 
                 var reserve = measurable.chartChildDataNode?.reserved ?: 0
-                if (reserve < 0) {
-                    reserve = placeable.height
-                }
 
-                val alignment = measurable.axisAlignment ?: Alignment.Center
-
-                if (((alignment as? BiasAlignment)?.verticalBias ?: 0f) < 0f) {
-                    topReservation = max(topReservation, reserve)
-                } else {
-                    bottomReservation = max(bottomReservation, reserve)
+                measurable.slot?.let {
+                    if (reserve < 0) {
+                        if ((it == Slot.TOP || it == Slot.BOTTOM) && placeable.height < constraints.maxHeight) {
+                            reserve = placeable.height
+                        }
+                        if ((it == Slot.LEFT || it == Slot.RIGHT) && placeable.width < constraints.maxWidth) {
+                            reserve = placeable.width
+                        }
+                    }
+                    when(it) {
+                        Slot.TOP -> topReservation = max(topReservation, reserve)
+                        Slot.BOTTOM -> bottomReservation = max(bottomReservation, reserve)
+                        Slot.LEFT -> leftReservation = max(leftReservation, reserve)
+                        Slot.RIGHT -> rightReservation = max(rightReservation, reserve)
+                        else -> {}
+                    }
                 }
-                val position = alignment.align(
-                    IntSize(placeable.width, placeable.height),
-                    IntSize(constraints.maxWidth, constraints.maxHeight),
-                    LayoutDirection.Ltr
-                )
                 placeables[index] = placeable
-                positions[index] = position
+            }
+        }
+
+        measurables.fastForEachIndexed { index, measurable ->
+            if (measurable.isAxis) {
+                val alignment = measurable.axisAlignment ?: Alignment.Center
+                placeables[index]?.let { placeable ->
+                    val offset = measurable.slot?.let {
+                        when(it) {
+                            Slot.TOP, Slot.BOTTOM -> IntOffset(leftReservation, 0)
+                            Slot.LEFT, Slot.RIGHT -> IntOffset(0, topReservation)
+                            else -> IntOffset.Zero
+                        }
+                    } ?: IntOffset.Zero
+                    val position = alignment.align(
+                        IntSize(placeable.width, placeable.height),
+                        // we should get this after mesasuring center
+                        IntSize(constraints.maxWidth, constraints.maxHeight),
+                        LayoutDirection.Ltr
+                    ).plus(offset)
+                    positions[index] = position
+                }
             }
         }
 
         val totalReservation = topReservation + bottomReservation
+        val horizontalReservation = leftReservation + rightReservation
 
         val chartAreaConstraints = constraints.copy(
-            minWidth = 0,
-            minHeight = 0,
-            maxHeight = constraints.maxHeight - totalReservation
+            minWidth = constraints.minWidth.minus(horizontalReservation).coerceAtLeast(0),
+            minHeight = constraints.minHeight.minus(totalReservation).coerceAtLeast(0),
+            maxHeight = if (totalReservation < constraints.maxHeight) constraints.maxHeight - totalReservation else constraints.maxHeight,
+            maxWidth = if (horizontalReservation < constraints.maxWidth) constraints.maxWidth - horizontalReservation else constraints.maxWidth,
+
         )
 
+        var plotWidth = 0
+        var plotHeight = 0
         measurables.fastForEachIndexed { index, measurable ->
             if (! measurable.isAxis) {
                 val placeable = measurable.measure(chartAreaConstraints)
-                val alignment = measurable.axisAlignment ?: Alignment.TopStart
-                boxWidth = max(boxWidth, placeable.width)
-                boxHeight = max(boxHeight, placeable.height)
-                val position = alignment.align(
-                    IntSize(placeable.width, placeable.height),
-                    IntSize(constraints.maxWidth, constraints.maxHeight - totalReservation),
-                    LayoutDirection.Ltr
-                ).plus(IntOffset(0, topReservation))
+                plotWidth = max(plotWidth, placeable.width)
+                plotHeight = max(plotHeight, placeable.height)
                 placeables[index] = placeable
-                positions[index] = position
+                positions[index] = IntOffset(leftReservation, topReservation)
             }
         }
 
-        val chartWidth = constraints.minWidth.takeIf { it > 0 } ?: boxWidth
-        val chartHeight = constraints.minHeight.takeIf { it > 0 } ?: (boxHeight + totalReservation)
+        val chartWidth = plotWidth + horizontalReservation
+        val chartHeight = plotHeight + totalReservation
 
         return layout(chartWidth, chartHeight) {
             placeables.forEachIndexed { index, placeable ->
@@ -203,13 +216,13 @@ private fun TestChartLayout() {
         Spacer(modifier = Modifier
             .size(10.dp)
             .background(Color.Red)
-            .asAxis(reserve = Dp.Unspecified))
+            .asAxis(slot = Slot.BOTTOM, reserve = Dp.Unspecified))
         Spacer(modifier = Modifier
             .fillMaxSize()
             .background(Color.Blue.copy(alpha = 0.5f)))
         Spacer(modifier = Modifier
             .size(5.dp)
-            .asAxis(alignment = Alignment.TopStart, reserve = Dp.Unspecified)
+            .asAxis(slot = Slot.TOP, reserve = Dp.Unspecified)
             .background(Color.Red))
     }
 }
@@ -235,12 +248,36 @@ private fun TestChartWrap2() {
         Spacer(modifier = Modifier
             .size(10.dp)
             .background(Color.Red)
-            .asAxis(Alignment.BottomCenter))
+            .asAxis(Slot.BOTTOM))
     }
 }
 
 
-
+@Preview(showBackground = true)
+@Composable
+private fun TestChartWrap4() {
+    ChartLayout(modifier = Modifier.wrapContentSize()) {
+        Spacer(modifier = Modifier
+            .size(50.dp)
+            .background(Color.Blue))
+        Spacer(modifier = Modifier
+            .height(10.dp).fillMaxWidth()
+            .background(Color.Red)
+            .asAxis(Slot.BOTTOM))
+        Spacer(modifier = Modifier
+            .height(10.dp).fillMaxWidth()
+            .background(Color.Red)
+            .asAxis(Slot.TOP))
+        Spacer(modifier = Modifier
+            .width(10.dp).fillMaxHeight()
+            .background(Color.Red)
+            .asAxis(Slot.LEFT))
+        Spacer(modifier = Modifier
+            .width(10.dp).fillMaxHeight()
+            .background(Color.Red)
+            .asAxis(Slot.RIGHT))
+    }
+}
 
 @Preview(showBackground = true)
 @Composable
@@ -254,7 +291,7 @@ private fun TestChartInBox() {
                 modifier = Modifier
                     .size(10.dp)
                     .background(Color.Red)
-                    .asAxis(Alignment.BottomCenter)
+                    .asAxis(Slot.BOTTOM)
             )
         }
     }
@@ -263,24 +300,30 @@ private fun TestChartInBox() {
 
 private val Measurable.chartChildDataNode: ChartChildDataNode? get() = parentData as? ChartChildDataNode
 private val Measurable.isAxis: Boolean get() = chartChildDataNode?.isAxis ?: false
-private val Measurable.axisAlignment: Alignment? get() = chartChildDataNode?.alignment
+private val Measurable.slot: Slot? get() = chartChildDataNode?.slot
+private val Measurable.axisAlignment: Alignment? get() = chartChildDataNode?.slot?.let {
+    when(it) {
+        Slot.LEFT -> Alignment.TopStart
+        Slot.RIGHT -> Alignment.TopEnd
+        Slot.TOP -> Alignment.TopStart
+        Slot.BOTTOM -> Alignment.BottomStart
+        else -> null
+    }
+}
 
 private class ChartChildDataElement(
-    val alignment: Alignment,
-    //val matchParentSize: Boolean,
+    val slot: Slot,
     val isAxis: Boolean,
     val reserved: Int,
     val inspectorInfo: InspectorInfo.() -> Unit
 
 ) : ModifierNodeElement<ChartChildDataNode>() {
     override fun create(): ChartChildDataNode {
-        //return ChartChildDataNode(alignment, matchParentSize)
-        return ChartChildDataNode(alignment, isAxis, reserved)
+        return ChartChildDataNode(slot, isAxis, reserved)
     }
 
     override fun update(node: ChartChildDataNode) {
-        node.alignment = alignment
-        //node.matchParentSize = matchParentSize
+        node.slot = slot
         node.isAxis = isAxis
     }
 
@@ -289,8 +332,7 @@ private class ChartChildDataElement(
     }
 
     override fun hashCode(): Int {
-        var result = alignment.hashCode()
-        //result = 31 * result + matchParentSize.hashCode()
+        var result = slot.hashCode()
         result = 31 * result + isAxis.hashCode()
         return result
     }
@@ -298,15 +340,12 @@ private class ChartChildDataElement(
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         val otherModifier = other as? ChartChildDataElement ?: return false
-        return alignment == otherModifier.alignment &&
-                //matchParentSize == otherModifier.matchParentSize
-                isAxis == otherModifier.isAxis
+        return slot == otherModifier.slot && reserved == otherModifier.reserved
     }
 }
 
 private class ChartChildDataNode(
-    var alignment: Alignment,
-    //var matchParentSize: Boolean,
+    var slot: Slot,
     var isAxis: Boolean,
     var reserved: Int,
 ) : ParentDataModifierNode, Modifier.Node() {
