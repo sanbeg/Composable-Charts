@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.BiasAlignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
@@ -125,7 +124,9 @@ private class ChartMeasurePolicy : MeasurePolicy {
         var leftReservation = 0
         var rightReservation = 0
 
-        // pass 0 - intrinsic?
+        /*
+         * pass 1 - determine reserved space based on intrinsic measurements
+         */
         measurables.fastForEachIndexed{ index, measurable ->
             if (measurable.isAxis) {
                 var reserve = measurable.chartChildDataNode?.reserved ?: 0
@@ -150,85 +151,77 @@ private class ChartMeasurePolicy : MeasurePolicy {
             }
         }
 
-        val haconstraint = constraints.copy(
-            minWidth = 0,
-            minHeight = 0,
-            maxWidth = constraints.maxWidth - leftReservation - rightReservation,
-        )
-        val veconstraint = constraints.copy(
-            minWidth = 0,
-            minHeight = 0,
-            maxHeight = constraints.maxHeight - topReservation - bottomReservation,
-        )
-
-        // pass 1 - measure edge slots, calculate reserve
-        measurables.fastForEachIndexed{ index, measurable ->
-            if (measurable.isAxis) {
-                val axcon = if (measurable.slot == Slot.BOTTOM || measurable.slot == Slot.TOP) {
-                    haconstraint
-                } else {
-                    veconstraint
-                }
-                val placeable = measurable.measure(axcon)
-
-                var reserve = measurable.chartChildDataNode?.reserved ?: 0
-
-                measurable.slot?.let {
-                    if (reserve < 0) {
-                        if ((it == Slot.TOP || it == Slot.BOTTOM) && placeable.height < constraints.maxHeight) {
-                            reserve = placeable.height
-                        }
-                        if ((it == Slot.LEFT || it == Slot.RIGHT) && placeable.width < constraints.maxWidth) {
-                            reserve = placeable.width
-                        }
-                    }
-                    reserve = 0
-                    when(it) {
-                        Slot.TOP -> topReservation = max(topReservation, reserve)
-                        Slot.BOTTOM -> bottomReservation = max(bottomReservation, reserve)
-                        Slot.LEFT -> leftReservation = max(leftReservation, reserve)
-                        Slot.RIGHT -> rightReservation = max(rightReservation, reserve)
-                        else -> {}
-                    }
-                }
-                placeables[index] = placeable
-            }
-        }
-
-
-        val totalReservation = topReservation + bottomReservation
+        val verticalReservation = topReservation + bottomReservation
         val horizontalReservation = leftReservation + rightReservation
 
-        val chartAreaConstraints = constraints.copy(
-            minWidth = constraints.minWidth.minus(horizontalReservation).coerceAtLeast(0),
-            minHeight = constraints.minHeight.minus(totalReservation).coerceAtLeast(0),
-            maxHeight = if (totalReservation < constraints.maxHeight) constraints.maxHeight - totalReservation else constraints.maxHeight,
-            maxWidth = if (horizontalReservation < constraints.maxWidth) constraints.maxWidth - horizontalReservation else constraints.maxWidth,
-
+        val horizAxisonstraint = constraints.copy(
+            minWidth = 0,
+            minHeight = 0,
+            maxWidth = constraints.maxWidth - horizontalReservation,
         )
+        val vertAxisConstraint = constraints.copy(
+            minWidth = 0,
+            minHeight = 0,
+            maxHeight = constraints.maxHeight - verticalReservation,
+        )
+
+        val plotAreaConstraints = constraints.copy(
+            minWidth = constraints.minWidth.minus(horizontalReservation).coerceAtLeast(0),
+            minHeight = constraints.minHeight.minus(verticalReservation).coerceAtLeast(0),
+            maxHeight = if (verticalReservation < constraints.maxHeight) constraints.maxHeight - verticalReservation else constraints.maxHeight,
+            maxWidth = if (horizontalReservation < constraints.maxWidth) constraints.maxWidth - horizontalReservation else constraints.maxWidth,
+            )
 
         var plotWidth = 0
         var plotHeight = 0
-        // pass 2 - measure plot area
-        measurables.fastForEachIndexed { index, measurable ->
-            if (! measurable.isAxis) {
-                val placeable = measurable.measure(chartAreaConstraints)
+
+        // pass 2 - measure axis & plots
+        measurables.fastForEachIndexed{ index, measurable ->
+            if (measurable.isAxis) {
+                val axisConstraint = when(measurable.slot) {
+                    Slot.BOTTOM, Slot.TOP -> horizAxisonstraint
+                    else -> vertAxisConstraint
+                }
+                val placeable = measurable.measure(axisConstraint)
+                placeables[index] = placeable
+            } else { // TODO - separate plot from random non-slot children?
+                val placeable = measurable.measure(plotAreaConstraints)
                 plotWidth = max(plotWidth, placeable.width)
                 plotHeight = max(plotHeight, placeable.height)
                 placeables[index] = placeable
-                positions[index] = IntOffset(leftReservation, topReservation)
+                // positions[index] = IntOffset(leftReservation, topReservation)
+            }
+        }
+
+        // alternative for pass 2
+        val ps2 = Array(measurables.size) {index ->
+            val measurable = measurables[index]
+            if (measurable.isAxis) {
+                val axisConstraint = when(measurable.slot) {
+                    Slot.BOTTOM, Slot.TOP -> horizAxisonstraint
+                    else -> vertAxisConstraint
+                }
+                measurable.measure(axisConstraint)
+            } else { // TODO - separate plot from random non-slot children?
+                val placeable = measurable.measure(plotAreaConstraints)
+                plotWidth = max(plotWidth, placeable.width)
+                plotHeight = max(plotHeight, placeable.height)
+                placeable
             }
         }
 
         val chartWidth = plotWidth + horizontalReservation
-        val chartHeight = plotHeight + totalReservation
+        val chartHeight = plotHeight + verticalReservation
 
-
-        // pass 3 - place axis
+        // pass 3 - determine position for each child
         measurables.fastForEachIndexed { index, measurable ->
             if (measurable.isAxis) {
+                /*
+                 * since axis are allowed to draw outside of their reserved space,
+                 * we draw them in most of the chart space with an appropriate alignment.
+                 */
                 val alignment = measurable.axisAlignment ?: Alignment.Center
-                placeables[index]?.let { placeable ->
+                ps2[index]?.let { placeable ->
                     var offset = IntOffset.Zero
                     var space = IntSize.Zero
                     var size = IntSize(placeable.width, placeable.height)
@@ -254,6 +247,8 @@ private class ChartMeasurePolicy : MeasurePolicy {
                     ).plus(offset)
                     positions[index] = position
                 }
+            } else {
+                positions[index] = IntOffset(leftReservation, topReservation)
             }
         }
 
