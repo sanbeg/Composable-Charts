@@ -125,10 +125,51 @@ private class ChartMeasurePolicy : MeasurePolicy {
         var leftReservation = 0
         var rightReservation = 0
 
+        // pass 0 - intrinsic?
+        measurables.fastForEachIndexed{ index, measurable ->
+            if (measurable.isAxis) {
+                var reserve = measurable.chartChildDataNode?.reserved ?: 0
+
+                measurable.slot?.let {
+                    if (reserve < 0) {
+                        if ((it == Slot.TOP || it == Slot.BOTTOM)) {
+                            reserve = measurable.minIntrinsicHeight(constraints.maxWidth)
+                        }
+                        if ((it == Slot.LEFT || it == Slot.RIGHT)) {
+                            reserve = measurable.minIntrinsicWidth(constraints.maxHeight)
+                        }
+                    }
+                    when(it) {
+                        Slot.TOP -> topReservation = max(topReservation, reserve)
+                        Slot.BOTTOM -> bottomReservation = max(bottomReservation, reserve)
+                        Slot.LEFT -> leftReservation = max(leftReservation, reserve)
+                        Slot.RIGHT -> rightReservation = max(rightReservation, reserve)
+                        else -> {}
+                    }
+                }
+            }
+        }
+
+        val haconstraint = constraints.copy(
+            minWidth = 0,
+            minHeight = 0,
+            maxWidth = constraints.maxWidth - leftReservation - rightReservation,
+        )
+        val veconstraint = constraints.copy(
+            minWidth = 0,
+            minHeight = 0,
+            maxHeight = constraints.maxHeight - topReservation - bottomReservation,
+        )
+
         // pass 1 - measure edge slots, calculate reserve
         measurables.fastForEachIndexed{ index, measurable ->
             if (measurable.isAxis) {
-                val placeable = measurable.measure(contentConstraints)
+                val axcon = if (measurable.slot == Slot.BOTTOM || measurable.slot == Slot.TOP) {
+                    haconstraint
+                } else {
+                    veconstraint
+                }
+                val placeable = measurable.measure(axcon)
 
                 var reserve = measurable.chartChildDataNode?.reserved ?: 0
 
@@ -141,6 +182,7 @@ private class ChartMeasurePolicy : MeasurePolicy {
                             reserve = placeable.width
                         }
                     }
+                    reserve = 0
                     when(it) {
                         Slot.TOP -> topReservation = max(topReservation, reserve)
                         Slot.BOTTOM -> bottomReservation = max(bottomReservation, reserve)
@@ -153,27 +195,6 @@ private class ChartMeasurePolicy : MeasurePolicy {
             }
         }
 
-        measurables.fastForEachIndexed { index, measurable ->
-            if (measurable.isAxis) {
-                val alignment = measurable.axisAlignment ?: Alignment.Center
-                placeables[index]?.let { placeable ->
-                    val offset = measurable.slot?.let {
-                        when(it) {
-                            Slot.TOP, Slot.BOTTOM -> IntOffset(leftReservation, 0)
-                            Slot.LEFT, Slot.RIGHT -> IntOffset(0, topReservation)
-                            else -> IntOffset.Zero
-                        }
-                    } ?: IntOffset.Zero
-                    val position = alignment.align(
-                        IntSize(placeable.width, placeable.height),
-                        // we should get this after mesasuring center
-                        IntSize(constraints.maxWidth, constraints.maxHeight),
-                        LayoutDirection.Ltr
-                    ).plus(offset)
-                    positions[index] = position
-                }
-            }
-        }
 
         val totalReservation = topReservation + bottomReservation
         val horizontalReservation = leftReservation + rightReservation
@@ -188,6 +209,7 @@ private class ChartMeasurePolicy : MeasurePolicy {
 
         var plotWidth = 0
         var plotHeight = 0
+        // pass 2 - measure plot area
         measurables.fastForEachIndexed { index, measurable ->
             if (! measurable.isAxis) {
                 val placeable = measurable.measure(chartAreaConstraints)
@@ -200,6 +222,40 @@ private class ChartMeasurePolicy : MeasurePolicy {
 
         val chartWidth = plotWidth + horizontalReservation
         val chartHeight = plotHeight + totalReservation
+
+
+        // pass 3 - place axis
+        measurables.fastForEachIndexed { index, measurable ->
+            if (measurable.isAxis) {
+                val alignment = measurable.axisAlignment ?: Alignment.Center
+                placeables[index]?.let { placeable ->
+                    var offset = IntOffset.Zero
+                    var space = IntSize.Zero
+                    var size = IntSize(placeable.width, placeable.height)
+                    measurable.slot?.let {
+                        when(it) {
+                            Slot.TOP, Slot.BOTTOM -> {
+                                offset = IntOffset(leftReservation, 0)
+                                space = IntSize(plotWidth, chartHeight)
+                                size = IntSize(plotWidth, placeable.height)
+                            }
+                            Slot.LEFT, Slot.RIGHT -> {
+                                offset = IntOffset(0, topReservation)
+                                space = IntSize(chartWidth, plotHeight)
+                                size = IntSize(placeable.width, plotHeight)
+                            }
+                            else -> {}
+                        }
+                    }
+                    val position = alignment.align(
+                        size,
+                        space,
+                        LayoutDirection.Ltr
+                    ).plus(offset)
+                    positions[index] = position
+                }
+            }
+        }
 
         return layout(chartWidth, chartHeight) {
             placeables.forEachIndexed { index, placeable ->
@@ -261,19 +317,23 @@ private fun TestChartWrap4() {
             .size(50.dp)
             .background(Color.Blue))
         Spacer(modifier = Modifier
-            .height(10.dp).fillMaxWidth()
+            .height(10.dp)
+            .fillMaxWidth()
             .background(Color.Red)
             .asAxis(Slot.BOTTOM))
         Spacer(modifier = Modifier
-            .height(10.dp).fillMaxWidth()
+            .height(10.dp)
+            .fillMaxWidth()
             .background(Color.Red)
             .asAxis(Slot.TOP))
         Spacer(modifier = Modifier
-            .width(10.dp).fillMaxHeight()
+            .width(5.dp)
+            .fillMaxHeight()
             .background(Color.Red)
             .asAxis(Slot.LEFT))
         Spacer(modifier = Modifier
-            .width(10.dp).fillMaxHeight()
+            .width(5.dp)
+            .fillMaxHeight()
             .background(Color.Red)
             .asAxis(Slot.RIGHT))
     }
