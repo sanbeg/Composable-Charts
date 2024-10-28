@@ -66,7 +66,6 @@ fun ComposableChartScope.Scale(
     })
 }
 
-
 @Preview(showBackground = true)
 @Composable
 private fun PreviewChart() {
@@ -98,7 +97,7 @@ private fun PreviewChartFlip() {
                     Offset(25f, 25f),
                     Offset(0f, 0f),
                     Offset(100f, 100f),
-                    )
+                    ).toDataSet()
             ) {
                 drawCircle(Color.Blue, 4.dp.toPx(), it)
             }

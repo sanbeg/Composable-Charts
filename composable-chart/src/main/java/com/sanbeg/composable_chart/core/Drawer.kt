@@ -14,24 +14,11 @@ import androidx.compose.ui.unit.dp
 import com.sanbeg.composable_chart.Chart
 import com.sanbeg.composable_chart.ComposableChartScaleScope
 import com.sanbeg.composable_chart.Scale
-import com.sanbeg.composable_chart_data.ImmutableDataSet
 import com.sanbeg.composable_chart_data.StableDataSet
 import com.sanbeg.composable_chart_data.dataSetOf
 import com.sanbeg.composable_chart_data.forEach
 import com.sanbeg.composable_chart_data.forEachIndexed
-
-@Deprecated("use drawEach(DataSet)")
-fun ComposableChartScaleScope.drawEach(
-    offsets: List<Offset>,
-    content: DrawScope.(offset: Offset) -> Unit
-) {
-    offsets
-        .map(::scale)
-        //.map(matrix::map)
-        .forEach{
-            drawScope.content(it)
-        }
-}
+import com.sanbeg.composable_chart_data.toDataSet
 
 fun ComposableChartScaleScope.drawEach(
     offsets: StableDataSet,
@@ -80,18 +67,6 @@ fun ComposableChartScaleScope.drawAtIndexed(
     }
 }
 
-// TODO - implement some high-level function that won't need to scale twice
-fun ComposableChartScaleScope.drawEachSegmentWindowed(
-    offsets: ImmutableDataSet,
-    content: DrawScope.(a: Offset, b: Offset) -> Unit
-) {
-    offsets.forEachOffsetWindow(2, 1) {w ->
-        if (w[0].isSpecified && w[1].isSpecified) {
-            drawScope.content(scale(w[0]), scale(w[1]))
-        }
-    }
-}
-
 fun ComposableChartScaleScope.drawEachSegment(
     offsets: StableDataSet,
     content: DrawScope.(a: Offset, b: Offset) -> Unit
@@ -121,7 +96,7 @@ private fun PreviewChart() {
                     Offset(25f, 25f),
                     Offset(0f, 0f),
                     Offset(100f, 100f),
-                )
+                ).toDataSet()
             ) {
                 drawCircle(Color.Blue, 4.dp.value, it)
             }

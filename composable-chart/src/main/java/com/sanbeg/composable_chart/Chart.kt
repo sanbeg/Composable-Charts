@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.isSpecified
 import androidx.compose.ui.util.fastForEachIndexed
 import com.sanbeg.composable_chart.core.drawEach
+import com.sanbeg.composable_chart_data.toDataSet
 import kotlin.math.max
 
 enum class Edge {
@@ -542,7 +543,7 @@ private fun PreviewChart2() {
                     Offset(25f, 25f),
                     Offset(0f, 0f),
                     Offset(100f, 100f),
-                )
+                ).toDataSet()
             ) {
                 drawCircle(Color.Blue, 6.dp.value, it)
             }
