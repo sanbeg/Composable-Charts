@@ -42,11 +42,14 @@ import com.sanbeg.composable_chart.core.drawEach
 import com.sanbeg.composable_chart_data.toDataSet
 import kotlin.math.max
 
+/**
+ * Specify which edge to draw an axis on
+ */
 enum class Edge {
     LEFT, RIGHT, TOP, BOTTOM
 }
 
-sealed interface Role {
+private sealed interface Role {
     data object Plot : Role
     data class Axis(val edge: Edge, val reserved: Int): Role
     data class Overlay(val alignment: Alignment) : Role
@@ -58,6 +61,20 @@ class ComposableChartScope internal constructor(
     ) {
     internal var dataInset: Float = 0f
 
+    /**
+     * Renders the composable as an axis, on the specified edge.
+     * The axis should have a size constraint perpendicular to its edge
+     * but be unconstrained in the other direction to match the plot size.
+     *
+     * This will cause the chart to adapt by either expanding the chart or
+     * shrinking the plot so that they can fit.  Note that the axis is allowed
+     * to draw outside of its reserved space to overlap with the chart; this
+     * can be done be specifying the reserved space, which would override the
+     * size.
+     *
+     * @param[edge] which edge to put this axis on.
+     * @param[reserve] the amount of space to reserve for this edge; defaults to unspecified, to use its size.
+     */
     @Composable
     @Stable
     fun Modifier.asAxis(
@@ -78,12 +95,22 @@ class ComposableChartScope internal constructor(
         }
     ))
 
+    /**
+     * Render the composable as a plot.  This will place it in the
+     * central slot.  If the plot has a constrained size and the chart doesn't,
+     * the chart will size itself based on the plot's size.
+     */
     @Stable
     fun Modifier.asPlot(): Modifier = this.then(ChartChildDataElement(
         Role.Plot,
         debugInspectorInfo { name = "asPlot" }
     ))
 
+    /**
+     * Renders the composable as an overlay.  This renders in the central slot,
+     * like the plot.  However, this does not drive the chart's size, so an overlay
+     * which fills available size would grow to match the plot.
+     */
     @Stable
     fun Modifier.asOverlay(alignment: Alignment) = this.then(ChartChildDataElement(
         Role.Overlay(alignment),
