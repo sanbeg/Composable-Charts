@@ -7,9 +7,11 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.Alignment
@@ -21,7 +23,6 @@ import androidx.compose.ui.layout.Measurable
 import androidx.compose.ui.layout.MeasurePolicy
 import androidx.compose.ui.layout.MeasureResult
 import androidx.compose.ui.layout.MeasureScope
-import androidx.compose.ui.layout.Placeable
 import androidx.compose.ui.node.ModifierNodeElement
 import androidx.compose.ui.node.ParentDataModifierNode
 import androidx.compose.ui.platform.InspectorInfo
@@ -40,8 +41,14 @@ import androidx.compose.ui.util.fastForEachIndexed
 import com.sanbeg.composable_chart.core.drawEach
 import kotlin.math.max
 
-enum class Slot {
-    LEFT, RIGHT, TOP, BOTTOM, CENTER
+enum class Edge {
+    LEFT, RIGHT, TOP, BOTTOM
+}
+
+sealed interface Role {
+    data object Plot : Role
+    data class Axis(val edge: Edge, val reserved: Int): Role
+    data class Overlay(val alignment: Alignment) : Role
 }
 
 class ComposableChartScope internal constructor(
@@ -53,20 +60,33 @@ class ComposableChartScope internal constructor(
     @Composable
     @Stable
     fun Modifier.asAxis(
-        slot: Slot,
+        edge: Edge,
         reserve: Dp = Dp.Unspecified,
     ) : Modifier = this.then(ChartChildDataElement(
-        slot = slot,
-        isAxis = (slot != Slot.CENTER),
-        reserved = if (reserve.isSpecified) {
-            with(LocalDensity.current) { reserve.roundToPx() }
-        } else {
-            -1
-        },
+        role = Role.Axis(
+            edge = edge,
+            reserved = if (reserve.isSpecified) {
+                with(LocalDensity.current) { reserve.roundToPx() }
+            } else {
+                -1
+            },
+        ),
         inspectorInfo = debugInspectorInfo {
             name = "asAxis"
-            value = slot
+            value = edge
         }
+    ))
+
+    @Stable
+    fun Modifier.asPlot(): Modifier = this.then(ChartChildDataElement(
+        Role.Plot,
+        debugInspectorInfo { name = "asPlot" }
+    ))
+
+    @Stable
+    fun Modifier.asOverlay(alignment: Alignment) = this.then(ChartChildDataElement(
+        Role.Overlay(alignment),
+        debugInspectorInfo { name = "asOverlay" }
     ))
 }
 
@@ -116,9 +136,6 @@ private class ChartMeasurePolicy : MeasurePolicy {
             }
         }
 
-        val placeables = arrayOfNulls<Placeable>(measurables.size)
-        val positions = arrayOfNulls<IntOffset>(measurables.size)
-
         var topReservation = 0
         var bottomReservation = 0
         var leftReservation = 0
@@ -129,22 +146,22 @@ private class ChartMeasurePolicy : MeasurePolicy {
          */
         measurables.fastForEachIndexed{ index, measurable ->
             if (measurable.isAxis) {
-                var reserve = measurable.chartChildDataNode?.reserved ?: 0
+                var reserve = measurable.axisRole?.reserved ?: 0
 
-                measurable.slot?.let {
+                measurable.axisRole?.edge?.let {
                     if (reserve < 0) {
-                        if ((it == Slot.TOP || it == Slot.BOTTOM)) {
+                        if ((it == Edge.TOP || it == Edge.BOTTOM)) {
                             reserve = measurable.minIntrinsicHeight(constraints.maxWidth)
                         }
-                        if ((it == Slot.LEFT || it == Slot.RIGHT)) {
+                        if ((it == Edge.LEFT || it == Edge.RIGHT)) {
                             reserve = measurable.minIntrinsicWidth(constraints.maxHeight)
                         }
                     }
                     when(it) {
-                        Slot.TOP -> topReservation = max(topReservation, reserve)
-                        Slot.BOTTOM -> bottomReservation = max(bottomReservation, reserve)
-                        Slot.LEFT -> leftReservation = max(leftReservation, reserve)
-                        Slot.RIGHT -> rightReservation = max(rightReservation, reserve)
+                        Edge.TOP -> topReservation = max(topReservation, reserve)
+                        Edge.BOTTOM -> bottomReservation = max(bottomReservation, reserve)
+                        Edge.LEFT -> leftReservation = max(leftReservation, reserve)
+                        Edge.RIGHT -> rightReservation = max(rightReservation, reserve)
                         else -> {}
                     }
                 }
@@ -154,16 +171,25 @@ private class ChartMeasurePolicy : MeasurePolicy {
         val verticalReservation = topReservation + bottomReservation
         val horizontalReservation = leftReservation + rightReservation
 
-        val horizAxisonstraint = constraints.copy(
-            minWidth = 0,
-            minHeight = 0,
-            maxWidth = constraints.maxWidth - horizontalReservation,
-        )
-        val vertAxisConstraint = constraints.copy(
-            minWidth = 0,
-            minHeight = 0,
-            maxHeight = constraints.maxHeight - verticalReservation,
-        )
+        val horizAxisConstraint = if (horizontalReservation > 0) {
+            constraints.copy(
+                minWidth = 0,
+                minHeight = 0,
+                maxWidth = constraints.maxWidth - horizontalReservation,
+            )
+        } else {
+            contentConstraints
+        }
+
+        val vertAxisConstraint = if (verticalReservation > 0) {
+            constraints.copy(
+                minWidth = 0,
+                minHeight = 0,
+                maxHeight = constraints.maxHeight - verticalReservation,
+            )
+        } else {
+            contentConstraints
+        }
 
         val plotAreaConstraints = constraints.copy(
             minWidth = constraints.minWidth.minus(horizontalReservation).coerceAtLeast(0),
@@ -176,37 +202,21 @@ private class ChartMeasurePolicy : MeasurePolicy {
         var plotHeight = 0
 
         // pass 2 - measure axis & plots
-        measurables.fastForEachIndexed{ index, measurable ->
-            if (measurable.isAxis) {
-                val axisConstraint = when(measurable.slot) {
-                    Slot.BOTTOM, Slot.TOP -> horizAxisonstraint
-                    else -> vertAxisConstraint
-                }
-                val placeable = measurable.measure(axisConstraint)
-                placeables[index] = placeable
-            } else { // TODO - separate plot from random non-slot children?
-                val placeable = measurable.measure(plotAreaConstraints)
-                plotWidth = max(plotWidth, placeable.width)
-                plotHeight = max(plotHeight, placeable.height)
-                placeables[index] = placeable
-                // positions[index] = IntOffset(leftReservation, topReservation)
-            }
-        }
-
-        // alternative for pass 2
-        val ps2 = Array(measurables.size) {index ->
+        val placeables = Array(measurables.size) {index ->
             val measurable = measurables[index]
             if (measurable.isAxis) {
-                val axisConstraint = when(measurable.slot) {
-                    Slot.BOTTOM, Slot.TOP -> horizAxisonstraint
+                val axisConstraint = when(measurable.axisRole?.edge) {
+                    Edge.BOTTOM, Edge.TOP -> horizAxisConstraint
                     else -> vertAxisConstraint
                 }
                 measurable.measure(axisConstraint)
-            } else { // TODO - separate plot from random non-slot children?
+            } else if (measurable.chartRole == Role.Plot) { // TODO - separate plot from random non-slot children?
                 val placeable = measurable.measure(plotAreaConstraints)
                 plotWidth = max(plotWidth, placeable.width)
                 plotHeight = max(plotHeight, placeable.height)
                 placeable
+            } else {
+                measurable.measure(plotAreaConstraints)
             }
         }
 
@@ -214,47 +224,53 @@ private class ChartMeasurePolicy : MeasurePolicy {
         val chartHeight = plotHeight + verticalReservation
 
         // pass 3 - determine position for each child
-        measurables.fastForEachIndexed { index, measurable ->
+        val positions = Array(measurables.size) { index ->
+            val measurable = measurables[index]
             if (measurable.isAxis) {
                 /*
                  * since axis are allowed to draw outside of their reserved space,
                  * we draw them in most of the chart space with an appropriate alignment.
                  */
                 val alignment = measurable.axisAlignment ?: Alignment.Center
-                ps2[index]?.let { placeable ->
-                    var offset = IntOffset.Zero
-                    var space = IntSize.Zero
-                    var size = IntSize(placeable.width, placeable.height)
-                    measurable.slot?.let {
-                        when(it) {
-                            Slot.TOP, Slot.BOTTOM -> {
-                                offset = IntOffset(leftReservation, 0)
-                                space = IntSize(plotWidth, chartHeight)
-                                size = IntSize(plotWidth, placeable.height)
-                            }
-                            Slot.LEFT, Slot.RIGHT -> {
-                                offset = IntOffset(0, topReservation)
-                                space = IntSize(chartWidth, plotHeight)
-                                size = IntSize(placeable.width, plotHeight)
-                            }
-                            else -> {}
+                val placeable = placeables[index]
+                val offset: IntOffset
+                val space: IntSize
+                val size: IntSize
+                measurable.axisRole?.edge.let {
+                    when(it) {
+                        Edge.TOP, Edge.BOTTOM -> {
+                            offset = IntOffset(leftReservation, 0)
+                            space = IntSize(plotWidth, chartHeight)
+                            size = IntSize(plotWidth, placeable.height)
+                        }
+                        Edge.LEFT, Edge.RIGHT-> {
+                            offset = IntOffset(0, topReservation)
+                            space = IntSize(chartWidth, plotHeight)
+                            size = IntSize(placeable.width, plotHeight)
+                        }
+                        null -> {
+                            offset = IntOffset.Zero
+                            space = IntSize.Zero
+                            size = IntSize.Zero
                         }
                     }
-                    val position = alignment.align(
-                        size,
-                        space,
-                        LayoutDirection.Ltr
-                    ).plus(offset)
-                    positions[index] = position
                 }
+                alignment.align(size, space, LayoutDirection.Ltr).plus(offset)
+            } else if (measurable.chartRole is Role.Overlay) {
+                val placeable = placeables[index]
+                val alignment = (measurable.chartRole as? Role.Overlay)?.alignment ?: Alignment.TopStart
+                val size = IntSize(placeable.width, placeable.height)
+                val space = IntSize(plotWidth, plotHeight)
+                val offset = IntOffset(leftReservation, topReservation)
+                alignment.align(size, space, LayoutDirection.Ltr).plus(offset)
             } else {
-                positions[index] = IntOffset(leftReservation, topReservation)
+                IntOffset(leftReservation, topReservation)
             }
         }
 
         return layout(chartWidth, chartHeight) {
             placeables.forEachIndexed { index, placeable ->
-                placeable?.place(positions[index] ?: IntOffset.Zero)
+                placeable.place(positions[index])
             }
         }
     }
@@ -267,13 +283,16 @@ private fun TestChartLayout() {
         Spacer(modifier = Modifier
             .size(10.dp)
             .background(Color.Red)
-            .asAxis(slot = Slot.BOTTOM, reserve = Dp.Unspecified))
+            .asAxis(edge = Edge.BOTTOM, reserve = Dp.Unspecified))
         Spacer(modifier = Modifier
             .fillMaxSize()
-            .background(Color.Blue.copy(alpha = 0.5f)))
+            .background(Color.Blue.copy(alpha = 0.5f))
+            .asPlot()
+        )
+
         Spacer(modifier = Modifier
             .size(5.dp)
-            .asAxis(slot = Slot.TOP, reserve = Dp.Unspecified)
+            .asAxis(edge = Edge.TOP, reserve = Dp.Unspecified)
             .background(Color.Red))
     }
 }
@@ -294,12 +313,13 @@ private fun TestChartWrap1() {
 private fun TestChartWrap2() {
     ChartLayout(modifier = Modifier.wrapContentSize()) {
         Spacer(modifier = Modifier
+            .asPlot()
             .size(50.dp)
             .background(Color.Blue))
         Spacer(modifier = Modifier
             .size(10.dp)
             .background(Color.Red)
-            .asAxis(Slot.BOTTOM))
+            .asAxis(Edge.BOTTOM))
     }
 }
 
@@ -307,30 +327,89 @@ private fun TestChartWrap2() {
 @Preview(showBackground = true)
 @Composable
 private fun TestChartWrap4() {
-    ChartLayout(modifier = Modifier.wrapContentSize()) {
+    ChartLayout() {
         Spacer(modifier = Modifier
-            .size(50.dp)
+            .asPlot()
+            .size(30.dp)
             .background(Color.Blue))
         Spacer(modifier = Modifier
-            .height(10.dp)
+            .height(8.dp)
             .fillMaxWidth()
             .background(Color.Red)
-            .asAxis(Slot.BOTTOM))
+            .asAxis(Edge.BOTTOM))
         Spacer(modifier = Modifier
-            .height(10.dp)
+            .height(8.dp)
             .fillMaxWidth()
             .background(Color.Red)
-            .asAxis(Slot.TOP))
+            .asAxis(Edge.TOP))
         Spacer(modifier = Modifier
-            .width(5.dp)
+            .width(8.dp)
             .fillMaxHeight()
             .background(Color.Red)
-            .asAxis(Slot.LEFT))
+            .asAxis(Edge.LEFT))
         Spacer(modifier = Modifier
-            .width(5.dp)
+            .width(8.dp)
             .fillMaxHeight()
             .background(Color.Red)
-            .asAxis(Slot.RIGHT))
+            .asAxis(Edge.RIGHT))
+
+        Spacer(
+            modifier = Modifier
+                .padding(2.dp)
+                .size(3.dp)
+                .background(Color.Green, CircleShape)
+                .asOverlay(Alignment.TopEnd)
+        )
+/*
+        Box(Modifier.fillMaxSize().padding(2.dp)) {
+            Spacer(
+                modifier = Modifier
+                    .size(3.dp)
+                    .background(Color.Green, CircleShape)
+                    .align(Alignment.TopEnd)
+            )
+        }
+*/
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun TestChartWrap4_2() {
+    ChartLayout(modifier= Modifier.size(40.dp)) {
+        Spacer(modifier = Modifier
+            .asPlot()
+            .background(Color.Blue))
+        Spacer(modifier = Modifier
+            .height(8.dp)
+            .fillMaxWidth()
+            .background(Color.Red)
+            .asAxis(Edge.BOTTOM))
+        Spacer(modifier = Modifier
+            .height(8.dp)
+            .fillMaxWidth()
+            .background(Color.Red)
+            .asAxis(Edge.TOP))
+        Spacer(modifier = Modifier
+            .width(8.dp)
+            .fillMaxHeight()
+            .background(Color.Red)
+            .asAxis(Edge.LEFT))
+        Spacer(modifier = Modifier
+            .width(8.dp)
+            .fillMaxHeight()
+            .background(Color.Red)
+            .asAxis(Edge.RIGHT))
+
+        // this works if chart has specified size
+        Box(Modifier.padding(2.dp)) {
+            Spacer(
+                modifier = Modifier
+                    .size(3.dp)
+                    .background(Color.Green, CircleShape)
+                    .align(Alignment.TopEnd)
+            )
+        }
     }
 }
 
@@ -340,13 +419,14 @@ private fun TestChartInBox() {
     Box(Modifier.size(75.dp)) {
         ChartLayout(modifier = Modifier.fillMaxSize()) {
             Spacer(modifier = Modifier
+                .asPlot()
                 .fillMaxSize()
                 .background(Color.Blue))
             Spacer(
                 modifier = Modifier
                     .size(10.dp)
                     .background(Color.Red)
-                    .asAxis(Slot.BOTTOM)
+                    .asAxis(Edge.BOTTOM)
             )
         }
     }
@@ -354,55 +434,43 @@ private fun TestChartInBox() {
 
 
 private val Measurable.chartChildDataNode: ChartChildDataNode? get() = parentData as? ChartChildDataNode
-private val Measurable.isAxis: Boolean get() = chartChildDataNode?.isAxis ?: false
-private val Measurable.slot: Slot? get() = chartChildDataNode?.slot
-private val Measurable.axisAlignment: Alignment? get() = chartChildDataNode?.slot?.let {
+private val Measurable.chartRole: Role? get() = (parentData as? ChartChildDataNode)?.role
+private val Measurable.isAxis: Boolean get() = chartRole is Role.Axis
+private val Measurable.axisRole: Role.Axis? get() = chartRole as? Role.Axis
+private val Measurable.axisAlignment: Alignment? get() = (chartRole as? Role.Axis)?.edge?.let {
     when(it) {
-        Slot.LEFT -> Alignment.TopStart
-        Slot.RIGHT -> Alignment.TopEnd
-        Slot.TOP -> Alignment.TopStart
-        Slot.BOTTOM -> Alignment.BottomStart
-        else -> null
+        Edge.LEFT -> Alignment.TopStart
+        Edge.RIGHT -> Alignment.TopEnd
+        Edge.TOP -> Alignment.TopStart
+        Edge.BOTTOM -> Alignment.BottomStart
     }
 }
 
 private class ChartChildDataElement(
-    val slot: Slot,
-    val isAxis: Boolean,
-    val reserved: Int,
-    val inspectorInfo: InspectorInfo.() -> Unit
-
+    val role: Role,
+    val inspectorInfo: InspectorInfo.() -> Unit,
 ) : ModifierNodeElement<ChartChildDataNode>() {
-    override fun create(): ChartChildDataNode {
-        return ChartChildDataNode(slot, isAxis, reserved)
-    }
+    override fun create() = ChartChildDataNode(role)
 
     override fun update(node: ChartChildDataNode) {
-        node.slot = slot
-        node.isAxis = isAxis
+        node.role = role
     }
 
     override fun InspectorInfo.inspectableProperties() {
         inspectorInfo()
     }
 
-    override fun hashCode(): Int {
-        var result = slot.hashCode()
-        result = 31 * result + isAxis.hashCode()
-        return result
-    }
+    override fun hashCode() = role.hashCode()
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         val otherModifier = other as? ChartChildDataElement ?: return false
-        return slot == otherModifier.slot && reserved == otherModifier.reserved
+        return role == otherModifier.role
     }
 }
 
 private class ChartChildDataNode(
-    var slot: Slot,
-    var isAxis: Boolean,
-    var reserved: Int,
+    var role: Role
 ) : ParentDataModifierNode, Modifier.Node() {
     override fun Density.modifyParentData(parentData: Any?) = this@ChartChildDataNode
 }
