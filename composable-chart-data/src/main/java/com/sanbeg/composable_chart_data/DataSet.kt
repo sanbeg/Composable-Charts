@@ -15,7 +15,7 @@ interface OffsetIterator : Iterator<Offset> {
     fun nextOffset(): Offset
 }
 
-class DataSetIterator(private val data: StableDataSet) : OffsetIterator {
+class DataSetIterator(private val data: DataSet) : OffsetIterator {
     private var index = 0
 
     override fun hasNext() = index < data.size
@@ -31,7 +31,7 @@ class DataSetIterator(private val data: StableDataSet) : OffsetIterator {
  * @see asDataSet
  */
 @Stable
-interface StableDataSet {
+interface DataSet {
     /** Returns the size of the collection. */
     val size: Int
 
@@ -43,41 +43,41 @@ interface StableDataSet {
 }
 
 @Stable
-val StableDataSet.indices: IntRange
+val DataSet.indices: IntRange
     get() = 0 until size
 
 @Stable
-val StableDataSet.lastIndex: Int
+val DataSet.lastIndex: Int
     get() = size - 1
 
-fun StableDataSet.forEach(action: (Offset) -> Unit) = indices.forEach {
+fun DataSet.forEach(action: (Offset) -> Unit) = indices.forEach {
     action(get(it))
 }
 
 
-fun StableDataSet.onEach(action: (Offset) -> Unit): StableDataSet {
+fun DataSet.onEach(action: (Offset) -> Unit): DataSet {
     forEach(action)
     return this
 }
 
-fun StableDataSet.forEachIndexed(action: (index: Int, Offset) -> Unit) =
+fun DataSet.forEachIndexed(action: (index: Int, Offset) -> Unit) =
     indices.forEachIndexed { i, o ->
         action(i, get(o))
     }
 
 @Deprecated("use asList().map()")
-fun StableDataSet.map(transform: (Offset) -> Offset): List<Offset> =
+fun DataSet.map(transform: (Offset) -> Offset): List<Offset> =
     mapStableDataSet(this, transform)
 
-private fun mapStableDataSet(data: StableDataSet, transform: (Offset) -> Offset): List<Offset> =
+private fun mapStableDataSet(data: DataSet, transform: (Offset) -> Offset): List<Offset> =
     buildList {
         data.forEach { add(transform(it)) }
     }
 
-fun StableDataSet.firstOrNull() = if (size > 0) this[0] else null
-fun StableDataSet.lastOrNull() = if (size > 0) this[size - 1] else null
+fun DataSet.firstOrNull() = if (size > 0) this[0] else null
+fun DataSet.lastOrNull() = if (size > 0) this[size - 1] else null
 
-fun StableDataSet.firstOrNull(predicate: (Offset) -> Boolean): Offset? {
+fun DataSet.firstOrNull(predicate: (Offset) -> Boolean): Offset? {
     indices.forEach {
         val o = this[it]
         if (predicate(o)) return o
@@ -85,7 +85,7 @@ fun StableDataSet.firstOrNull(predicate: (Offset) -> Boolean): Offset? {
     return null
 }
 
-fun StableDataSet.lastOrNull(predicate: (Offset) -> Boolean): Offset? {
+fun DataSet.lastOrNull(predicate: (Offset) -> Boolean): Offset? {
     indices.reversed().forEach {
         val o = this[it]
         if (predicate(o)) return o

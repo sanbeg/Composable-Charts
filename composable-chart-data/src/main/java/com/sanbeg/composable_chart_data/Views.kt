@@ -2,7 +2,7 @@ package com.sanbeg.composable_chart_data
 
 import androidx.compose.ui.geometry.Offset
 
-private class DataSetListView(val data: StableDataSet) : AbstractList<Offset>() {
+private class DataSetListView(val data: DataSet) : AbstractList<Offset>() {
     override val size
         get() = data.size
 
@@ -10,18 +10,18 @@ private class DataSetListView(val data: StableDataSet) : AbstractList<Offset>() 
 }
 
 @JvmInline
-private value class DataSetIterableView(val data: StableDataSet) : Iterable<Offset> {
+private value class DataSetIterableView(val data: DataSet) : Iterable<Offset> {
     override fun iterator(): Iterator<Offset> = data.iterator()
 }
 
 class DataSetSubset(
-    private val data: StableDataSet,
+    private val data: DataSet,
     private val start: Int = 0,
     override val size: Int = data.size - start
-) : StableDataSet {
+) : DataSet {
     override fun get(index: Int): Offset = data[index + start]
     override fun iterator(): OffsetIterator = DataSetIterator(this)
 }
 
-fun StableDataSet.asList(): List<Offset> = DataSetListView(this)
-fun StableDataSet.asIterable(): Iterable<Offset> = DataSetIterableView(this)
+fun DataSet.asList(): List<Offset> = DataSetListView(this)
+fun DataSet.asIterable(): Iterable<Offset> = DataSetIterableView(this)

@@ -14,7 +14,7 @@ private fun Offset.copyIntoArray(dst: FloatArray, start: Int) = if (isSpecified)
 
 @JvmInline
 @Stable
-value class FloatArrayDataSet(private val array: FloatArray) : StableDataSet {
+value class FloatArrayDataSet(private val array: FloatArray) : DataSet {
     private class FloatArrayDataSetIterator(val array: FloatArray): OffsetIterator{
         private var nextIndex = 0
 

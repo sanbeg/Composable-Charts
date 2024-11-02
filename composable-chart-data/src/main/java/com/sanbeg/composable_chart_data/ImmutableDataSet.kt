@@ -34,7 +34,7 @@ private fun toOffset(l: Long) = Offset(unpackFloat1(l), unpackFloat2(l))
 @ExperimentalStdlibApi
 @JvmInline
 @Immutable
-value class ImmutableDataSet private constructor(private val array: LongArray): StableDataSet {
+value class ImmutableDataSet private constructor(private val array: LongArray): DataSet {
     @JvmInline
     private value class DataSetLongIterator(private val iterator: LongIterator) : OffsetIterator {
         override fun hasNext() = iterator.hasNext()

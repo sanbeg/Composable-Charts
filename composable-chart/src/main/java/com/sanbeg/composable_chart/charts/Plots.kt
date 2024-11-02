@@ -18,22 +18,22 @@ import com.sanbeg.composable_chart.Scale
 import com.sanbeg.composable_chart.core.drawAt
 import com.sanbeg.composable_chart.core.drawEach
 import com.sanbeg.composable_chart.core.drawEachSegment
-import com.sanbeg.composable_chart_data.StableDataSet
+import com.sanbeg.composable_chart_data.DataSet
 import com.sanbeg.composable_chart_data.dataSetOf
 
-fun ComposableChartScaleScope.scatter(data: StableDataSet, radius: Dp, brush: Brush) {
+fun ComposableChartScaleScope.scatter(data: DataSet, radius: Dp, brush: Brush) {
     drawAt(data) {
         drawCircle(brush, radius.toPx(), Offset.Zero)
     }
 }
 
-fun ComposableChartScaleScope.line(data: StableDataSet, width: Dp = Dp.Hairline, brush: Brush) {
+fun ComposableChartScaleScope.line(data: DataSet, width: Dp = Dp.Hairline, brush: Brush) {
     drawEachSegment(data) { a, b ->
         drawLine(brush, a, b, width.toPx())
     }
 }
 
-fun ComposableChartScaleScope.area(data: StableDataSet, brush: Brush) {
+fun ComposableChartScaleScope.area(data: DataSet, brush: Brush) {
     var prev: Offset? = null
     val path = Path()
     val height = drawScope.size.height

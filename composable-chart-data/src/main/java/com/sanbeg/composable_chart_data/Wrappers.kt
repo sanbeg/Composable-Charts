@@ -10,7 +10,7 @@ private value class WrapperIterator(val iterator: Iterator<Offset>) : OffsetIter
 
 }
 @JvmInline
-private value class ListWrapper(val list: List<Offset>) : StableDataSet {
+private value class ListWrapper(val list: List<Offset>) : DataSet {
     override val size
         get() = list.size
 
@@ -19,7 +19,7 @@ private value class ListWrapper(val list: List<Offset>) : StableDataSet {
 }
 
 @JvmInline
-private value class ArrayWrapper(val array: Array<Offset>) : StableDataSet {
+private value class ArrayWrapper(val array: Array<Offset>) : DataSet {
     override val size: Int
         get() = array.size
 
@@ -29,14 +29,14 @@ private value class ArrayWrapper(val array: Array<Offset>) : StableDataSet {
 
 // maybe remove these?
 /** Creates a StableDataSet as a wrapped List of boxed Offsets. */
-fun dataSetOf(list: List<Offset>): StableDataSet = ListWrapper(list)
+fun dataSetOf(list: List<Offset>): DataSet = ListWrapper(list)
 /** Creates a StableDataSet as a wrapped Array of boxed Offsets. */
-fun dataSetOf(array: Array<Offset>): StableDataSet = ArrayWrapper(array)
+fun dataSetOf(array: Array<Offset>): DataSet = ArrayWrapper(array)
 
 /** Creates a StableDataSet as a wrapped List of boxed Offsets. */
-fun List<Offset>.asDataSet(): StableDataSet = ListWrapper(this)
+fun List<Offset>.asDataSet(): DataSet = ListWrapper(this)
 /** Creates a StableDataSet as a wrapped Array of boxed Offsets. */
-fun Array<Offset>.asDataSet(): StableDataSet = ArrayWrapper(this)
+fun Array<Offset>.asDataSet(): DataSet = ArrayWrapper(this)
 
 /**
  * Creates a StableDataSet as a wrapped FloatArray, without boxing.
