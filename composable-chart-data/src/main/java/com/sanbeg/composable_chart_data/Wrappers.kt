@@ -34,9 +34,9 @@ fun dataSetOf(list: List<Offset>): StableDataSet = ListWrapper(list)
 fun dataSetOf(array: Array<Offset>): StableDataSet = ArrayWrapper(array)
 
 /** Creates a StableDataSet as a wrapped List of boxed Offsets. */
-fun List<Offset>.toDataSet(): StableDataSet = ListWrapper(this)
+fun List<Offset>.asDataSet(): StableDataSet = ListWrapper(this)
 /** Creates a StableDataSet as a wrapped Array of boxed Offsets. */
-fun Array<Offset>.toDataSet(): StableDataSet = ArrayWrapper(this)
+fun Array<Offset>.asDataSet(): StableDataSet = ArrayWrapper(this)
 
 /**
  * Creates a StableDataSet as a wrapped FloatArray, without boxing.

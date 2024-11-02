@@ -28,7 +28,7 @@ class DataSetIterator(private val data: StableDataSet) : OffsetIterator {
  * Methods in this interface support read-only access to the collection.
  *
  * @see dataSetOf
- * @see toDataSet
+ * @see asDataSet
  */
 @Stable
 interface StableDataSet {
@@ -39,7 +39,7 @@ interface StableDataSet {
     operator fun get(index: Int): Offset
 
     /** Returns an iterator over the Offsets in this object.*/
-    fun iterator(): OffsetIterator
+    fun iterator(): OffsetIterator = DataSetIterator(this)
 }
 
 @Stable

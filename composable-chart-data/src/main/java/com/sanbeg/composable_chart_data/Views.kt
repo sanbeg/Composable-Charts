@@ -9,6 +9,11 @@ private class DataSetListView(val data: StableDataSet) : AbstractList<Offset>() 
     override fun get(index: Int) = data[index]
 }
 
+@JvmInline
+private value class DataSetIterableView(val data: StableDataSet) : Iterable<Offset> {
+    override fun iterator(): Iterator<Offset> = data.iterator()
+}
+
 class DataSetSubset(
     private val data: StableDataSet,
     private val start: Int = 0,
@@ -19,3 +24,4 @@ class DataSetSubset(
 }
 
 fun StableDataSet.asList(): List<Offset> = DataSetListView(this)
+fun StableDataSet.asIterable(): Iterable<Offset> = DataSetIterableView(this)

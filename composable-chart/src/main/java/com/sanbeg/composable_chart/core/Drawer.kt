@@ -18,7 +18,7 @@ import com.sanbeg.composable_chart_data.StableDataSet
 import com.sanbeg.composable_chart_data.dataSetOf
 import com.sanbeg.composable_chart_data.forEach
 import com.sanbeg.composable_chart_data.forEachIndexed
-import com.sanbeg.composable_chart_data.toDataSet
+import com.sanbeg.composable_chart_data.asDataSet
 
 fun ComposableChartScaleScope.drawEach(
     offsets: StableDataSet,
@@ -96,7 +96,7 @@ private fun PreviewChart() {
                     Offset(25f, 25f),
                     Offset(0f, 0f),
                     Offset(100f, 100f),
-                ).toDataSet()
+                ).asDataSet()
             ) {
                 drawCircle(Color.Blue, 4.dp.value, it)
             }
