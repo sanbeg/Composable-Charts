@@ -54,7 +54,6 @@ fun DataSet.forEach(action: (Offset) -> Unit) = indices.forEach {
     action(get(it))
 }
 
-
 fun DataSet.onEach(action: (Offset) -> Unit): DataSet {
     forEach(action)
     return this

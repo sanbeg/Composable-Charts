@@ -30,4 +30,22 @@ class WrapperTest {
         assertEquals(array[3], array.asDataSet()[3])
     }
 
+    @Test
+    fun testArrayIterator() {
+        val it = array.asDataSet().iterator()
+        array.forEach { offset ->
+            assertEquals(offset, it.nextOffset())
+        }
+        assertFalse(it.hasNext())
+    }
+
+    @Test
+    fun testListIterator() {
+        val it = list.asDataSet().iterator()
+        list.forEach { offset ->
+            assertEquals(offset, it.next())
+        }
+        assertFalse(it.hasNext())
+    }
+
 }
