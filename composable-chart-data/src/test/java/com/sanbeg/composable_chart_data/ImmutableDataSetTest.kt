@@ -4,6 +4,7 @@ import androidx.compose.ui.geometry.Offset
 import org.junit.Assert.*
 import org.junit.Test
 
+@OptIn(ExperimentalStdlibApi::class)
 class ImmutableDataSetTest {
 
     private val list = listOf(

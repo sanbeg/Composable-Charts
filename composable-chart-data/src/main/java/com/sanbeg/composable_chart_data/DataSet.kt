@@ -74,6 +74,9 @@ private fun mapStableDataSet(data: DataSet, transform: (Offset) -> Offset): List
         data.forEach { add(transform(it)) }
     }
 
+fun DataSet.first() = this[0]
+fun DataSet.last() = this[lastIndex]
+
 fun DataSet.firstOrNull() = if (size > 0) this[0] else null
 fun DataSet.lastOrNull() = if (size > 0) this[size - 1] else null
 
