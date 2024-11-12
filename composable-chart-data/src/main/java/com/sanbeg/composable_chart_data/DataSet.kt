@@ -94,3 +94,11 @@ fun DataSet.lastOrNull(predicate: (Offset) -> Boolean): Offset? {
     }
     return null
 }
+
+fun <R>DataSet.fold(initial: R, operation: (acc: R, Offset) -> R): R {
+    var acc = initial
+    for (i in indices) {
+        acc = operation(acc, get(i))
+    }
+    return acc
+}
