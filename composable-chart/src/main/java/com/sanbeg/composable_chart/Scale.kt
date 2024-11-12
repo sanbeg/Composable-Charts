@@ -1,12 +1,8 @@
 package com.sanbeg.composable_chart
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
@@ -15,7 +11,6 @@ import androidx.compose.ui.geometry.isSpecified
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Matrix
 import androidx.compose.ui.graphics.drawscope.DrawScope
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.sanbeg.composable_chart.core.drawEach
@@ -105,48 +100,5 @@ private fun PreviewChartFlip() {
                 drawCircle(Color.Blue, 4.dp.toPx(), it)
             }
         }
-    }
-}
-
-@Composable
-fun ComposableChartScope.bottomAxis(spacing: Float, modifier: Modifier = Modifier) {
-    Spacer(
-        modifier
-            .fillMaxWidth()
-            .asAxis(Edge.BOTTOM)
-            .drawBehind {
-                val di2 = dataInset * 2
-                val scale = (size.width - di2) / (maxX - minX)
-                var x = minX
-                while (x <= maxX) {
-                    val xs = x * scale + dataInset
-                    x += spacing
-                    drawLine(
-                        Color.Black,
-                        Offset(xs, 0f),
-                        Offset(xs, size.height)
-                    )
-                }
-            }
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun PreviewChartAxis() {
-    Chart(maxX = 100f, dataInset = 3.dp, modifier = Modifier.size(100.dp)) {
-        Scale(maxY = 100f, modifier = Modifier) {
-            drawEach(
-                listOf(
-                    Offset(25f, 25f),
-                    Offset(0f, 0f),
-                    Offset(100f, 100f),
-                ).asDataSet()
-            ) {
-                drawCircle(Color.Blue, 3.dp.toPx(), it)
-            }
-        }
-
-        bottomAxis(10f, modifier = Modifier.height(8.dp))
     }
 }
