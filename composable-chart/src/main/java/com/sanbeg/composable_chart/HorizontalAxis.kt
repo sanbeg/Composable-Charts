@@ -1,5 +1,6 @@
 package com.sanbeg.composable_chart
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -16,11 +17,12 @@ import androidx.compose.ui.unit.dp
 import com.sanbeg.composable_chart.core.drawEach
 import com.sanbeg.composable_chart_data.asDataSet
 
-class HorizontalAxisScope(
+class HorizontalAxisScope internal constructor(
     private val chartScope: ComposableChartScope,
     internal val drawScope: DrawScope,
     ) {
-    private val scale = (drawScope.size.width - chartScope.dataInset * 2) / (chartScope.maxX - chartScope.minX)
+    private val scale =
+        (drawScope.size.width - chartScope.dataInset * 2) / (chartScope.maxX - chartScope.minX)
 
     fun scale(x: Float): Float = x * scale + chartScope.dataInset
 
@@ -48,8 +50,7 @@ fun ComposableChartScope.HorizontalAxis(
 }
 
 fun HorizontalAxisScope.drawAt(x: Float, draw: DrawScope.() -> Unit) {
-    val xs = scale(x)
-    drawScope.translate(xs) {
+    drawScope.translate(scale(x)) {
         draw()
     }
 }
@@ -82,6 +83,9 @@ private fun PreviewChartAxis() {
 
         HorizontalAxis(Modifier.height(8.dp)) {
             drawTics(10f)
+        }
+        HorizontalAxis(Modifier.height(4.dp).background(Color.Cyan), edge = Edge.TOP) {
+            drawTics(15f)
         }
     }
 }

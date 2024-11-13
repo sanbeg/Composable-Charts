@@ -41,18 +41,6 @@ fun ComposableChartScaleScope.drawEachFinite(
     }
 }
 
-fun ComposableChartScaleScope.drawAt(
-    offsets: DataSet,
-    content: DrawScope.() -> Unit
-) {
-    offsets.forEach { offset ->
-        if (offset.isSpecified && offset.isFinite) {
-            val scaled = scale(offset)
-            drawScope.translate(scaled.x, scaled.y, content)
-        }
-    }
-}
-
 fun ComposableChartScaleScope.drawAtIndexed(
     offsets: DataSet,
     content: DrawScope.(index: Int) -> Unit
@@ -120,26 +108,6 @@ private fun PreviewDrawEachData() {
             // drawScope.drawCircle(Color.Red, 4.dp.value)
             drawEach(dataSet) {
                 drawCircle(Color.Blue, 4.dp.value, it)
-            }
-        }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun PreviewDrawAt() {
-    Chart(maxX = 100f, dataInset = 6.dp, modifier = Modifier.size(100.dp)) {
-        val dataSet = dataSetOf(
-            listOf(
-                Offset(25f, 25f),
-                Offset(0f, 0f),
-                Offset(100f, 100f),
-            )
-        )
-        Scale(maxY = 100f) {
-            // drawScope.drawCircle(Color.Red, 4.dp.value)
-            drawAt(dataSet) {
-                drawCircle(Color.Blue, 4.dp.value, Offset.Zero)
             }
         }
     }

@@ -15,17 +15,10 @@ import androidx.compose.ui.unit.dp
 import com.sanbeg.composable_chart.Chart
 import com.sanbeg.composable_chart.ComposableChartScaleScope
 import com.sanbeg.composable_chart.Scale
-import com.sanbeg.composable_chart.core.drawAt
 import com.sanbeg.composable_chart.core.drawEach
 import com.sanbeg.composable_chart.core.drawEachSegment
 import com.sanbeg.composable_chart_data.DataSet
 import com.sanbeg.composable_chart_data.dataSetOf
-
-fun ComposableChartScaleScope.scatter(data: DataSet, radius: Dp, brush: Brush) {
-    drawAt(data) {
-        drawCircle(brush, radius.toPx(), Offset.Zero)
-    }
-}
 
 fun ComposableChartScaleScope.line(data: DataSet, width: Dp = Dp.Hairline, brush: Brush) {
     drawEachSegment(data) { a, b ->
@@ -59,24 +52,6 @@ fun ComposableChartScaleScope.area(data: DataSet, brush: Brush) {
     drawScope.drawPath(path, brush)
 }
 
-
-@Preview(showBackground = true)
-@Composable
-private fun PreviewScatter() {
-    Chart(maxX = 100f, dataInset = 6.dp, modifier = Modifier.size(100.dp)) {
-        val dataSet = dataSetOf(
-            listOf(
-                Offset(0f, 0f),
-                Offset(25f, 15f),
-                Offset(45f, 25f),
-                Offset(100f, 100f),
-            )
-        )
-        Scale(maxY = 100f) {
-            scatter(dataSet, 4.dp, SolidColor(Color.Blue))
-        }
-    }
-}
 
 @Preview(showBackground = true)
 @Composable
