@@ -1,5 +1,6 @@
 package com.sanbeg.composable_chart.charts
 
+import androidx.annotation.FloatRange
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -7,10 +8,13 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.geometry.isFinite
 import androidx.compose.ui.geometry.isSpecified
+import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.drawscope.DrawScope.Companion.DefaultBlendMode
 import androidx.compose.ui.graphics.drawscope.DrawStyle
 import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.graphics.drawscope.Stroke
@@ -87,31 +91,54 @@ fun ComposableChartScaleScope.scatterWithIndexedValues(
 
 /**
  * Convenience function to draw a scatter diagram as circles.
+ *
+ * @param data The data which will be plotted, one circle per [Offset]
+ * @param radius The radius of each circle
+ * @param brush The color or fill to be applied to each circle
+ * @param alpha Opacity to be applied to each circle from 0.0f to 1.0f representing
+ * fully transparent to fully opaque respectively
+ * @param style Whether or not the circles are stroked or filled in
+ * @param colorFilter ColorFilter to apply to the [brush] when drawn into the destination
+ * @param blendMode Blending algorithm to be applied to the brush
  */
 fun ComposableChartScaleScope.scatter(
     data: DataSet,
     radius: Dp,
     brush: Brush,
-    style: DrawStyle = Fill
+    @FloatRange(from = 0.0, to = 1.0) alpha: Float = 1.0f,
+    style: DrawStyle = Fill,
+    colorFilter: ColorFilter? = null,
+    blendMode: BlendMode = DefaultBlendMode
 ) {
     val r = with(drawScope) {
         radius.toPx()
     }
     drawAt(data) {
-        drawCircle(brush, r, Offset.Zero, style=style)
+        drawCircle(brush, r, Offset.Zero, alpha, style, colorFilter, blendMode)
     }
 }
 
 /**
  * Convenience function to draw a scatter diagram as circles.
+ *
+ *  @param data The data which will be plotted, one circle per [Offset]
+ *  @param radius The radius of each circle
+ *  @param color The color to be applied to each circle
+ *  @param alpha Opacity to be applied to each circle from 0.0f to 1.0f representing
+ *  fully transparent to fully opaque respectively
+ *  @param style Whether or not the circles are stroked or filled in
+ *  @param colorFilter ColorFilter to apply to the [color] when drawn into the destination
+ *  @param blendMode Blending algorithm to be applied to the brush
  */
 fun ComposableChartScaleScope.scatter(
     data: DataSet,
     radius: Dp,
     color: Color,
-    style: DrawStyle = Fill
-) =
-    scatter(data, radius, SolidColor(color), style)
+    @FloatRange(from = 0.0, to = 1.0) alpha: Float = 1.0f,
+    style: DrawStyle = Fill,
+    colorFilter: ColorFilter? = null,
+    blendMode: BlendMode = DefaultBlendMode) =
+    scatter(data, radius, SolidColor(color), alpha, style, colorFilter, blendMode)
 
 @Preview(showBackground = true)
 @Composable
@@ -126,7 +153,7 @@ private fun PreviewScatter() {
             )
         )
         Scale(maxY = 100f) {
-            scatter(dataSet, 3.dp, SolidColor(Color.Blue), Stroke(2f))
+            scatter(dataSet, 3.dp, SolidColor(Color.Blue), style=Stroke(2f))
         }
     }
 }

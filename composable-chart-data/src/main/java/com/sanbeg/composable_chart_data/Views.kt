@@ -14,7 +14,7 @@ private value class DataSetIterableView(val data: DataSet) : Iterable<Offset> {
     override fun iterator(): Iterator<Offset> = data.iterator()
 }
 
-class DataSetSubset(
+private class DataSetSubset(
     private val data: DataSet,
     private val start: Int = 0,
     override val size: Int = data.size - start
@@ -25,3 +25,4 @@ class DataSetSubset(
 
 fun DataSet.asList(): List<Offset> = DataSetListView(this)
 fun DataSet.asIterable(): Iterable<Offset> = DataSetIterableView(this)
+fun DataSet.slice(indices: IntRange): DataSet = DataSetSubset(this, indices.first, indices.last - indices.first)

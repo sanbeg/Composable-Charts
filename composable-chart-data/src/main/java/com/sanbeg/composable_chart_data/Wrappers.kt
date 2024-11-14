@@ -28,18 +28,21 @@ private value class ArrayWrapper(val array: Array<Offset>) : DataSet {
 }
 
 // maybe remove these?
-/** Creates a StableDataSet as a wrapped List of boxed Offsets. */
+/** Creates a [DataSet] as a wrapped List of boxed [Offset]s, like [list.asDataSet()] */
 fun dataSetOf(list: List<Offset>): DataSet = ListWrapper(list)
-/** Creates a StableDataSet as a wrapped Array of boxed Offsets. */
+/** Creates a [DataSet] as a wrapped Array of boxed [Offset]s, like [array.asDataSet()] */
 fun dataSetOf(array: Array<Offset>): DataSet = ArrayWrapper(array)
 
-/** Creates a StableDataSet as a wrapped List of boxed Offsets. */
+/** Creates a [DataSet] as a wrapped List of boxed [Offset]s. */
 fun List<Offset>.asDataSet(): DataSet = ListWrapper(this)
-/** Creates a StableDataSet as a wrapped Array of boxed Offsets. */
+/** Creates a [DataSet] as a wrapped Array of boxed [Offset]s. */
 fun Array<Offset>.asDataSet(): DataSet = ArrayWrapper(this)
 
+/** Creates a [DataSet] as a wrapped [FloatArray], without boxing. */
+fun FloatArray.asDataSet(): DataSet = FloatArrayDataSet(this)
+
 /**
- * Creates a StableDataSet as a wrapped FloatArray, without boxing.
+ * Creates a [DataSet] as a wrapped [FloatArray], without boxing.
  * @param[elements] alternating x and y elements; the number of arguments must be even.
  */
 fun dataSetOf(vararg elements: Float): FloatArrayDataSet = FloatArrayDataSet(elements)

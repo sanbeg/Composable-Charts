@@ -1,13 +1,20 @@
 package com.sanbeg.composable_chart.charts
 
+import androidx.annotation.FloatRange
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.graphics.PathEffect.Companion.dashPathEffect
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.drawscope.DrawScope.Companion.DefaultBlendMode
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -18,9 +25,30 @@ import com.sanbeg.composable_chart.core.drawEachSegment
 import com.sanbeg.composable_chart_data.DataSet
 import com.sanbeg.composable_chart_data.dataSetOf
 
-fun ComposableChartScaleScope.line(data: DataSet, width: Dp = Dp.Hairline, brush: Brush) {
+/**
+ * Draws a series of lines connecting the given points using the given paint. The lines
+ * are stroked.
+ *
+ * @param data the set of points
+ * @param brush the color or fill to be applied to the line
+ * @param width stroke width to apply to the line
+ * @param pathEffect optional effect or pattern to apply to the line
+ * @param alpha opacity to be applied to the [brush] from 0.0f to 1.0f representing
+ * fully transparent to fully opaque respectively
+ * @param colorFilter ColorFilter to apply to the [brush] when drawn into the destination
+ * @param blendMode the blending algorithm to apply to the [brush]
+ */
+fun ComposableChartScaleScope.line(
+    data: DataSet,
+    width: Dp = Dp.Hairline,
+    brush: Brush,
+    pathEffect: PathEffect? = null,
+    @FloatRange(from = 0.0, to = 1.0) alpha: Float = 1.0f,
+    colorFilter: ColorFilter? = null,
+    blendMode: BlendMode = DefaultBlendMode
+    ) {
     drawEachSegment(data) { a, b ->
-        drawLine(brush, a, b, width.toPx(), StrokeCap.Round)
+        drawLine(brush, a, b, width.toPx(), StrokeCap.Round, pathEffect, alpha, colorFilter, blendMode)
     }
 }
 
@@ -30,6 +58,21 @@ enum class StepVertical{
 }
 
 fun ComposableChartScaleScope.step(
+    data: DataSet,
+    where: StepVertical = StepVertical.Post,
+    content: DrawScope.(start: Offset, end: Offset) -> Unit
+) {
+    drawEachSegment(data) { a, c ->
+        val b = when (where) {
+            StepVertical.Pre -> Offset(a.x, c.y)
+            StepVertical.Post -> Offset(c.x, a.y)
+        }
+        content(a, b)
+        content(b, c)
+    }
+}
+
+fun ComposableChartScaleScope.step1(
     data: DataSet,
     width: Dp = Dp.Hairline,
     brush: Brush,
@@ -46,6 +89,16 @@ fun ComposableChartScaleScope.step(
     }
 }
 
+fun ComposableChartScaleScope.step(
+    data: DataSet,
+    width: Dp = Dp.Hairline,
+    brush: Brush,
+    where: StepVertical = StepVertical.Post,
+) {
+    step(data, where) {a, b ->
+        drawLine(brush, a, b, width.toPx(), StrokeCap.Round)
+    }
+}
 
 @Preview(showBackground = true)
 @Composable
@@ -78,7 +131,11 @@ private fun PreviewStep() {
             )
         )
         Scale(maxY = 100f) {
-            line(dataSet, 1.dp, SolidColor(Color.Cyan))
+            //line(dataSet, 1.dp, SolidColor(Color.Cyan))
+            drawEachSegment(dataSet) {a, b ->
+                drawLine(Color.Cyan, a, b,
+                    pathEffect = dashPathEffect(floatArrayOf(6f, 3f)))
+            }
             step(dataSet, 1.dp, SolidColor(Color.Blue))
         }
     }

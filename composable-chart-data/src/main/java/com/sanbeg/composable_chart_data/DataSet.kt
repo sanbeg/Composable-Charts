@@ -5,13 +5,13 @@ import androidx.compose.runtime.Stable
 import androidx.compose.ui.geometry.Offset
 
 /**
- * An iterator over an entity that can be represented as a sequence of [Offset]s
+ * An [Iterator] over an entity that can be represented as a sequence of [Offset]s
  */
 interface OffsetIterator : Iterator<Offset> {
     override fun hasNext(): Boolean
     override fun next(): Offset
 
-    /** Returns the next offset in the sequence without boxing.*/
+    /** Returns the next [Offset] in the sequence without boxing.*/
     fun nextOffset(): Offset
 }
 
@@ -24,7 +24,7 @@ class DataSetIterator(private val data: DataSet) : OffsetIterator {
 }
 
 /**
- * An ordered collection of offsets.
+ * An ordered collection of [Offset]s.
  * Methods in this interface support read-only access to the collection.
  *
  * @see dataSetOf

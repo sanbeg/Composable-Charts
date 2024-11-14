@@ -9,6 +9,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.sanbeg.composable_chart.Chart
@@ -18,7 +19,7 @@ import com.sanbeg.composable_chart.core.drawEach
 import com.sanbeg.composable_chart_data.DataSet
 import com.sanbeg.composable_chart_data.dataSetOf
 
-fun ComposableChartScaleScope.area(data: DataSet, brush: Brush) {
+fun ComposableChartScaleScope.area(data: DataSet, content: DrawScope.(path: Path) -> Unit) {
     var prev: Offset? = null
     val path = Path()
     val height = drawScope.size.height
@@ -41,9 +42,14 @@ fun ComposableChartScaleScope.area(data: DataSet, brush: Brush) {
         path.lineTo(p.x, height)
         path.close()
     }
-    drawScope.drawPath(path, brush)
+    drawScope.content(path)
 }
 
+fun ComposableChartScaleScope.area(data: DataSet, brush: Brush) {
+    area(data) {path ->
+        drawScope.drawPath(path, brush)
+    }
+}
 
 @Preview(showBackground = true)
 @Composable
