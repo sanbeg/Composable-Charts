@@ -4,52 +4,46 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.isSpecified
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.sanbeg.composable_chart.Chart
 import com.sanbeg.composable_chart.ComposableChartScaleScope
 import com.sanbeg.composable_chart.Scale
-import com.sanbeg.composable_chart.core.drawEach
 import com.sanbeg.composable_chart.core.drawEachSegment
 import com.sanbeg.composable_chart_data.DataSet
 import com.sanbeg.composable_chart_data.dataSetOf
 
 fun ComposableChartScaleScope.line(data: DataSet, width: Dp = Dp.Hairline, brush: Brush) {
     drawEachSegment(data) { a, b ->
-        drawLine(brush, a, b, width.toPx())
+        drawLine(brush, a, b, width.toPx(), StrokeCap.Round)
     }
 }
 
-fun ComposableChartScaleScope.area(data: DataSet, brush: Brush) {
-    var prev: Offset? = null
-    val path = Path()
-    val height = drawScope.size.height
-    drawEach(data) {
-        if (prev == null) {
-            path.moveTo(it.x, height)
+// see https://matplotlib.org/stable/gallery/lines_bars_and_markers/stairs_demo.html
+enum class StepVertical{
+    Pre, Post
+}
+
+fun ComposableChartScaleScope.step(
+    data: DataSet,
+    width: Dp = Dp.Hairline,
+    brush: Brush,
+    where: StepVertical = StepVertical.Post,
+) {
+    drawEachSegment(data) { a, c ->
+        val px = width.toPx()
+        val b = when(where) {
+            StepVertical.Pre -> Offset(a.x, c.y)
+            StepVertical.Post -> Offset(c.x, a.y)
         }
-        if (it.isSpecified) {
-            path.lineTo(it.x, it.y)
-            prev = it
-        } else {
-            prev?.let { p ->
-                path.lineTo(p.x, height)
-                path.close()
-            }
-            prev = null
-        }
+        drawLine(brush, a, b, px, StrokeCap.Round)
+        drawLine(brush, b, c, px, StrokeCap.Round)
     }
-    prev?.let { p ->
-        path.lineTo(p.x, height)
-        path.close()
-    }
-    drawScope.drawPath(path, brush)
 }
 
 
@@ -71,10 +65,9 @@ private fun PreviewLine() {
     }
 }
 
-
 @Preview(showBackground = true)
 @Composable
-private fun PreviewArea() {
+private fun PreviewStep() {
     Chart(maxX = 100f, dataInset = 6.dp, modifier = Modifier.size(100.dp)) {
         val dataSet = dataSetOf(
             listOf(
@@ -85,27 +78,27 @@ private fun PreviewArea() {
             )
         )
         Scale(maxY = 100f) {
-            area(dataSet, SolidColor(Color.Blue))
+            line(dataSet, 1.dp, SolidColor(Color.Cyan))
+            step(dataSet, 1.dp, SolidColor(Color.Blue))
         }
     }
 }
 
-
 @Preview(showBackground = true)
 @Composable
-private fun PreviewAreaGap() {
+private fun PreviewStepPre() {
     Chart(maxX = 100f, dataInset = 6.dp, modifier = Modifier.size(100.dp)) {
         val dataSet = dataSetOf(
             listOf(
                 Offset(0f, 0f),
                 Offset(25f, 20f),
-                Offset.Unspecified,
                 Offset(45f, 25f),
                 Offset(100f, 100f),
             )
         )
         Scale(maxY = 100f) {
-            area(dataSet, SolidColor(Color.Blue))
+            line(dataSet, 1.dp, SolidColor(Color.Cyan))
+            step(dataSet, 1.dp, SolidColor(Color.Blue), where=StepVertical.Pre)
         }
     }
 }

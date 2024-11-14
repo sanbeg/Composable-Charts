@@ -11,6 +11,9 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.drawscope.DrawStyle
+import androidx.compose.ui.graphics.drawscope.Fill
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -21,8 +24,14 @@ import com.sanbeg.composable_chart.Scale
 import com.sanbeg.composable_chart_data.DataSet
 import com.sanbeg.composable_chart_data.dataSetOf
 import com.sanbeg.composable_chart_data.forEach
+import com.sanbeg.composable_chart_data.forEachIndexed
 
 
+/**
+ * Because circle's default position ignores any translation and draws at the
+ * canvas center, we want to shift the center to match the origin to handle that
+ * case.
+ */
 @JvmInline
 private value class OriginCenteredDrawScope(
     private val delegate: DrawScope
@@ -31,7 +40,7 @@ private value class OriginCenteredDrawScope(
         get() = Offset.Zero
 }
 
-fun ComposableChartScaleScope.drawAt(
+private fun ComposableChartScaleScope.drawAt(
     offsets: DataSet,
     content: DrawScope.() -> Unit
 ) {
@@ -43,7 +52,15 @@ fun ComposableChartScaleScope.drawAt(
     }
 }
 
-fun ComposableChartScaleScope.scatter(offsets: DataSet, content: DrawScope.() -> Unit) {
+/**
+ * Draw a scatter plot with the supplied content lambda.
+ * The content is called for each data point, and is bound to a [DrawScope] which
+ * has both its origin and center at the location of the point.
+ */
+fun ComposableChartScaleScope.scatter(
+    offsets: DataSet,
+    content: DrawScope.() -> Unit
+) {
     val scope = OriginCenteredDrawScope(drawScope)
     offsets.forEach { offset ->
         if (offset.isSpecified && offset.isFinite) {
@@ -53,11 +70,48 @@ fun ComposableChartScaleScope.scatter(offsets: DataSet, content: DrawScope.() ->
     }
 }
 
-fun ComposableChartScaleScope.scatter(data: DataSet, radius: Dp, brush: Brush) {
-    drawAt(data) {
-        drawCircle(brush, radius.toPx(), Offset.Zero)
+fun ComposableChartScaleScope.scatterWithIndexedValues(
+    offsets: DataSet,
+    content: DrawScope.(index: Int, offset: Offset) -> Unit
+) {
+    val scope = OriginCenteredDrawScope(drawScope)
+    offsets.forEachIndexed { index, offset ->
+        if (offset.isSpecified && offset.isFinite) {
+            val scaled = scale(offset)
+            scope.translate(scaled.x, scaled.y) {
+                content(index, offset)
+            }
+        }
     }
 }
+
+/**
+ * Convenience function to draw a scatter diagram as circles.
+ */
+fun ComposableChartScaleScope.scatter(
+    data: DataSet,
+    radius: Dp,
+    brush: Brush,
+    style: DrawStyle = Fill
+) {
+    val r = with(drawScope) {
+        radius.toPx()
+    }
+    drawAt(data) {
+        drawCircle(brush, r, Offset.Zero, style=style)
+    }
+}
+
+/**
+ * Convenience function to draw a scatter diagram as circles.
+ */
+fun ComposableChartScaleScope.scatter(
+    data: DataSet,
+    radius: Dp,
+    color: Color,
+    style: DrawStyle = Fill
+) =
+    scatter(data, radius, SolidColor(color), style)
 
 @Preview(showBackground = true)
 @Composable
@@ -72,7 +126,7 @@ private fun PreviewScatter() {
             )
         )
         Scale(maxY = 100f) {
-            scatter(dataSet, 3.dp, SolidColor(Color.Blue))
+            scatter(dataSet, 3.dp, SolidColor(Color.Blue), Stroke(2f))
         }
     }
 }
