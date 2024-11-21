@@ -23,3 +23,4 @@ rootProject.name = "Composable Charts"
 include(":app")
 include(":composable-chart")
 include(":composable-chart-data")
+include(":offset-data")

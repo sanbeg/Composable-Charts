@@ -9,6 +9,15 @@ import androidx.compose.ui.util.unpackFloat2
 import kotlin.math.min
 
 
+/**
+ * Packs two Float values into one Long value for use in inline classes.
+ */
+private fun packFloats(val1: Float, val2: Float): Long {
+    val v1 = val1.toRawBits().toLong()
+    val v2 = val2.toRawBits().toLong()
+    return (v1 shl 32) or (v2 and 0xFFFFFFFF)
+}
+
 
 private fun Offset.toLong() = if (this.isSpecified) packFloats(x, y) else packFloats(Float.NaN, Float.NaN)
 private fun toOffset(l: Long) = Offset(unpackFloat1(l), unpackFloat2(l))

@@ -11,8 +11,6 @@ java {
 dependencies {
     dokkaPlugin(libs.android.documentation.plugin)
 
-    compileOnly(libs.compose.stable.marker)
-
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
 
