@@ -1,6 +1,5 @@
 package com.sanbeg.composable_chart_data
 
-import androidx.compose.ui.geometry.Offset
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
@@ -9,30 +8,32 @@ import org.junit.Test
 
 class DataSetTest {
     private val array = Array(10) {
-        Offset(it.toFloat(), it.toFloat())
+        Point(it.toFloat(), it.toFloat())
     }
 
     private val dataSet = array.asDataSet()
 
-    private val emptySet = emptyArray<Offset>().asDataSet()
+    private val emptySet = emptyArray<Point>().asDataSet()
+
+    private val zero = Point(0f, 0f)
 
     @Test
     fun testDefaultIterator() {
         val emptyFakeDataSet = object : DataSet {
             override val size = 0
-            override fun get(index: Int): Offset {
+            override fun get(index: Int): Point {
                 TODO("Not yet implemented")
             }
         }
         val singleFakeDataSet = object : DataSet {
             override val size = 1
-            override fun get(int: Int) = Offset.Zero
+            override fun get(int: Int) = Point(0f, 0f)
         }
 
-        assertFalse(emptyFakeDataSet.iterator().hasNext())
-        assertTrue(singleFakeDataSet.iterator().hasNext())
-        assertEquals(Offset.Zero, singleFakeDataSet.iterator().nextOffset())
-        assertEquals(Offset.Zero, singleFakeDataSet.iterator().next())
+        assertFalse(emptyFakeDataSet.asIterable().iterator().hasNext())
+        assertTrue(singleFakeDataSet.asIterable().iterator().hasNext())
+        assertEquals(zero, singleFakeDataSet.asIterable().iterator().nextPoint())
+        assertEquals(zero, singleFakeDataSet.asIterable().iterator().next())
     }
 
     @Test

@@ -1,42 +1,31 @@
 package com.sanbeg.composable_chart_data
 
-import androidx.compose.ui.geometry.Offset
-
 @JvmInline
-private value class WrapperIterator(val iterator: Iterator<Offset>) : OffsetIterator {
-    override fun hasNext() = iterator.hasNext()
-    override fun next() = iterator.next()
-    override fun nextOffset() = iterator.next()
-
-}
-@JvmInline
-private value class ListWrapper(val list: List<Offset>) : DataSet {
+private value class ListWrapper(val list: List<Point>) : DataSet {
     override val size
         get() = list.size
 
     override fun get(index: Int) = list[index]
-    override fun iterator(): OffsetIterator = WrapperIterator(list.iterator())
 }
 
 @JvmInline
-private value class ArrayWrapper(val array: Array<Offset>) : DataSet {
+private value class ArrayWrapper(val array: Array<Point>) : DataSet {
     override val size: Int
         get() = array.size
 
     override fun get(index: Int) = array[index]
-    override fun iterator(): OffsetIterator = WrapperIterator(array.iterator())
 }
 
 // maybe remove these?
-/** Creates a [DataSet] as a wrapped List of boxed [Offset]s, like [list.asDataSet()] */
-fun dataSetOf(list: List<Offset>): DataSet = ListWrapper(list)
-/** Creates a [DataSet] as a wrapped Array of boxed [Offset]s, like [array.asDataSet()] */
-fun dataSetOf(array: Array<Offset>): DataSet = ArrayWrapper(array)
+/** Creates a [DataSet] as a wrapped List of boxed [Point]s, like [list.asDataSet()] */
+fun dataSetOf(list: List<Point>): DataSet = ListWrapper(list)
+/** Creates a [DataSet] as a wrapped Array of boxed [Point]s, like [array.asDataSet()] */
+fun dataSetOf(array: Array<Point>): DataSet = ArrayWrapper(array)
 
-/** Creates a [DataSet] as a wrapped List of boxed [Offset]s. */
-fun List<Offset>.asDataSet(): DataSet = ListWrapper(this)
-/** Creates a [DataSet] as a wrapped Array of boxed [Offset]s. */
-fun Array<Offset>.asDataSet(): DataSet = ArrayWrapper(this)
+/** Creates a [DataSet] as a wrapped List of boxed [Point]s. */
+fun List<Point>.asDataSet(): DataSet = ListWrapper(this)
+/** Creates a [DataSet] as a wrapped Array of boxed [Point]s. */
+fun Array<Point>.asDataSet(): DataSet = ArrayWrapper(this)
 
 /** Creates a [DataSet] as a wrapped [FloatArray], without boxing. */
 fun FloatArray.asDataSet(): DataSet = FloatArrayDataSet(this)

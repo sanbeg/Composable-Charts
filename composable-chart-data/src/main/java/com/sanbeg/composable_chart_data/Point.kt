@@ -1,10 +1,6 @@
 package com.sanbeg.composable_chart_data
 
 import androidx.compose.runtime.Stable
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.util.floatFromBits
-import androidx.compose.ui.util.packFloats
-
 
 // Masks everything but the sign bit
 internal const val DualUnsignedFloatMask = 0x7fffffff_7fffffffL
@@ -30,6 +26,8 @@ inline fun packFloats(val1: Float, val2: Float): Long {
     return (v1 shl 32) or (v2 and 0xFFFFFFFF)
 }
 
+inline fun floatFromBits(bits: Int): Float = java.lang.Float.intBitsToFloat(bits)
+
 /**
  * Unpacks the first Float value in [packFloats] from its returned Long.
  */
@@ -37,14 +35,12 @@ inline fun unpackFloat1(value: Long): Float {
     return floatFromBits((value shr 32).toInt())
 }
 
-
 /**
  * Unpacks the second Float value in [packFloats] from its returned Long.
  */
 inline fun unpackFloat2(value: Long): Float {
     return floatFromBits((value and 0xFFFFFFFF).toInt())
 }
-
 
 @JvmInline
 @Stable
@@ -71,7 +67,7 @@ value class Point(val packedValue: Long) {
 
 
 /**
- * True if both x and y values of the [Offset] are finite. NaN values are not
+ * True if both x and y values of the [Point] are finite. NaN values are not
  * considered finite.
  */
 @Stable
@@ -84,14 +80,14 @@ val Point.isFinite: Boolean get() {
 }
 
 /**
- * `false` when this is [Offset.Unspecified].
+ * `false` when this is [Point.Unspecified].
  */
 @Stable
 val Point.isSpecified: Boolean
     get() = packedValue and DualUnsignedFloatMask != UnspecifiedPackedFloats
 
 /**
- * `true` when this is [Offset.Unspecified].
+ * `true` when this is [Point.Unspecified].
  */
 @Stable
 val Point.isUnspecified: Boolean

@@ -1,13 +1,12 @@
 package com.sanbeg.composable_chart_data
 
-import androidx.compose.ui.geometry.Offset
 import org.junit.Assert.*
 import org.junit.Test
 
 class WrapperTest {
-    private val list = (0 .. 10).map { Offset(it.toFloat(), it.toFloat()) }
+    private val list = (0 .. 10).map { Point(it.toFloat(), it.toFloat()) }
     private val array = Array(10) {
-        Offset(it.toFloat(), it.toFloat())
+        Point(it.toFloat(), it.toFloat())
     }
 
     @Test
@@ -32,16 +31,16 @@ class WrapperTest {
 
     @Test
     fun testArrayIterator() {
-        val it = array.asDataSet().iterator()
+        val it = array.asDataSet().asIterable().iterator()
         array.forEach { offset ->
-            assertEquals(offset, it.nextOffset())
+            assertEquals(offset, it.nextPoint())
         }
         assertFalse(it.hasNext())
     }
 
     @Test
     fun testListIterator() {
-        val it = list.asDataSet().iterator()
+        val it = list.asDataSet().asIterable().iterator()
         list.forEach { offset ->
             assertEquals(offset, it.next())
         }

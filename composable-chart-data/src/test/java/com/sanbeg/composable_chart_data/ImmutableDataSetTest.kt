@@ -1,6 +1,5 @@
 package com.sanbeg.composable_chart_data
 
-import androidx.compose.ui.geometry.Offset
 import org.junit.Assert.*
 import org.junit.Test
 
@@ -8,8 +7,8 @@ import org.junit.Test
 class ImmutableDataSetTest {
 
     private val list = listOf(
-        Offset(12f, 34f),
-        Offset(56f, 78f),
+        Point(12f, 34f),
+        Point(56f, 78f),
     )
 
     @Test
@@ -18,7 +17,7 @@ class ImmutableDataSetTest {
             list[i]
         }
 
-        val mutableList = mutableListOf<Offset>()
+        val mutableList = mutableListOf<Point>()
 
         sut.forEach(mutableList::add)
 
@@ -66,20 +65,20 @@ class ImmutableDataSetTest {
     fun testContains() {
         val sut = ImmutableDataSet(list)
 
-        assertTrue(sut.contains(Offset(12f, 34f)))
+        assertTrue(sut.contains(Point(12f, 34f)))
     }
 
     @Test
     fun testNotContains() {
         val sut = ImmutableDataSet(list)
 
-        assertFalse(sut.contains(Offset(1234f, 1234f)))
+        assertFalse(sut.contains(Point(1234f, 1234f)))
     }
 
 
     @Test
     fun testPlus() {
-        val extra = Offset(1234f, 1234f)
+        val extra = Point(1234f, 1234f)
         val sut = ImmutableDataSet(list).plus(extra)
 
         assertEquals(list.plus(extra), sut.map { it })
@@ -87,7 +86,7 @@ class ImmutableDataSetTest {
 
     @Test
     fun testPlusCollection() {
-        val extra = Offset(1234f, 1234f)
+        val extra = Point(1234f, 1234f)
         val collection = ImmutableDataSet(listOf(extra))
         val sut = ImmutableDataSet(list).plus(collection)
 

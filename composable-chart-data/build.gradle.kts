@@ -14,7 +14,7 @@ dependencies {
     compileOnly(libs.compose.stable.marker)
 
     implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.androidx.ui)
+    // implementation(libs.androidx.ui)
 
     testImplementation(libs.junit)
 }

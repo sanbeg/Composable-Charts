@@ -1,39 +1,13 @@
 package com.sanbeg.composable_chart_data
 
 import androidx.compose.runtime.Immutable
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.isSpecified
-//import androidx.compose.ui.util.packFloats
-import androidx.compose.ui.util.unpackFloat1
-import androidx.compose.ui.util.unpackFloat2
 import kotlin.math.min
-
-
-
-private fun Offset.toLong() = if (this.isSpecified) packFloats(x, y) else packFloats(Float.NaN, Float.NaN)
-private fun toOffset(l: Long) = Offset(unpackFloat1(l), unpackFloat2(l))
-
-/*
- * note - with composeBom = "2024.04.01", an unspecified Offset would throw an exception when
- * trying to access either element, or with many other operations which at that time depended on
- * the X & Y values. That logic seems to be gone from composeBom = "2024.10.00" (ui.geometry=1.7.4).
- *
- * As of 10/24, master may expose the constructor & packed long, if that comes to pass we can skip
- * some of this pack/unpack translation/
- */
 
 @ExperimentalStdlibApi
 @JvmInline
 @Immutable
 value class ImmutableDataSet private constructor(private val array: LongArray): DataSet {
-    @JvmInline
-    private value class DataSetLongIterator(private val iterator: LongIterator) : OffsetIterator {
-        override fun hasNext() = iterator.hasNext()
-        override fun next() = toOffset(iterator.next())
-        override fun nextOffset() = toOffset(iterator.nextLong())
-    }
-
-    constructor(size: Int, init: (Int) -> Offset) : this(
+    constructor(size: Int, init: (Int) -> Point) : this(
         LongArray(size) { i ->
             init(i).let {
                 packFloats(it.x, it.y)
@@ -52,10 +26,10 @@ value class ImmutableDataSet private constructor(private val array: LongArray): 
         }
     )
 
-    constructor(collection: Collection<Offset>) : this(
+    constructor(collection: Collection<Point>) : this(
         LongArray(collection.size).also {
             collection.forEachIndexed { index, offset ->
-                it[index] = offset.toLong()
+                it[index] = offset.packedValue
             }
         }
     )
@@ -63,19 +37,17 @@ value class ImmutableDataSet private constructor(private val array: LongArray): 
     override val size
         get() = array.size
 
-    override fun get(index: Int) = toOffset(array[index])
+    override fun get(index: Int) = Point(array[index])
 
-    override fun iterator(): OffsetIterator = DataSetLongIterator(array.iterator())
-
-    operator fun plus(offset: Offset) = ImmutableDataSet(array + offset.toLong())
+    operator fun plus(point: Point) = ImmutableDataSet(array + point.packedValue)
     operator fun plus(other: ImmutableDataSet) = ImmutableDataSet(array + other.array)
 
-    fun contains(offset: Offset) = array.contains(offset.toLong())
+    fun contains(point: Point) = array.contains(point.packedValue)
 
-    fun mapOffsets(transform: (Offset) -> Offset): ImmutableDataSet {
+    fun mapOffsets(transform: (Point) -> Point): ImmutableDataSet {
         val rv = LongArray(size)
-        forEachIndexed { i, offset ->
-            rv[i] = transform(offset).toLong()
+        forEachIndexed { i, point ->
+            rv[i] = transform(point).packedValue
         }
         return ImmutableDataSet(rv)
     }
