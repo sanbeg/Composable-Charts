@@ -45,6 +45,16 @@ private class DataSetSubset(
     override fun get(index: Int): Point = data[index + start]
 }
 
+/**
+ * Convert this DataSet into a [List] which delegates calls to the underlying dataset.
+ * This allows for interoperability when a list is needed and performance isn't critical.
+ */
 fun DataSet.asList(): List<Point> = DataSetListView(this)
+
+/**
+ * Convert this DataSet into an [Iterable].  The returned Iterable view would be implemented
+ * as a value class, this doesn't require allocation a new object.  Its iterator provides a
+ * nextPoint method which allows it to iterate through the points without boxing.
+ */
 fun DataSet.asIterable(): PointIterable = DataSetIterableView(this)
 fun DataSet.slice(indices: IntRange): DataSet = DataSetSubset(this, indices.first, indices.last - indices.first)

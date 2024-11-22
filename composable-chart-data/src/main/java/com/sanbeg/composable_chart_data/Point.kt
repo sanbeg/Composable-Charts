@@ -1,5 +1,6 @@
 package com.sanbeg.composable_chart_data
 
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
 
 // Masks everything but the sign bit
@@ -20,30 +21,36 @@ internal const val Uint64Low32 = 0x00000001_00000001L
 /**
  * Packs two Float values into one Long value for use in inline classes.
  */
-inline fun packFloats(val1: Float, val2: Float): Long {
+internal fun packFloats(val1: Float, val2: Float): Long {
     val v1 = val1.toRawBits().toLong()
     val v2 = val2.toRawBits().toLong()
     return (v1 shl 32) or (v2 and 0xFFFFFFFF)
 }
 
-inline fun floatFromBits(bits: Int): Float = java.lang.Float.intBitsToFloat(bits)
+
+private fun floatFromBits(bits: Int): Float = java.lang.Float.intBitsToFloat(bits)
 
 /**
  * Unpacks the first Float value in [packFloats] from its returned Long.
  */
-inline fun unpackFloat1(value: Long): Float {
+private fun unpackFloat1(value: Long): Float {
     return floatFromBits((value shr 32).toInt())
 }
 
 /**
  * Unpacks the second Float value in [packFloats] from its returned Long.
  */
-inline fun unpackFloat2(value: Long): Float {
+private fun unpackFloat2(value: Long): Float {
     return floatFromBits((value and 0xFFFFFFFF).toInt())
 }
 
+/**
+ * An immutable 2D floating point data point.
+ *
+ * Points are generally interpreted as data coordinates in some unspecified units.
+ */
 @JvmInline
-@Stable
+@Immutable
 value class Point(val packedValue: Long) {
     constructor(x: Float, y: Float) : this(packFloats(x, y))
 
@@ -54,13 +61,24 @@ value class Point(val packedValue: Long) {
     val y: Float get() = unpackFloat2(packedValue)
 
     @Stable
-    inline operator fun component1(): Float = x
+    operator fun component1() = unpackFloat1(packedValue)
 
     @Stable
-    inline operator fun component2(): Float = y
+     operator fun component2() = unpackFloat2(packedValue)
+
+    /**
+     * Returns a copy of this Point instance optionally overriding the
+     * x or y parameter
+     */
+    fun copy(x: Float = unpackFloat1(packedValue), y: Float = unpackFloat2(packedValue)) =
+        Point(packFloats(x, y))
 
     @Stable
     companion object {
+        /**
+         * Represents an unspecified [Point] value, usually a replacement for `null`
+         * when a primitive value is desired.
+         */
         val Unspecified = Point(UnspecifiedPackedFloats)
     }
 }

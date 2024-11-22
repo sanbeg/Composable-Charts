@@ -23,7 +23,7 @@ fun DataSet.minX(): Float = if (this is DataMath) {
 }
 
 fun DataSet.minY(): Float = if (this is DataMath) {
-    this.minX()
+    this.minY()
 } else if (size == 0) {
     Float.NaN
 } else {
@@ -33,7 +33,7 @@ fun DataSet.minY(): Float = if (this is DataMath) {
 }
 
 fun DataSet.maxX(): Float = if (this is DataMath) {
-    this.minX()
+    this.maxX()
 } else if (size == 0) {
     Float.NaN
 } else {
@@ -43,7 +43,7 @@ fun DataSet.maxX(): Float = if (this is DataMath) {
 }
 
 fun DataSet.maxY(): Float = if (this is DataMath) {
-    this.minX()
+    this.maxY()
 } else if (size == 0) {
     Float.NaN
 } else {
@@ -59,6 +59,17 @@ fun DataSet.avgX(): Float = if (this is DataMath) {
 } else {
     val sum = fold(0f) {a, o ->
         a + o.x
+    }
+    sum / size
+}
+
+fun DataSet.avgY(): Float = if (this is DataMath) {
+    this.avgY()
+} else if (size == 0) {
+    Float.NaN
+} else {
+    val sum = fold(0f) {a, o ->
+        a + o.y
     }
     sum / size
 }

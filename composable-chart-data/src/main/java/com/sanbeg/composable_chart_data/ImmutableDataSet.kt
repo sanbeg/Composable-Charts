@@ -1,17 +1,16 @@
 package com.sanbeg.composable_chart_data
 
 import androidx.compose.runtime.Immutable
+import com.sanbeg.composable_chart_data.function.IndexPointProducer
 import kotlin.math.min
 
 @ExperimentalStdlibApi
 @JvmInline
 @Immutable
 value class ImmutableDataSet private constructor(private val array: LongArray): DataSet {
-    constructor(size: Int, init: (Int) -> Point) : this(
+    constructor(size: Int, init: IndexPointProducer) : this(
         LongArray(size) { i ->
-            init(i).let {
-                packFloats(it.x, it.y)
-            }
+            init(i).let(Point::packedValue)
         }
     )
 
