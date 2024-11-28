@@ -1,6 +1,6 @@
 package com.sanbeg.composable_chart_data.function
 
-import com.sanbeg.composable_chart_data.Point
+import com.sanbeg.composable_chart_data.point.Point
 
 
 /*
@@ -26,7 +26,10 @@ fun interface IndexedPointConsumer {
     operator fun invoke (index: Int, point: Point)
 }
 
-fun interface IndexPointProducer {
+/**
+ * Represents an operation that accepts an [Int] argument and produces a [Point] result.
+ */
+fun interface IntToPointFunction {
     operator fun invoke (index: Int) : Point
 }
 
@@ -51,7 +54,7 @@ fun interface PointBinaryOperator {
 }
 
 /**
- * Represents a function that accepts a [Point] argument and produces an boolean-valued result.
+ * Represents a function that accepts a [Point] argument and produces a [Float] result.
  *
  * This is a [functional interface](https://kotlinlang.org/docs/fun-interfaces.html)
  */

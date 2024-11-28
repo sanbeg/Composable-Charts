@@ -6,6 +6,7 @@ import com.sanbeg.composable_chart_data.function.PointBinaryOperator
 import com.sanbeg.composable_chart_data.function.PointConsumer
 import com.sanbeg.composable_chart_data.function.PointPredicate
 import com.sanbeg.composable_chart_data.function.PointToFloatFunction
+import com.sanbeg.composable_chart_data.point.Point
 
 /**
  * An ordered collection of [Point]s.
@@ -31,10 +32,28 @@ val DataSet.indices: IntRange
 val DataSet.lastIndex: Int
     get() = size - 1
 
-fun DataSet.forEach(action: PointConsumer) {
+inline fun DataSet.forEach(action: PointConsumer) {
     for (i in indices) {
         action(get(i))
     }
+}
+
+inline fun DataSet.forEach2(action: (Point) -> Unit) {
+    for (i in indices) {
+        action(get(i))
+    }
+}
+
+fun DataSet.testsum(): Float {
+    var sum = 0f
+    forEach{sum += it.x}
+    return sum
+}
+
+fun DataSet.testsum2(): Float {
+    var sum = 0f
+    forEach2{sum += it.x}
+    return sum
 }
 
 fun DataSet.onEach(action: PointConsumer): DataSet {
@@ -70,8 +89,8 @@ fun DataSet.lastOrNull(predicate: PointPredicate): Point? {
     return null
 }
 
-// TODO - this still boxes
-fun <R>DataSet.fold(initial: R, operation: (acc: R, Point) -> R): R {
+
+inline fun <R>DataSet.fold(initial: R, operation: (acc: R, Point) -> R): R {
     var acc = initial
     for (i in indices) {
         acc = operation(acc, get(i))
@@ -87,7 +106,7 @@ private fun DataSet.fastReduce(operation: PointBinaryOperator): Point {
     return acc
 }
 
-inline fun DataSet.maxByOrNull(selector: (Point) -> Float): Point? {
+inline fun DataSet.maxByOrNull(selector: PointToFloatFunction): Point? {
     if (size == 0) return null
     var acc = first()
     for (i in 1 until size) {
@@ -97,11 +116,11 @@ inline fun DataSet.maxByOrNull(selector: (Point) -> Float): Point? {
     return acc
 }
 
-fun DataSet.maxBy(selector: PointToFloatFunction): Point = fastReduce{acc, cur ->
+fun DataSet.maxBy(selector: PointToFloatFunction): Point = fastReduce{ acc, cur ->
     if (selector(cur) > selector(acc)) cur else acc
 }
 
-fun DataSet.minBy(selector: PointToFloatFunction): Point = fastReduce{acc, cur ->
+fun DataSet.minBy(selector: PointToFloatFunction): Point = fastReduce{ acc, cur ->
     if (selector(cur) < selector(acc)) cur else acc
 }
 

@@ -1,4 +1,3 @@
-import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.dokka.gradle.DokkaTaskPartial
 import java.net.URL
 
@@ -18,6 +17,9 @@ subprojects {
 subprojects {
     tasks.withType<DokkaTaskPartial>().configureEach {
         dokkaSourceSets.configureEach {
+            // contains descriptions for the module and the packages
+            includes.from("Module.md")
+
             sourceLink {
                 localDirectory.set(rootProject.projectDir)
                 remoteUrl.set(URL("https://github.com/sanbeg/Composable-Charts/tree/main/"))

@@ -1,5 +1,7 @@
 package com.sanbeg.composable_chart_data
 
+import com.sanbeg.composable_chart_data.point.Point
+
 
 /**
  * An [Iterator] over an entity that can be represented as a sequence of [Point]s
@@ -27,7 +29,7 @@ private class DataSetListView(val data: DataSet) : AbstractList<Point>() {
     override fun get(index: Int) = data[index]
 }
 
-interface PointIterable : Iterable<Point> {
+interface PointIterable: Iterable<Point> {
     /** Returns an iterator over the [Point]s in this object.*/
     override fun iterator(): PointIterator
 }
@@ -57,4 +59,11 @@ fun DataSet.asList(): List<Point> = DataSetListView(this)
  * nextPoint method which allows it to iterate through the points without boxing.
  */
 fun DataSet.asIterable(): PointIterable = DataSetIterableView(this)
+
+fun DataSet.asit2() = object : PointIterable {
+    override fun iterator()= DataSetIterator(this@asit2)
+}
+
+fun DataSet.asSequence() = Sequence { DataSetIterator(this) }
+
 fun DataSet.slice(indices: IntRange): DataSet = DataSetSubset(this, indices.first, indices.last - indices.first)

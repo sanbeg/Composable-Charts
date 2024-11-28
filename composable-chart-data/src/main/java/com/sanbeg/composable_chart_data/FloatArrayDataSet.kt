@@ -1,7 +1,9 @@
 package com.sanbeg.composable_chart_data
 
 import androidx.compose.runtime.Stable
-import com.sanbeg.composable_chart_data.function.IndexPointProducer
+import com.sanbeg.composable_chart_data.function.IntToPointFunction
+import com.sanbeg.composable_chart_data.point.Point
+import com.sanbeg.composable_chart_data.point.isSpecified
 
 private fun Point.copyIntoArray(dst: FloatArray, start: Int) = if (isSpecified) {
     dst[start] = x
@@ -20,7 +22,7 @@ value class FloatArrayDataSet(private val array: FloatArray) : DataSet {
         }
     }
 
-    constructor(size: Int, block: IndexPointProducer) : this(
+    constructor(size: Int, block: IntToPointFunction) : this(
         FloatArray(size).apply {
             for (i in indices) {
                 block(i).copyIntoArray(this, i * 2)

@@ -1,5 +1,7 @@
 package com.sanbeg.composable_chart_data
 
+import com.sanbeg.composable_chart_data.point.Point
+
 @JvmInline
 private value class ListWrapper(val list: List<Point>) : DataSet {
     override val size
