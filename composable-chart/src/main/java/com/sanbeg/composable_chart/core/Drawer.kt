@@ -19,6 +19,9 @@ import com.sanbeg.composable_chart_data.dataSetOf
 import com.sanbeg.composable_chart_data.forEach
 import com.sanbeg.composable_chart_data.forEachIndexed
 import com.sanbeg.composable_chart_data.asDataSet
+import com.sanbeg.composable_chart_data.point.Point
+import com.sanbeg.composable_chart_data.point.isFinite
+import com.sanbeg.composable_chart_data.point.isSpecified
 
 fun ComposableChartScaleScope.drawEach(
     offsets: DataSet,
@@ -68,7 +71,7 @@ fun ComposableChartScaleScope.drawEachSegment(
             }
             prev = cur
         } else {
-            prev = raw
+            prev = Offset.Unspecified
         }
     }
 }
@@ -81,9 +84,9 @@ private fun PreviewChart() {
             // drawScope.drawCircle(Color.Red, 4.dp.value)
             drawEach(
                 listOf(
-                    Offset(25f, 25f),
-                    Offset(0f, 0f),
-                    Offset(100f, 100f),
+                    Point(25f, 25f),
+                    Point(0f, 0f),
+                    Point(100f, 100f),
                 ).asDataSet()
             ) {
                 drawCircle(Color.Blue, 4.dp.value, it)
@@ -99,9 +102,9 @@ private fun PreviewDrawEachData() {
     Chart(maxX = 100f, dataInset = 6.dp, modifier = Modifier.size(100.dp)) {
         val dataSet = dataSetOf(
             listOf(
-                Offset(25f, 25f),
-                Offset(0f, 0f),
-                Offset(100f, 100f),
+                Point(25f, 25f),
+                Point(0f, 0f),
+                Point(100f, 100f),
             )
         )
         Scale(maxY = 100f) {

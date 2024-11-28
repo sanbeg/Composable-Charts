@@ -16,6 +16,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.sanbeg.composable_chart.core.drawEach
 import com.sanbeg.composable_chart_data.asDataSet
+import com.sanbeg.composable_chart_data.point.Point
 
 class HorizontalAxisScope internal constructor(
     private val chartScope: ComposableChartScope,
@@ -72,9 +73,9 @@ private fun PreviewChartAxis() {
         Scale(maxY = 100f, modifier = Modifier) {
             drawEach(
                 listOf(
-                    Offset(25f, 25f),
-                    Offset(0f, 0f),
-                    Offset(100f, 100f),
+                    Point(25f, 25f),
+                    Point(0f, 0f),
+                    Point(100f, 100f),
                 ).asDataSet()
             ) {
                 drawCircle(Color.Blue, 3.dp.toPx(), it)

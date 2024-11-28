@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.isSpecified
 import androidx.compose.ui.util.fastForEachIndexed
 import com.sanbeg.composable_chart.core.drawEach
 import com.sanbeg.composable_chart_data.asDataSet
+import com.sanbeg.composable_chart_data.point.Point
 import kotlin.math.max
 
 /**
@@ -567,9 +568,9 @@ private fun PreviewChart2() {
 
             drawEach(
                 listOf(
-                    Offset(25f, 25f),
-                    Offset(0f, 0f),
-                    Offset(100f, 100f),
+                    Point(25f, 25f),
+                    Point(0f, 0f),
+                    Point(100f, 100f),
                 ).asDataSet()
             ) {
                 drawCircle(Color.Blue, 6.dp.value, it)

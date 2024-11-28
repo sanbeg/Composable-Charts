@@ -7,7 +7,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.isSpecified
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Matrix
 import androidx.compose.ui.graphics.drawscope.DrawScope
@@ -15,15 +14,18 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.sanbeg.composable_chart.core.drawEach
 import com.sanbeg.composable_chart_data.asDataSet
+import com.sanbeg.composable_chart_data.point.Point
+import com.sanbeg.composable_chart_data.point.isSpecified
 
 class ComposableChartScaleScope internal constructor(
     private val matrix: Matrix,
     internal val drawScope: DrawScope,
 ) {
-    internal fun scale(offset: Offset) = if (offset.isSpecified) {
-        matrix.map(offset)
+
+    internal fun scale(point: Point) = if (point.isSpecified) {
+        matrix.map(Offset(point.x, point.y))
     } else {
-        offset
+        Offset(point.x, point.y)
     }
 }
 
@@ -73,9 +75,9 @@ private fun PreviewChart() {
 
             drawEach(
                 listOf(
-                    Offset(25f, 25f),
-                    Offset(0f, 0f),
-                    Offset(100f, 100f),
+                    Point(25f, 25f),
+                    Point(0f, 0f),
+                    Point(100f, 100f),
                 ).asDataSet()
             ) {
                 drawCircle(Color.Blue, 3.dp.toPx(), it)
@@ -92,9 +94,9 @@ private fun PreviewChartFlip() {
             // drawScope.drawCircle(Color.Red, 4.dp.value)
             drawEach(
                 listOf(
-                    Offset(25f, 25f),
-                    Offset(0f, 0f),
-                    Offset(100f, 100f),
+                    Point(25f, 25f),
+                    Point(0f, 0f),
+                    Point(100f, 100f),
                     ).asDataSet()
             ) {
                 drawCircle(Color.Blue, 4.dp.toPx(), it)

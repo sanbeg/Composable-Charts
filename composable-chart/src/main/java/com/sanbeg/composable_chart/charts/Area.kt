@@ -18,6 +18,7 @@ import com.sanbeg.composable_chart.Scale
 import com.sanbeg.composable_chart.core.drawEach
 import com.sanbeg.composable_chart_data.DataSet
 import com.sanbeg.composable_chart_data.dataSetOf
+import com.sanbeg.composable_chart_data.point.Point
 
 fun ComposableChartScaleScope.area(data: DataSet, content: DrawScope.(path: Path) -> Unit) {
     var prev: Offset? = null
@@ -57,10 +58,10 @@ private fun PreviewArea() {
     Chart(maxX = 100f, dataInset = 6.dp, modifier = Modifier.size(100.dp)) {
         val dataSet = dataSetOf(
             listOf(
-                Offset(0f, 0f),
-                Offset(25f, 20f),
-                Offset(45f, 25f),
-                Offset(100f, 100f),
+                Point(0f, 0f),
+                Point(25f, 20f),
+                Point(45f, 25f),
+                Point(100f, 100f),
             )
         )
         Scale(maxY = 100f) {
@@ -76,11 +77,11 @@ private fun PreviewAreaGap() {
     Chart(maxX = 100f, dataInset = 6.dp, modifier = Modifier.size(100.dp)) {
         val dataSet = dataSetOf(
             listOf(
-                Offset(0f, 0f),
-                Offset(25f, 20f),
-                Offset.Unspecified,
-                Offset(45f, 25f),
-                Offset(100f, 100f),
+                Point(0f, 0f),
+                Point(25f, 20f),
+                Point.Unspecified,
+                Point(45f, 25f),
+                Point(100f, 100f),
             )
         )
         Scale(maxY = 100f) {

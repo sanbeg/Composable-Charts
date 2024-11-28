@@ -24,6 +24,7 @@ import com.sanbeg.composable_chart.Scale
 import com.sanbeg.composable_chart.core.drawEachSegment
 import com.sanbeg.composable_chart_data.DataSet
 import com.sanbeg.composable_chart_data.dataSetOf
+import com.sanbeg.composable_chart_data.point.Point
 
 /**
  * Draws a series of lines connecting the given points using the given paint. The lines
@@ -106,10 +107,10 @@ private fun PreviewLine() {
     Chart(maxX = 100f, dataInset = 6.dp, modifier = Modifier.size(100.dp)) {
         val dataSet = dataSetOf(
             listOf(
-                Offset(0f, 0f),
-                Offset(25f, 20f),
-                Offset(45f, 25f),
-                Offset(100f, 100f),
+                Point(0f, 0f),
+                Point(25f, 20f),
+                Point(45f, 25f),
+                Point(100f, 100f),
             )
         )
         Scale(maxY = 100f) {
@@ -124,10 +125,10 @@ private fun PreviewStep() {
     Chart(maxX = 100f, dataInset = 6.dp, modifier = Modifier.size(100.dp)) {
         val dataSet = dataSetOf(
             listOf(
-                Offset(0f, 0f),
-                Offset(25f, 20f),
-                Offset(45f, 25f),
-                Offset(100f, 100f),
+                Point(0f, 0f),
+                Point(25f, 20f),
+                Point(45f, 25f),
+                Point(100f, 100f),
             )
         )
         Scale(maxY = 100f) {
@@ -147,10 +148,10 @@ private fun PreviewStepPre() {
     Chart(maxX = 100f, dataInset = 6.dp, modifier = Modifier.size(100.dp)) {
         val dataSet = dataSetOf(
             listOf(
-                Offset(0f, 0f),
-                Offset(25f, 20f),
-                Offset(45f, 25f),
-                Offset(100f, 100f),
+                Point(0f, 0f),
+                Point(25f, 20f),
+                Point(45f, 25f),
+                Point(100f, 100f),
             )
         )
         Scale(maxY = 100f) {

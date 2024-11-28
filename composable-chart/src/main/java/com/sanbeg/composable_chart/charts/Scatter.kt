@@ -6,8 +6,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.geometry.isFinite
-import androidx.compose.ui.geometry.isSpecified
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -29,6 +27,9 @@ import com.sanbeg.composable_chart_data.DataSet
 import com.sanbeg.composable_chart_data.dataSetOf
 import com.sanbeg.composable_chart_data.forEach
 import com.sanbeg.composable_chart_data.forEachIndexed
+import com.sanbeg.composable_chart_data.point.Point
+import com.sanbeg.composable_chart_data.point.isFinite
+import com.sanbeg.composable_chart_data.point.isSpecified
 
 
 /**
@@ -76,7 +77,7 @@ fun ComposableChartScaleScope.scatter(
 
 fun ComposableChartScaleScope.scatterWithIndexedValues(
     offsets: DataSet,
-    content: DrawScope.(index: Int, offset: Offset) -> Unit
+    content: DrawScope.(index: Int, offset: Point) -> Unit
 ) {
     val scope = OriginCenteredDrawScope(drawScope)
     offsets.forEachIndexed { index, offset ->
@@ -146,10 +147,10 @@ private fun PreviewScatter() {
     Chart(maxX = 100f, dataInset = 6.dp, modifier = Modifier.size(100.dp)) {
         val dataSet = dataSetOf(
             listOf(
-                Offset(0f, 0f),
-                Offset(25f, 15f),
-                Offset(45f, 25f),
-                Offset(100f, 100f),
+                Point(0f, 0f),
+                Point(25f, 15f),
+                Point(45f, 25f),
+                Point(100f, 100f),
             )
         )
         Scale(maxY = 100f) {
@@ -164,10 +165,10 @@ private fun PreviewScatter2() {
     Chart(maxX = 100f, dataInset = 6.dp, modifier = Modifier.size(100.dp)) {
         val dataSet = dataSetOf(
             listOf(
-                Offset(0f, 0f),
-                Offset(25f, 15f),
-                Offset(45f, 25f),
-                Offset(100f, 100f),
+                Point(0f, 0f),
+                Point(25f, 15f),
+                Point(45f, 25f),
+                Point(100f, 100f),
             )
         )
         Scale(maxY = 100f) {
@@ -184,10 +185,10 @@ private fun PreviewScatter3() {
     Chart(maxX = 100f, dataInset = 6.dp, modifier = Modifier.size(100.dp)) {
         val dataSet = dataSetOf(
             listOf(
-                Offset(0f, 0f),
-                Offset(25f, 15f),
-                Offset(45f, 25f),
-                Offset(100f, 100f),
+                Point(0f, 0f),
+                Point(25f, 15f),
+                Point(45f, 25f),
+                Point(100f, 100f),
             )
         )
         Scale(maxY = 100f) {
@@ -208,9 +209,9 @@ private fun PreviewDrawAt() {
     Chart(maxX = 100f, dataInset = 6.dp, modifier = Modifier.size(100.dp)) {
         val dataSet = dataSetOf(
             listOf(
-                Offset(25f, 25f),
-                Offset(0f, 0f),
-                Offset(100f, 100f),
+                Point(25f, 25f),
+                Point(0f, 0f),
+                Point(100f, 100f),
             )
         )
         Scale(maxY = 100f) {
