@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.isFinite
 import androidx.compose.ui.geometry.isSpecified
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
@@ -15,17 +14,16 @@ import com.sanbeg.composable_chart.Chart
 import com.sanbeg.composable_chart.ComposableChartScaleScope
 import com.sanbeg.composable_chart.Scale
 import com.sanbeg.composable_chart_data.DataSet
-import com.sanbeg.composable_chart_data.dataSetOf
+import com.sanbeg.composable_chart_data.asDataSet
 import com.sanbeg.composable_chart_data.forEach
 import com.sanbeg.composable_chart_data.forEachIndexed
-import com.sanbeg.composable_chart_data.asDataSet
 import com.sanbeg.composable_chart_data.point.Point
 import com.sanbeg.composable_chart_data.point.isFinite
 import com.sanbeg.composable_chart_data.point.isSpecified
 
-fun ComposableChartScaleScope.drawEach(
+inline fun ComposableChartScaleScope.drawEach(
     offsets: DataSet,
-    content: DrawScope.(offset: Offset) -> Unit
+    crossinline content: DrawScope.(offset: Offset) -> Unit
 ) {
     offsets.forEach { offset ->
         drawScope.content(scale(offset))
@@ -33,9 +31,9 @@ fun ComposableChartScaleScope.drawEach(
 }
 
 
-fun ComposableChartScaleScope.drawEachFinite(
+inline fun ComposableChartScaleScope.drawEachFinite(
     offsets: DataSet,
-    content: DrawScope.(offset: Offset) -> Unit
+    crossinline content: DrawScope.(offset: Offset) -> Unit
 ) {
     offsets.forEach { offset ->
         if (offset.isSpecified && offset.isFinite) {
@@ -44,9 +42,9 @@ fun ComposableChartScaleScope.drawEachFinite(
     }
 }
 
-fun ComposableChartScaleScope.drawAtIndexed(
+inline fun ComposableChartScaleScope.drawAtIndexed(
     offsets: DataSet,
-    content: DrawScope.(index: Int) -> Unit
+    crossinline content: DrawScope.(index: Int) -> Unit
 ) {
     offsets.forEachIndexed { index, offset ->
         if (offset.isFinite) {
@@ -58,9 +56,9 @@ fun ComposableChartScaleScope.drawAtIndexed(
     }
 }
 
-fun ComposableChartScaleScope.drawEachSegment(
+inline fun ComposableChartScaleScope.drawEachSegment(
     offsets: DataSet,
-    content: DrawScope.(a: Offset, b: Offset) -> Unit
+    crossinline content: DrawScope.(a: Offset, b: Offset) -> Unit
 ) {
    var prev = Offset.Unspecified
     offsets.forEach { raw ->
@@ -95,18 +93,15 @@ private fun PreviewChart() {
     }
 }
 
-
 @Preview(showBackground = true)
 @Composable
 private fun PreviewDrawEachData() {
     Chart(maxX = 100f, dataInset = 6.dp, modifier = Modifier.size(100.dp)) {
-        val dataSet = dataSetOf(
-            listOf(
-                Point(25f, 25f),
-                Point(0f, 0f),
-                Point(100f, 100f),
-            )
-        )
+        val dataSet = listOf(
+            Point(25f, 25f),
+            Point(0f, 0f),
+            Point(100f, 100f),
+        ).asDataSet()
         Scale(maxY = 100f) {
             // drawScope.drawCircle(Color.Red, 4.dp.value)
             drawEach(dataSet) {

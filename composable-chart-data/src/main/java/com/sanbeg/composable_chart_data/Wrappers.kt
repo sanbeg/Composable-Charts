@@ -20,8 +20,10 @@ private value class ArrayWrapper(val array: Array<Point>) : DataSet {
 
 // maybe remove these?
 /** Creates a [DataSet] as a wrapped List of boxed [Point]s, like [list.asDataSet()] */
+@Deprecated("replaced with extension", ReplaceWith("list.asDataSet()", "com.sanbeg.composable_chart_data.asDataSet"))
 fun dataSetOf(list: List<Point>): DataSet = ListWrapper(list)
 /** Creates a [DataSet] as a wrapped Array of boxed [Point]s, like [array.asDataSet()] */
+@Deprecated("replaced with extension", ReplaceWith("array.asDataSet()", "com.sanbeg.composable_chart_data.asDataSet"))
 fun dataSetOf(array: Array<Point>): DataSet = ArrayWrapper(array)
 
 /** Creates a [DataSet] as a wrapped List of boxed [Point]s. */

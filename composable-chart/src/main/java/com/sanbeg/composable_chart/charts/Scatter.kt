@@ -23,7 +23,9 @@ import androidx.compose.ui.unit.dp
 import com.sanbeg.composable_chart.Chart
 import com.sanbeg.composable_chart.ComposableChartScaleScope
 import com.sanbeg.composable_chart.Scale
+import com.sanbeg.composable_chart.core.drawEachFinite
 import com.sanbeg.composable_chart_data.DataSet
+import com.sanbeg.composable_chart_data.asDataSet
 import com.sanbeg.composable_chart_data.dataSetOf
 import com.sanbeg.composable_chart_data.forEach
 import com.sanbeg.composable_chart_data.forEachIndexed
@@ -37,8 +39,9 @@ import com.sanbeg.composable_chart_data.point.isSpecified
  * canvas center, we want to shift the center to match the origin to handle that
  * case.
  */
+@PublishedApi
 @JvmInline
-private value class OriginCenteredDrawScope(
+internal value class OriginCenteredDrawScope(
     private val delegate: DrawScope
 ) : DrawScope by delegate {
     override val center: Offset
@@ -62,9 +65,9 @@ private fun ComposableChartScaleScope.drawAt(
  * The content is called for each data point, and is bound to a [DrawScope] which
  * has both its origin and center at the location of the point.
  */
-fun ComposableChartScaleScope.scatter(
+inline fun ComposableChartScaleScope.scatter(
     offsets: DataSet,
-    content: DrawScope.() -> Unit
+    crossinline content: DrawScope.() -> Unit
 ) {
     val scope = OriginCenteredDrawScope(drawScope)
     offsets.forEach { offset ->
@@ -75,9 +78,9 @@ fun ComposableChartScaleScope.scatter(
     }
 }
 
-fun ComposableChartScaleScope.scatterWithIndexedValues(
+inline fun ComposableChartScaleScope.scatterWithIndexedValues(
     offsets: DataSet,
-    content: DrawScope.(index: Int, offset: Point) -> Unit
+    crossinline content: DrawScope.(index: Int, offset: Point) -> Unit
 ) {
     val scope = OriginCenteredDrawScope(drawScope)
     offsets.forEachIndexed { index, offset ->
@@ -114,8 +117,12 @@ fun ComposableChartScaleScope.scatter(
     val r = with(drawScope) {
         radius.toPx()
     }
-    drawAt(data) {
-        drawCircle(brush, r, Offset.Zero, alpha, style, colorFilter, blendMode)
+    //drawAt(data) {
+    //    drawCircle(brush, r, Offset.Zero, alpha, style, colorFilter, blendMode)
+    //}
+    drawEachFinite(data) { offset ->
+        drawCircle(brush, r, offset, alpha, style, colorFilter, blendMode)
+
     }
 }
 
@@ -207,13 +214,11 @@ private fun PreviewScatter3() {
 @Composable
 private fun PreviewDrawAt() {
     Chart(maxX = 100f, dataInset = 6.dp, modifier = Modifier.size(100.dp)) {
-        val dataSet = dataSetOf(
-            listOf(
-                Point(25f, 25f),
-                Point(0f, 0f),
-                Point(100f, 100f),
-            )
-        )
+        val dataSet = listOf(
+            Point(25f, 25f),
+            Point(0f, 0f),
+            Point(100f, 100f),
+        ).asDataSet()
         Scale(maxY = 100f) {
             drawAt(dataSet) {
                 drawCircle(Color.Blue, 4.dp.value, Offset.Zero)

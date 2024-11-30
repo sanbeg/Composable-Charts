@@ -19,9 +19,10 @@ import com.sanbeg.composable_chart_data.point.isSpecified
 
 class ComposableChartScaleScope internal constructor(
     private val matrix: Matrix,
+    @PublishedApi
     internal val drawScope: DrawScope,
 ) {
-
+    @PublishedApi
     internal fun scale(point: Point) = if (point.isSpecified) {
         matrix.map(Offset(point.x, point.y))
     } else {
