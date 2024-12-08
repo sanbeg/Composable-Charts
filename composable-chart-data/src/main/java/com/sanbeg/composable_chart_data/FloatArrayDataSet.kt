@@ -2,8 +2,8 @@ package com.sanbeg.composable_chart_data
 
 import androidx.compose.runtime.Stable
 import com.sanbeg.composable_chart_data.function.IntToPointFunction
-import com.sanbeg.composable_chart_data.point.Point
-import com.sanbeg.composable_chart_data.point.isSpecified
+import com.sanbeg.composable_chart_data.geometry.Point
+import com.sanbeg.composable_chart_data.geometry.isSpecified
 
 private fun Point.copyIntoArray(dst: FloatArray, start: Int) = if (isSpecified) {
     dst[start] = x

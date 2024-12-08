@@ -1,4 +1,4 @@
-package com.sanbeg.composable_chart_data.point
+package com.sanbeg.composable_chart_data.geometry
 
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable

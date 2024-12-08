@@ -2,8 +2,8 @@ package com.sanbeg.composable_chart_data
 
 import androidx.compose.runtime.Immutable
 import com.sanbeg.composable_chart_data.function.IntToPointFunction
-import com.sanbeg.composable_chart_data.point.Point
-import com.sanbeg.composable_chart_data.point.packFloats
+import com.sanbeg.composable_chart_data.geometry.Point
+import com.sanbeg.composable_chart_data.geometry.packFloats
 import kotlin.math.min
 
 @ExperimentalStdlibApi

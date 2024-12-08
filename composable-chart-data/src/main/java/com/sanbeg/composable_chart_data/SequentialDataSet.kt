@@ -1,7 +1,9 @@
 package com.sanbeg.composable_chart_data
 
-import com.sanbeg.composable_chart_data.point.Point
+import androidx.compose.runtime.Stable
+import com.sanbeg.composable_chart_data.geometry.Point
 
+@Stable
 @JvmInline
 value class SequentialDataSet(private val data: FloatArray) : DataSet {
     override val size get() = data.size

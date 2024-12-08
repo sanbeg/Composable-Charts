@@ -18,7 +18,7 @@ import com.sanbeg.composable_chart.Scale
 import com.sanbeg.composable_chart.core.drawEach
 import com.sanbeg.composable_chart_data.DataSet
 import com.sanbeg.composable_chart_data.dataSetOf
-import com.sanbeg.composable_chart_data.point.Point
+import com.sanbeg.composable_chart_data.geometry.Point
 
 fun ComposableChartScaleScope.area(data: DataSet, content: DrawScope.(path: Path) -> Unit) {
     var prev: Offset? = null

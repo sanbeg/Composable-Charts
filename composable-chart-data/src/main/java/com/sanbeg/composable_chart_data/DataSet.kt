@@ -1,12 +1,7 @@
 package com.sanbeg.composable_chart_data
 
 import androidx.compose.runtime.Stable
-import com.sanbeg.composable_chart_data.function.IndexedPointConsumer
-import com.sanbeg.composable_chart_data.function.PointBinaryOperator
-import com.sanbeg.composable_chart_data.function.PointConsumer
-import com.sanbeg.composable_chart_data.function.PointPredicate
-import com.sanbeg.composable_chart_data.function.PointToFloatFunction
-import com.sanbeg.composable_chart_data.point.Point
+import com.sanbeg.composable_chart_data.geometry.Point
 
 /**
  * An ordered collection of [Point]s.
@@ -32,48 +27,63 @@ val DataSet.indices: IntRange
 val DataSet.lastIndex: Int
     get() = size - 1
 
-inline fun DataSet.forEach(action: PointConsumer) {
+/**
+ * Performs the given [action] on each element.
+ */
+inline fun DataSet.forEach(action: (Point) -> Unit) {
     for (i in indices) {
         action(get(i))
     }
 }
 
-inline fun DataSet.forEach2(action: (Point) -> Unit) {
-    for (i in indices) {
-        action(get(i))
-    }
-}
-
-fun DataSet.testsum(): Float {
+private fun DataSet.testsum(): Float {
     var sum = 0f
     forEach{sum += it.x}
     return sum
 }
 
-fun DataSet.testsum2(): Float {
-    var sum = 0f
-    forEach2{sum += it.x}
-    return sum
-}
-
-fun DataSet.onEach(action: PointConsumer): DataSet {
+/**
+ * Performs the given [action] on each element and returns the DataSet itself afterwards.
+ */
+inline fun DataSet.onEach(action: (Point) -> Unit): DataSet {
     forEach(action)
     return this
 }
 
-fun DataSet.forEachIndexed(action: IndexedPointConsumer) {
+/**
+ * Performs the given [action] on each element, providing sequential index with the element.
+ * @param [action] function that takes the index of an element and the element itself
+ * and performs the action on the element.
+ */
+inline fun DataSet.forEachIndexed(action: (Int, Point) -> Unit) {
     for (i in indices) {
         action(i, get(i))
     }
 }
 
+/**
+ * Returns the first element.
+ *
+ * @throws NoSuchElementException if the DataSet is empty.
+ */
 fun DataSet.first() = this[0]
+/**
+ * Returns the last element.
+ *
+ * @throws NoSuchElementException if the DataSet is empty.
+ */
 fun DataSet.last() = this[lastIndex]
 
+/**
+ * Returns the first element, or `null` if the DataSet is empty.
+ */
 fun DataSet.firstOrNull() = if (size > 0) this[0] else null
+/**
+ * Returns the last element, or `null` if the DataSet is empty.
+ */
 fun DataSet.lastOrNull() = if (size > 0) this[size - 1] else null
 
-fun DataSet.firstOrNull(predicate: PointPredicate): Point? {
+inline fun DataSet.firstOrNull(predicate: (Point) -> Boolean): Point? {
     for (it in indices) {
         val o = this[it]
         if (predicate(o)) return o
@@ -81,7 +91,7 @@ fun DataSet.firstOrNull(predicate: PointPredicate): Point? {
     return null
 }
 
-fun DataSet.lastOrNull(predicate: PointPredicate): Point? {
+inline fun DataSet.lastOrNull(predicate: (Point) -> Boolean): Point? {
     for (it in indices.reversed()) {
         val o = this[it]
         if (predicate(o)) return o
@@ -89,7 +99,14 @@ fun DataSet.lastOrNull(predicate: PointPredicate): Point? {
     return null
 }
 
-
+/**
+ * Accumulates value starting with [initial] value and applying [operation] from left to right
+ * to current accumulator value and each element.
+ *
+ * Returns the specified [initial] value if the array is empty.
+ *
+ * @param [operation] function that takes current accumulator value and an element, and calculates the next accumulator value.
+ */
 inline fun <R>DataSet.fold(initial: R, operation: (acc: R, Point) -> R): R {
     var acc = initial
     for (i in indices) {
@@ -98,7 +115,7 @@ inline fun <R>DataSet.fold(initial: R, operation: (acc: R, Point) -> R): R {
     return acc
 }
 
-private fun DataSet.fastReduce(operation: PointBinaryOperator): Point {
+inline fun DataSet.fastReduce(operation: (Point, Point) -> Point): Point {
     var acc = first()
     for (i in 1 until size) {
         acc = operation(acc, get(i))
@@ -106,7 +123,7 @@ private fun DataSet.fastReduce(operation: PointBinaryOperator): Point {
     return acc
 }
 
-inline fun DataSet.maxByOrNull(selector: PointToFloatFunction): Point? {
+inline fun DataSet.maxByOrNull(selector: (Point) -> Float): Point? {
     if (size == 0) return null
     var acc = first()
     for (i in 1 until size) {
@@ -116,13 +133,13 @@ inline fun DataSet.maxByOrNull(selector: PointToFloatFunction): Point? {
     return acc
 }
 
-fun DataSet.maxBy(selector: PointToFloatFunction): Point = fastReduce{ acc, cur ->
+inline fun DataSet.maxBy(selector: (Point) -> Float): Point = fastReduce{ acc, cur ->
     if (selector(cur) > selector(acc)) cur else acc
 }
 
-fun DataSet.minBy(selector: PointToFloatFunction): Point = fastReduce{ acc, cur ->
+inline fun DataSet.minBy(selector: (Point) -> Float): Point = fastReduce{ acc, cur ->
     if (selector(cur) < selector(acc)) cur else acc
 }
 
-fun DataSet.maxX2() = maxBy(Point::x)
-fun DataSet.maxX3() = maxBy{it.x}
+private fun DataSet.maxX2() = maxBy(Point::x)
+private fun DataSet.maxX3() = maxBy{it.x}

@@ -14,8 +14,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.sanbeg.composable_chart.core.drawEach
 import com.sanbeg.composable_chart_data.asDataSet
-import com.sanbeg.composable_chart_data.point.Point
-import com.sanbeg.composable_chart_data.point.isSpecified
+import com.sanbeg.composable_chart_data.geometry.Point
+import com.sanbeg.composable_chart_data.geometry.isSpecified
 
 class ComposableChartScaleScope internal constructor(
     private val matrix: Matrix,
@@ -32,7 +32,7 @@ class ComposableChartScaleScope internal constructor(
 
 /**
  * A composable which provides a scaling for its content.  The content is invoked in a scope which
- * provides functionality to scale [Offset]s from real-world units to pixels.
+ * provides functionality to scale [Point]s in real-world units to [Offset]s in pixels.
  *
  * @param[minY] The Y value which will scale to the bottom of the chart.
  * @param[maxY] The Y value which will scale to the top of the chart.

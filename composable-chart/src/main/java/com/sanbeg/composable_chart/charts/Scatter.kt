@@ -29,9 +29,9 @@ import com.sanbeg.composable_chart_data.asDataSet
 import com.sanbeg.composable_chart_data.dataSetOf
 import com.sanbeg.composable_chart_data.forEach
 import com.sanbeg.composable_chart_data.forEachIndexed
-import com.sanbeg.composable_chart_data.point.Point
-import com.sanbeg.composable_chart_data.point.isFinite
-import com.sanbeg.composable_chart_data.point.isSpecified
+import com.sanbeg.composable_chart_data.geometry.Point
+import com.sanbeg.composable_chart_data.geometry.isFinite
+import com.sanbeg.composable_chart_data.geometry.isSpecified
 
 
 /**
@@ -49,12 +49,12 @@ internal value class OriginCenteredDrawScope(
 }
 
 private fun ComposableChartScaleScope.drawAt(
-    offsets: DataSet,
+    data: DataSet,
     content: DrawScope.() -> Unit
 ) {
-    offsets.forEach { offset ->
-        if (offset.isSpecified && offset.isFinite) {
-            val scaled = scale(offset)
+    data.forEach { point ->
+        if (point.isSpecified && point.isFinite) {
+            val scaled = scale(point)
             drawScope.translate(scaled.x, scaled.y, content)
         }
     }
@@ -66,28 +66,28 @@ private fun ComposableChartScaleScope.drawAt(
  * has both its origin and center at the location of the point.
  */
 inline fun ComposableChartScaleScope.scatter(
-    offsets: DataSet,
+    data: DataSet,
     crossinline content: DrawScope.() -> Unit
 ) {
     val scope = OriginCenteredDrawScope(drawScope)
-    offsets.forEach { offset ->
-        if (offset.isSpecified && offset.isFinite) {
-            val scaled = scale(offset)
+    data.forEach { point ->
+        if (point.isSpecified && point.isFinite) {
+            val scaled = scale(point)
             scope.translate(scaled.x, scaled.y, content)
         }
     }
 }
 
 inline fun ComposableChartScaleScope.scatterWithIndexedValues(
-    offsets: DataSet,
+    data: DataSet,
     crossinline content: DrawScope.(index: Int, offset: Point) -> Unit
 ) {
     val scope = OriginCenteredDrawScope(drawScope)
-    offsets.forEachIndexed { index, offset ->
-        if (offset.isSpecified && offset.isFinite) {
-            val scaled = scale(offset)
+    data.forEachIndexed { index, point ->
+        if (point.isSpecified && point.isFinite) {
+            val scaled = scale(point)
             scope.translate(scaled.x, scaled.y) {
-                content(index, offset)
+                content(index, point)
             }
         }
     }
@@ -122,7 +122,6 @@ fun ComposableChartScaleScope.scatter(
     //}
     drawEachFinite(data) { offset ->
         drawCircle(brush, r, offset, alpha, style, colorFilter, blendMode)
-
     }
 }
 

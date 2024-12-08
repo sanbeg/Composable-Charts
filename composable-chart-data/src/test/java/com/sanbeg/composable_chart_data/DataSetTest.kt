@@ -1,6 +1,6 @@
 package com.sanbeg.composable_chart_data
 
-import com.sanbeg.composable_chart_data.point.Point
+import com.sanbeg.composable_chart_data.geometry.Point
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull

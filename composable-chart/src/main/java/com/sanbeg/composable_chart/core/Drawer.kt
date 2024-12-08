@@ -17,9 +17,9 @@ import com.sanbeg.composable_chart_data.DataSet
 import com.sanbeg.composable_chart_data.asDataSet
 import com.sanbeg.composable_chart_data.forEach
 import com.sanbeg.composable_chart_data.forEachIndexed
-import com.sanbeg.composable_chart_data.point.Point
-import com.sanbeg.composable_chart_data.point.isFinite
-import com.sanbeg.composable_chart_data.point.isSpecified
+import com.sanbeg.composable_chart_data.geometry.Point
+import com.sanbeg.composable_chart_data.geometry.isFinite
+import com.sanbeg.composable_chart_data.geometry.isSpecified
 
 inline fun ComposableChartScaleScope.drawEach(
     offsets: DataSet,

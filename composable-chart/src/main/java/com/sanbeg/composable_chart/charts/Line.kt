@@ -24,7 +24,7 @@ import com.sanbeg.composable_chart.Scale
 import com.sanbeg.composable_chart.core.drawEachSegment
 import com.sanbeg.composable_chart_data.DataSet
 import com.sanbeg.composable_chart_data.dataSetOf
-import com.sanbeg.composable_chart_data.point.Point
+import com.sanbeg.composable_chart_data.geometry.Point
 
 /**
  * Draws a series of lines connecting the given points using the given paint. The lines
@@ -58,10 +58,10 @@ enum class StepVertical{
     Pre, Post
 }
 
-fun ComposableChartScaleScope.step(
+inline fun ComposableChartScaleScope.step(
     data: DataSet,
     where: StepVertical = StepVertical.Post,
-    content: DrawScope.(start: Offset, end: Offset) -> Unit
+    crossinline content: DrawScope.(start: Offset, end: Offset) -> Unit
 ) {
     drawEachSegment(data) { a, c ->
         val b = when (where) {
@@ -70,23 +70,6 @@ fun ComposableChartScaleScope.step(
         }
         content(a, b)
         content(b, c)
-    }
-}
-
-fun ComposableChartScaleScope.step1(
-    data: DataSet,
-    width: Dp = Dp.Hairline,
-    brush: Brush,
-    where: StepVertical = StepVertical.Post,
-) {
-    drawEachSegment(data) { a, c ->
-        val px = width.toPx()
-        val b = when(where) {
-            StepVertical.Pre -> Offset(a.x, c.y)
-            StepVertical.Post -> Offset(c.x, a.y)
-        }
-        drawLine(brush, a, b, px, StrokeCap.Round)
-        drawLine(brush, b, c, px, StrokeCap.Round)
     }
 }
 
