@@ -16,6 +16,7 @@ import com.sanbeg.composable_chart.Chart
 import com.sanbeg.composable_chart.ComposableChartScaleScope
 import com.sanbeg.composable_chart.Scale
 import com.sanbeg.composable_chart.core.drawEach
+import com.sanbeg.composable_chart.core.drawEachSegment
 import com.sanbeg.composable_chart_data.DataSet
 import com.sanbeg.composable_chart_data.dataSetOf
 import com.sanbeg.composable_chart_data.geometry.Point
@@ -52,6 +53,21 @@ fun ComposableChartScaleScope.area(data: DataSet, brush: Brush) {
     }
 }
 
+fun ComposableChartScaleScope.fastArea(data: DataSet, brush: Brush) {
+    val path = Path()
+    val height = drawScope.size.height
+
+    drawEachSegment(data) {a, b ->
+        path.reset()
+        path.moveTo(a.x, height)
+        path.lineTo(a.x, a.y)
+        path.lineTo(b.x, b.y)
+        path.lineTo(b.x, height)
+        path.close()
+        drawScope.drawPath(path, brush)
+    }
+}
+
 @Preview(showBackground = true)
 @Composable
 private fun PreviewArea() {
@@ -66,6 +82,25 @@ private fun PreviewArea() {
         )
         Scale(maxY = 100f) {
             area(dataSet, SolidColor(Color.Blue))
+        }
+    }
+}
+
+
+@Preview(showBackground = true)
+@Composable
+private fun PreviewFastArea() {
+    Chart(maxX = 100f, dataInset = 6.dp, modifier = Modifier.size(100.dp)) {
+        val dataSet = dataSetOf(
+            listOf(
+                Point(0f, 0f),
+                Point(25f, 20f),
+                Point(45f, 25f),
+                Point(100f, 100f),
+            )
+        )
+        Scale(maxY = 100f) {
+            fastArea(dataSet, SolidColor(Color.Blue))
         }
     }
 }

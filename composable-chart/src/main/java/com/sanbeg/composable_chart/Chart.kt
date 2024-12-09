@@ -118,32 +118,8 @@ class ComposableChartScope internal constructor(
     ))
 }
 
-@Composable
-fun Chart(
-    minX: Float = 0f,
-    maxX: Float = 1f,
-    dataInset: Dp = 0.dp,
-    modifier: Modifier = Modifier,
-    content: @Composable ComposableChartScope.() -> Unit
-) = ChartLayout(minX, maxX, dataInset, modifier, content)
-
-@Composable
-fun Chart1(
-    minX: Float = 0f,
-    maxX: Float = 1f,
-    dataInset: Dp = 0.dp,
-    modifier: Modifier = Modifier,
-    content: @Composable ComposableChartScope.() -> Unit
-) {
-    Box(modifier) {
-        ComposableChartScope(minX, maxX).also {
-            it.dataInset = with(LocalDensity.current) { dataInset.toPx() }
-        }.content()
-    }
-}
-
 /*************************************
- * boilerplate for new chart layout, based on Box
+ * boilerplate for chart layout, based on Box
  *************************************/
 
 private class ChartMeasurePolicy : MeasurePolicy {
@@ -307,7 +283,7 @@ private class ChartMeasurePolicy : MeasurePolicy {
 @Preview(showBackground = true)
 @Composable
 private fun TestChartLayout() {
-    ChartLayout(modifier = Modifier.size(50.dp)) {
+    Chart(modifier = Modifier.size(50.dp)) {
         Spacer(modifier = Modifier
             .size(10.dp)
             .background(Color.Red)
@@ -328,7 +304,7 @@ private fun TestChartLayout() {
 @Preview(showBackground = true)
 @Composable
 private fun TestChartWrap1() {
-    ChartLayout(modifier = Modifier.wrapContentSize()) {
+    Chart(modifier = Modifier.wrapContentSize()) {
         Spacer(modifier = Modifier
             .size(50.dp)
             .background(Color.Blue))
@@ -339,7 +315,7 @@ private fun TestChartWrap1() {
 @Preview(showBackground = true)
 @Composable
 private fun TestChartWrap2() {
-    ChartLayout(modifier = Modifier.wrapContentSize()) {
+    Chart(modifier = Modifier.wrapContentSize()) {
         Spacer(modifier = Modifier
             .asPlot()
             .size(50.dp)
@@ -355,7 +331,7 @@ private fun TestChartWrap2() {
 @Preview(showBackground = true)
 @Composable
 private fun TestChartWrap4() {
-    ChartLayout() {
+    Chart {
         Spacer(modifier = Modifier
             .asPlot()
             .size(30.dp)
@@ -404,7 +380,7 @@ private fun TestChartWrap4() {
 @Preview(showBackground = true)
 @Composable
 private fun TestChartWrap4_2() {
-    ChartLayout(modifier= Modifier.size(40.dp)) {
+    Chart(modifier= Modifier.size(40.dp)) {
         Spacer(modifier = Modifier
             .asPlot()
             .background(Color.Blue))
@@ -445,7 +421,7 @@ private fun TestChartWrap4_2() {
 @Composable
 private fun TestChartInBox() {
     Box(Modifier.size(75.dp)) {
-        ChartLayout(modifier = Modifier.fillMaxSize()) {
+        Chart(modifier = Modifier.fillMaxSize()) {
             Spacer(modifier = Modifier
                 .asPlot()
                 .fillMaxSize()
@@ -504,7 +480,7 @@ private class ChartChildDataNode(
 }
 
 @Composable
-fun ChartLayout(
+fun Chart(
     minX: Float = 0f,
     maxX: Float = 1f,
     dataInset: Dp = 0.dp,
@@ -519,49 +495,10 @@ fun ChartLayout(
     Layout(measurePolicy = ChartMeasurePolicy(), content = layoutContent, modifier = modifier)
 }
 
-/****************************************
- * end new chart layout
- ****************************************/
-@Composable
-fun Chart2(
-    minX: Float = 0f,
-    maxX: Float = 1f,
-    dataInset: Dp = 0.dp,
-    modifier: Modifier = Modifier,
-    content: @Composable ComposableChartScope.() -> Unit
-) {
-    val layoutContent: @Composable () -> Unit = {
-        ComposableChartScope(minX, maxX).also {
-            it.dataInset = with(LocalDensity.current) { dataInset.toPx() }
-        }.content()
-    }
-    Layout(layoutContent, modifier) {measurables, constraints ->
-        val contentConstraints = constraints.copy(minWidth = 0, minHeight = 0)
-        val placeables = measurables.map { measurable ->
-            measurable.measure(contentConstraints)
-        }
-        layout(constraints.maxWidth, constraints.maxHeight) {
-            // Place children in the parent layout
-            placeables.forEach { placeable ->
-                // Position item on the screen
-                val position = Alignment.BottomStart.align(
-                    IntSize(placeable.width, placeable.height),
-                    IntSize(constraints.maxWidth, constraints.maxHeight),
-                    LayoutDirection.Ltr
-                )
-                //placeable.placeRelative(x = 0, y = 0)
-                placeable.place(position)
-            }
-        }
-    }
-}
-
-
-
 @Preview(showBackground = true)
 @Composable
 private fun PreviewChart2() {
-    Chart2(maxX = 100f, dataInset = 6.dp, modifier = Modifier.size(100.dp)) {
+    Chart(maxX = 100f, dataInset = 6.dp, modifier = Modifier.size(100.dp)) {
         Scale(maxY = 100f, modifier = Modifier) {
             // drawScope.drawCircle(Color.Red, 4.dp.value)
 
@@ -577,6 +514,7 @@ private fun PreviewChart2() {
         }
         Spacer(
             Modifier
+                .asAxis(Edge.BOTTOM)
                 .fillMaxWidth()
                 .height(10.dp)
                 .background(Color.Red))

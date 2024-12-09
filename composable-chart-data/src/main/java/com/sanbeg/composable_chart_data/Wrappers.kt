@@ -39,3 +39,10 @@ fun FloatArray.asDataSet(): DataSet = FloatArrayDataSet(this)
  * @param[elements] alternating x and y elements; the number of arguments must be even.
  */
 fun dataSetOf(vararg elements: Float): FloatArrayDataSet = FloatArrayDataSet(elements)
+
+fun emptyDataSet(): DataSet = object: DataSet {
+    override val size = 0
+    override fun get(index: Int): Point {
+        return emptyArray<Point>()[index]
+    }
+}
