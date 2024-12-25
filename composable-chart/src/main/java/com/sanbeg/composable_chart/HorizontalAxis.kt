@@ -2,7 +2,6 @@ package com.sanbeg.composable_chart
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
@@ -100,9 +99,9 @@ private fun PreviewHorizontalAxisShift() {
         Scale(maxY = 100f, modifier = Modifier) {
             drawEach(
                 listOf(
-                    Point(25f, 25f),
-                    Point(0f, 0f),
-                    Point(100f, 100f),
+                    Point(125f, 25f),
+                    Point(100f, 0f),
+                    Point(200f, 100f),
                 ).asDataSet()
             ) {
                 drawCircle(Color.Blue, 3.dp.toPx(), it)

@@ -60,7 +60,8 @@ fun ComposableChartScope.Scale(
                 y = (size.height - di2) / -(maxY - minY),
             )
             translate(
-                y = -maxY
+                x = -minX,
+                y = -maxY,
             )
         }.let { ComposableChartScaleScope(it, this) }
             .content()
