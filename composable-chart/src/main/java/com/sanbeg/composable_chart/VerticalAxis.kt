@@ -2,10 +2,9 @@ package com.sanbeg.composable_chart
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
@@ -19,58 +18,60 @@ import com.sanbeg.composable_chart.core.drawEach
 import com.sanbeg.composable_chart_data.asDataSet
 import com.sanbeg.composable_chart_data.geometry.Point
 
-class HorizontalAxisScope internal constructor(
+class VerticalAxisScope internal constructor(
     private val chartScope: ComposableChartScope,
     internal val drawScope: DrawScope,
-    ) {
+    internal val minY: Float,
+    internal val maxY: Float,
+) {
+    private val scale = (drawScope.size.height - chartScope.dataInset * 2) / -(maxY - minY)
 
-    val minX by chartScope::minX
-    val maxX by chartScope::maxX
-
-    private val scale = (drawScope.size.width - chartScope.dataInset * 2) / (maxX - minX)
-
-    fun scale(x: Float): Float = x * scale + chartScope.dataInset - minX * scale
-
+    fun scale(y: Float): Float = y * scale + chartScope.dataInset - maxY * scale
 }
 
 @Composable
-fun ComposableChartScope.HorizontalAxis(
-    modifier: Modifier,
-    edge: Edge = Edge.BOTTOM,
-    content: HorizontalAxisScope.() -> Unit
+fun ComposableChartScope.VerticalAxis(
+    minY: Float,
+    maxY: Float,
+    modifier: Modifier = Modifier,
+    edge: Edge = Edge.LEFT,
+    content: VerticalAxisScope.() -> Unit
 ) {
     Box(
         modifier
-            .fillMaxWidth()
+            .fillMaxHeight()
             .asAxis(edge)
             .drawBehind {
-                HorizontalAxisScope(
-                    this@HorizontalAxis,
-                    this
+                VerticalAxisScope(
+                    this@VerticalAxis,
+                    this,
+                    minY,
+                    maxY,
                 ).content()
             }
     )
 }
 
-fun HorizontalAxisScope.drawAt(x: Float, draw: DrawScope.() -> Unit) {
-    drawScope.translate(scale(x)) {
+
+fun VerticalAxisScope.drawAt(y: Float, draw: DrawScope.() -> Unit) {
+    drawScope.translate(top=scale(y)) {
         draw()
     }
 }
 
-fun HorizontalAxisScope.drawTics(spacing: Float) {
-    var x = minX
-    while (x <= maxX) {
-        drawAt(x) {
-            drawLine(Color.Black, Offset.Zero, Offset(0f, size.height))
+fun VerticalAxisScope.drawTics(spacing: Float) {
+    var y = minY
+    while (y <= maxY) {
+        drawAt(y) {
+            drawLine(Color.Black, Offset.Zero, Offset(size.width, 0f))
         }
-        x += spacing
+        y += spacing
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-private fun PreviewHorizontalAxis() {
+private fun PreviewChartVerticalAxis() {
     Chart(maxX = 100f, dataInset = 3.dp, modifier = Modifier.size(100.dp)) {
         Scale(maxY = 100f, modifier = Modifier) {
             drawEach(
@@ -84,10 +85,13 @@ private fun PreviewHorizontalAxis() {
             }
         }
 
-        HorizontalAxis(Modifier.height(8.dp)) {
+        VerticalAxis(0f, 100f, Modifier.width(8.dp)) {
             drawTics(10f)
         }
-        HorizontalAxis(Modifier.height(4.dp).background(Color.Cyan), edge = Edge.TOP) {
+        VerticalAxis(0f, 100f,
+            Modifier
+                .width(4.dp)
+                .background(Color.Cyan), edge = Edge.RIGHT) {
             drawTics(15f)
         }
     }
@@ -95,9 +99,37 @@ private fun PreviewHorizontalAxis() {
 
 @Preview(showBackground = true)
 @Composable
-private fun PreviewHorizontalAxisShift() {
-    Chart(minX = 100f, maxX = 200f, dataInset = 3.dp, modifier = Modifier.size(100.dp)) {
-        Scale(maxY = 100f, modifier = Modifier) {
+private fun PreviewChartVerticalAxisShift() {
+    Chart(maxX = 100f, dataInset = 3.dp, modifier = Modifier.size(100.dp)) {
+        Scale(minY = 100f, maxY = 200f, modifier = Modifier) {
+            drawEach(
+                listOf(
+                    Point(25f, 125f),
+                    Point(0f, 100f),
+                    Point(100f, 200f),
+                ).asDataSet()
+            ) {
+                drawCircle(Color.Blue, 3.dp.toPx(), it)
+            }
+        }
+
+        VerticalAxis(100f, 200f, Modifier.width(8.dp)) {
+            drawTics(10f)
+        }
+        VerticalAxis(100f, 200f,
+            Modifier
+                .width(4.dp)
+                .background(Color.Cyan), edge = Edge.RIGHT) {
+            drawTics(15f)
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun PreviewChartVerticalAxisFlip() {
+    Chart(maxX = 100f, dataInset = 3.dp, modifier = Modifier.size(100.dp)) {
+        Scale(minY = 100f, maxY = 0f, modifier = Modifier) {
             drawEach(
                 listOf(
                     Point(25f, 25f),
@@ -109,36 +141,13 @@ private fun PreviewHorizontalAxisShift() {
             }
         }
 
-        HorizontalAxis(Modifier.height(8.dp)) {
+        VerticalAxis(100f, 0f, Modifier.width(8.dp)) {
             drawTics(10f)
         }
-        HorizontalAxis(Modifier.height(4.dp).background(Color.Cyan), edge = Edge.TOP) {
-            drawTics(15f)
-        }
-    }
-}
-
-
-@Preview(showBackground = true)
-@Composable
-private fun PreviewHorizontalAxisFlip() {
-    Chart(minX = 100f, maxX = 0f, dataInset = 3.dp, modifier = Modifier.size(100.dp)) {
-        Scale(maxY = 100f, modifier = Modifier) {
-            drawEach(
-                listOf(
-                    Point(25f, 25f),
-                    Point(0f, 0f),
-                    Point(100f, 100f),
-                ).asDataSet()
-            ) {
-                drawCircle(Color.Blue, 3.dp.toPx(), it)
-            }
-        }
-
-        HorizontalAxis(Modifier.height(8.dp)) {
-            drawTics(10f)
-        }
-        HorizontalAxis(Modifier.height(4.dp).background(Color.Cyan), edge = Edge.TOP) {
+        VerticalAxis(100f, 0f,
+            Modifier
+                .width(4.dp)
+                .background(Color.Cyan), edge = Edge.RIGHT) {
             drawTics(15f)
         }
     }

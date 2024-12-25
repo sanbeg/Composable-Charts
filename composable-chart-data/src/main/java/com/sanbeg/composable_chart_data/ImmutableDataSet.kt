@@ -6,7 +6,6 @@ import com.sanbeg.composable_chart_data.geometry.Point
 import com.sanbeg.composable_chart_data.geometry.packFloats
 import kotlin.math.min
 
-@ExperimentalStdlibApi
 @JvmInline
 @Immutable
 value class ImmutableDataSet private constructor(private val array: LongArray): DataSet {
@@ -45,6 +44,7 @@ value class ImmutableDataSet private constructor(private val array: LongArray): 
 
     fun contains(point: Point) = array.contains(point.packedValue)
 
+    @ExperimentalStdlibApi
     fun mapOffsets(transform: (Point) -> Point): ImmutableDataSet {
         val rv = LongArray(size)
         forEachIndexed { i, point ->
@@ -53,6 +53,7 @@ value class ImmutableDataSet private constructor(private val array: LongArray): 
         return ImmutableDataSet(rv)
     }
 
+    @ExperimentalStdlibApi
     fun forEachOffsetWindow(
         size: Int,
         step: Int,

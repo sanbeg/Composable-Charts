@@ -7,6 +7,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Scaffold
@@ -40,13 +41,11 @@ data class ViewModel(
     val data: DataSet
 )
 
-@OptIn(ExperimentalStdlibApi::class)
 val data = ImmutableDataSet(10000) { i ->
     val fi = i.toFloat() / 100f
     Point(fi, sin(fi))
 }
 
-@OptIn(ExperimentalStdlibApi::class)
 val model = ViewModel(maxX = 100f, minY = -1f, maxY = 1f, data = data)
 
 class MainActivity : ComponentActivity() {
@@ -78,7 +77,7 @@ fun Greeting(name: String, model: ViewModel, modifier: Modifier = Modifier) {
         )
         var slideval by remember { mutableFloatStateOf(model.maxX) }
         Slider(value = slideval, valueRange = 0f .. model.maxX, modifier = Modifier.fillMaxWidth(), onValueChange = {slideval = it})
-        Chart(minX = 0f, maxX = slideval, modifier = Modifier.size(200.dp)) {
+        Chart(minX = 0f, maxX = slideval, modifier = Modifier.height(150.dp).fillMaxWidth()) {
             Scale(minY = model.minY, maxY = model.maxY) {
                 line(model.data, brush = SolidColor(Color.Black))
                 fastArea(model.data, brush = SolidColor(Color.Cyan))
