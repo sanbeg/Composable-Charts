@@ -176,20 +176,22 @@ private class ChartMeasurePolicy : MeasurePolicy {
         val horizontalReservation = leftReservation + rightReservation
 
         val horizAxisConstraint = if (horizontalReservation > 0) {
+            val axisWidth = constraints.maxWidth - horizontalReservation
             constraints.copy(
                 minWidth = 0,
                 minHeight = 0,
-                maxWidth = constraints.maxWidth - horizontalReservation,
+                maxWidth = axisWidth,
             )
         } else {
             contentConstraints
         }
 
         val vertAxisConstraint = if (verticalReservation > 0) {
+            val axisHeight = constraints.maxHeight - verticalReservation
             constraints.copy(
                 minWidth = 0,
                 minHeight = 0,
-                maxHeight = constraints.maxHeight - verticalReservation,
+                maxHeight = axisHeight,
             )
         } else {
             contentConstraints
@@ -230,6 +232,7 @@ private class ChartMeasurePolicy : MeasurePolicy {
         // pass 3 - determine position for each child
         val positions = Array(measurables.size) { index ->
             val measurable = measurables[index]
+
             if (measurable.isAxis) {
                 /*
                  * since axis are allowed to draw outside of their reserved space,
