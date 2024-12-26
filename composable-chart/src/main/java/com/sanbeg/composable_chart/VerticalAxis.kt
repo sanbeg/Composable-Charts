@@ -23,12 +23,12 @@ import kotlin.math.min
 class VerticalAxisScope internal constructor(
     private val chartScope: ComposableChartScope,
     internal val drawScope: DrawScope,
-    internal val minY: Float,
-    internal val maxY: Float,
+    internal val minVal: Float,
+    internal val maxVal: Float,
 ) {
-    private val scale = (drawScope.size.height - chartScope.dataInset * 2) / -(maxY - minY)
+    private val scale = (drawScope.size.height - chartScope.dataInset * 2) / -(maxVal - minVal)
 
-    fun scale(y: Float): Float = y * scale + chartScope.dataInset - maxY * scale
+    fun scale(y: Float): Float = (y - maxVal) * scale + chartScope.dataInset
 }
 
 @Composable
@@ -62,8 +62,8 @@ fun VerticalAxisScope.drawAt(y: Float, draw: DrawScope.() -> Unit) {
 }
 
 fun VerticalAxisScope.drawTics(spacing: Float) {
-    var y = min(minY, maxY)
-    while (y <= max(minY, maxY)) {
+    var y = min(minVal, maxVal)
+    while (y <= max(minVal, maxVal)) {
         drawAt(y) {
             drawLine(Color.Black, Offset.Zero, Offset(size.width, 0f))
         }

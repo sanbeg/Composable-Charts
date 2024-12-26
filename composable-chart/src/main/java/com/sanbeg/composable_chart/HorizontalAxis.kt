@@ -25,12 +25,12 @@ class HorizontalAxisScope internal constructor(
     internal val drawScope: DrawScope,
     ) {
 
-    val minX by chartScope::minX
-    val maxX by chartScope::maxX
+    val minVal by chartScope::minX
+    val maxVal by chartScope::maxX
 
-    private val scale = (drawScope.size.width - chartScope.dataInset * 2) / (maxX - minX)
+    private val scale = (drawScope.size.width - chartScope.dataInset * 2) / (maxVal - minVal)
 
-    fun scale(x: Float): Float = x * scale + chartScope.dataInset - minX * scale
+    fun scale(x: Float): Float = (x -minVal)* scale + chartScope.dataInset
 
 }
 
@@ -60,8 +60,8 @@ fun HorizontalAxisScope.drawAt(x: Float, draw: DrawScope.() -> Unit) {
 }
 
 fun HorizontalAxisScope.drawTics(spacing: Float) {
-    var x = min(minX, maxX)
-    while (x <= max(minX, maxX)) {
+    var x = min(minVal, maxVal)
+    while (x <= max(minVal, maxVal)) {
         drawAt(x) {
             drawLine(Color.Black, Offset.Zero, Offset(0f, size.height))
         }
