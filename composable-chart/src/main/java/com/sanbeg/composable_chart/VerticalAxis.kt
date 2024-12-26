@@ -17,6 +17,8 @@ import androidx.compose.ui.unit.dp
 import com.sanbeg.composable_chart.core.drawEach
 import com.sanbeg.composable_chart_data.asDataSet
 import com.sanbeg.composable_chart_data.geometry.Point
+import kotlin.math.max
+import kotlin.math.min
 
 class VerticalAxisScope internal constructor(
     private val chartScope: ComposableChartScope,
@@ -60,8 +62,8 @@ fun VerticalAxisScope.drawAt(y: Float, draw: DrawScope.() -> Unit) {
 }
 
 fun VerticalAxisScope.drawTics(spacing: Float) {
-    var y = minY
-    while (y <= maxY) {
+    var y = min(minY, maxY)
+    while (y <= max(minY, maxY)) {
         drawAt(y) {
             drawLine(Color.Black, Offset.Zero, Offset(size.width, 0f))
         }
