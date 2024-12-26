@@ -22,6 +22,7 @@ import kotlin.math.min
 
 class HorizontalAxisScope internal constructor(
     private val chartScope: ComposableChartScope,
+    @PublishedApi
     internal val drawScope: DrawScope,
     ) {
 
@@ -53,7 +54,7 @@ fun ComposableChartScope.HorizontalAxis(
     )
 }
 
-fun HorizontalAxisScope.drawAt(x: Float, draw: DrawScope.() -> Unit) {
+inline fun HorizontalAxisScope.drawAt(x: Float, draw: DrawScope.() -> Unit) {
     drawScope.translate(scale(x)) {
         draw()
     }

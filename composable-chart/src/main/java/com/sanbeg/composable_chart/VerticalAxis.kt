@@ -22,6 +22,7 @@ import kotlin.math.min
 
 class VerticalAxisScope internal constructor(
     private val chartScope: ComposableChartScope,
+    @PublishedApi
     internal val drawScope: DrawScope,
     internal val minVal: Float,
     internal val maxVal: Float,
@@ -54,10 +55,9 @@ fun ComposableChartScope.VerticalAxis(
     )
 }
 
-
-fun VerticalAxisScope.drawAt(y: Float, draw: DrawScope.() -> Unit) {
+inline fun VerticalAxisScope.drawAt(y: Float, draw: DrawScope.(y: Float) -> Unit) {
     drawScope.translate(top=scale(y)) {
-        draw()
+        draw(y)
     }
 }
 
