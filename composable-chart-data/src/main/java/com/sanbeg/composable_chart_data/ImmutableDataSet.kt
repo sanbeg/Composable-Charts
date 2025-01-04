@@ -44,8 +44,10 @@ value class ImmutableDataSet private constructor(private val array: LongArray): 
 
     fun contains(point: Point) = array.contains(point.packedValue)
 
+    override fun toString() = contentToString("ImmutableDataSet")
+
     @ExperimentalStdlibApi
-    fun mapOffsets(transform: (Point) -> Point): ImmutableDataSet {
+    fun map(transform: (Point) -> Point): ImmutableDataSet {
         val rv = LongArray(size)
         forEachIndexed { i, point ->
             rv[i] = transform(point).packedValue

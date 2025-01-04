@@ -159,3 +159,13 @@ fun DataSet.yrange(): InclusiveFloatRange {
         InclusiveFloatRange(min(range.start, cur), max(range.end, cur))
     }
 }
+
+internal fun DataSet.contentToString(classname: String) = StringBuilder().apply {
+    append(classname)
+    this@contentToString.forEach {
+        append(it.contentToString())
+        append(',')
+    }
+    deleteCharAt(lastIndex)
+    append(")")
+}.toString()

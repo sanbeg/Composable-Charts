@@ -23,7 +23,13 @@ value class Point(val packedValue: Long) {
     operator fun component1() = unpackFloat1(packedValue)
 
     @Stable
-     operator fun component2() = unpackFloat2(packedValue)
+    operator fun component2() = unpackFloat2(packedValue)
+
+    @Stable
+    override fun toString() = "Point(x=$x, y=$y)"
+
+    @Stable
+    fun contentToString() = "[$x,$y]"
 
     /**
      * Returns a copy of this Point instance optionally overriding the

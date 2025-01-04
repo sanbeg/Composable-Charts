@@ -1,10 +1,10 @@
 package com.sanbeg.composable_chart_data
 
+import com.sanbeg.composable_chart_data.geometry.InclusiveFloatRange
 import com.sanbeg.composable_chart_data.geometry.Point
 import org.junit.Assert.*
 import org.junit.Test
 
-@OptIn(ExperimentalStdlibApi::class)
 class ImmutableDataSetTest {
 
     private val list = listOf(
@@ -31,28 +31,28 @@ class ImmutableDataSetTest {
             list[i]
         }
 
-        assertEquals(list, sut.map { it })
+        assertEquals(list, sut.asList())
     }
 
     @Test
     fun `it can round trip from a list`() {
         val sut = ImmutableDataSet(list)
 
-        assertEquals(list, sut.map { it })
+        assertEquals(list, sut.asList())
     }
 
     @Test
     fun `it can create from two arrays`() {
         val sut = ImmutableDataSet(floatArrayOf(12f, 56f), floatArrayOf(34f, 78f))
 
-        assertEquals(list, sut.map { it })
+        assertEquals(list, sut.asList())
     }
 
     @Test
     fun `it can create from one array`() {
         val sut = ImmutableDataSet(floatArrayOf(12f, 34f, 56f, 78f))
 
-        assertEquals(list, sut.map { it })
+        assertEquals(list, sut.asList())
     }
 
     @Test
@@ -82,7 +82,7 @@ class ImmutableDataSetTest {
         val extra = Point(1234f, 1234f)
         val sut = ImmutableDataSet(list).plus(extra)
 
-        assertEquals(list.plus(extra), sut.map { it })
+        assertEquals(list.plus(extra), sut.asList())
     }
 
     @Test
@@ -91,7 +91,20 @@ class ImmutableDataSetTest {
         val collection = ImmutableDataSet(listOf(extra))
         val sut = ImmutableDataSet(list).plus(collection)
 
-        assertEquals(list.plus(extra), sut.map { it })
+        assertEquals(list.plus(extra), sut.asList())
     }
 
+    @Test
+    fun testXRange() {
+        val range = ImmutableDataSet(list).xrange()
+
+        assertEquals(InclusiveFloatRange(12f, 56f), range)
+    }
+
+    @Test
+    fun testYRange() {
+        val range = ImmutableDataSet(list).yrange()
+
+        assertEquals(InclusiveFloatRange(34f, 78f), range)
+    }
 }
