@@ -52,7 +52,7 @@ fun ComposableChartScope.Scale(
     content: ComposableChartScaleScope.() -> Unit
     ) {
     Spacer(modifier.asPlot().fillMaxSize().drawBehind {
-        Matrix().apply {
+        val matrix = Matrix().apply {
             translate(x = dataInset, y = dataInset)
             val di2 = dataInset * 2
             scale(
@@ -63,8 +63,9 @@ fun ComposableChartScope.Scale(
                 x = -minX,
                 y = -maxY,
             )
-        }.let { ComposableChartScaleScope(it, this) }
-            .content()
+        }
+            //.let { ComposableChartScaleScope(it, this) }.content()
+        ComposableChartScaleScope(matrix, this).content()
     })
 }
 

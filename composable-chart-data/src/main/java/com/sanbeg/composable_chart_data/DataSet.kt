@@ -1,7 +1,10 @@
 package com.sanbeg.composable_chart_data
 
 import androidx.compose.runtime.Stable
+import com.sanbeg.composable_chart_data.geometry.InclusiveFloatRange
 import com.sanbeg.composable_chart_data.geometry.Point
+import kotlin.math.max
+import kotlin.math.min
 
 /**
  * An ordered collection of [Point]s.
@@ -115,7 +118,7 @@ inline fun <R>DataSet.fold(initial: R, operation: (acc: R, Point) -> R): R {
     return acc
 }
 
-inline fun DataSet.fastReduce(operation: (Point, Point) -> Point): Point {
+inline fun DataSet.reduce(operation: (Point, Point) -> Point): Point {
     var acc = first()
     for (i in 1 until size) {
         acc = operation(acc, get(i))
@@ -133,13 +136,26 @@ inline fun DataSet.maxByOrNull(selector: (Point) -> Float): Point? {
     return acc
 }
 
-inline fun DataSet.maxBy(selector: (Point) -> Float): Point = fastReduce{ acc, cur ->
+inline fun DataSet.maxBy(selector: (Point) -> Float): Point = reduce { acc, cur ->
     if (selector(cur) > selector(acc)) cur else acc
 }
 
-inline fun DataSet.minBy(selector: (Point) -> Float): Point = fastReduce{ acc, cur ->
+inline fun DataSet.minBy(selector: (Point) -> Float): Point = reduce { acc, cur ->
     if (selector(cur) < selector(acc)) cur else acc
 }
 
-private fun DataSet.maxX2() = maxBy(Point::x)
-private fun DataSet.maxX3() = maxBy{it.x}
+fun DataSet.xrange(): InclusiveFloatRange {
+    val init = get(0).x
+    return fold(InclusiveFloatRange(init, init)) { range, point ->
+        val cur = point.x
+        InclusiveFloatRange(min(range.start, cur), max(range.end, cur))
+    }
+}
+
+fun DataSet.yrange(): InclusiveFloatRange {
+    val init = get(0).y
+    return fold(InclusiveFloatRange(init, init)) { range, point ->
+        val cur = point.y
+        InclusiveFloatRange(min(range.start, cur), max(range.end, cur))
+    }
+}

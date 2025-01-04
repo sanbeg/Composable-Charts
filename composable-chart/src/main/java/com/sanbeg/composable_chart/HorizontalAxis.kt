@@ -37,7 +37,7 @@ class HorizontalAxisScope internal constructor(
 
     private val scale = (drawScope.size.width - chartScope.dataInset * 2) / (maxVal - minVal)
 
-    fun scale(x: Float): Float = (x -minVal)* scale + chartScope.dataInset
+    fun scale(x: Float): Float = (x - minVal) * scale + chartScope.dataInset
 
 }
 

@@ -1,0 +1,12 @@
+#Module composable-charts-data
+
+A high-performance chart data set
+
+#Package function
+
+Functional interfaces which are called like lambdas, but unlike lambdas don't
+require their arguments to be boxed.
+
+#Package point
+
+A representation of a single data point.
