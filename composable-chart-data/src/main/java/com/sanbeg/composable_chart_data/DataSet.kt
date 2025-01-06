@@ -1,7 +1,7 @@
 package com.sanbeg.composable_chart_data
 
 import androidx.compose.runtime.Stable
-import com.sanbeg.composable_chart_data.geometry.InclusiveFloatRange
+import com.sanbeg.composable_chart_data.geometry.ChartRange
 import com.sanbeg.composable_chart_data.geometry.Point
 import kotlin.math.max
 import kotlin.math.min
@@ -144,19 +144,19 @@ inline fun DataSet.minBy(selector: (Point) -> Float): Point = reduce { acc, cur 
     if (selector(cur) < selector(acc)) cur else acc
 }
 
-fun DataSet.xrange(): InclusiveFloatRange {
+fun DataSet.xRange(): ChartRange {
     val init = get(0).x
-    return fold(InclusiveFloatRange(init, init)) { range, point ->
+    return fold(ChartRange(init, init)) { range, point ->
         val cur = point.x
-        InclusiveFloatRange(min(range.start, cur), max(range.end, cur))
+        ChartRange(min(range.start, cur), max(range.end, cur))
     }
 }
 
-fun DataSet.yrange(): InclusiveFloatRange {
+fun DataSet.yRange(): ChartRange {
     val init = get(0).y
-    return fold(InclusiveFloatRange(init, init)) { range, point ->
+    return fold(ChartRange(init, init)) { range, point ->
         val cur = point.y
-        InclusiveFloatRange(min(range.start, cur), max(range.end, cur))
+        ChartRange(min(range.start, cur), max(range.end, cur))
     }
 }
 

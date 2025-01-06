@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.isSpecified
 import androidx.compose.ui.util.fastForEachIndexed
 import com.sanbeg.composable_chart.core.drawEach
 import com.sanbeg.composable_chart_data.asDataSet
+import com.sanbeg.composable_chart_data.geometry.ChartRange
 import com.sanbeg.composable_chart_data.geometry.Point
 import kotlin.math.max
 
@@ -492,6 +493,21 @@ fun Chart(
 ) {
     val layoutContent: @Composable () -> Unit = {
         ComposableChartScope(minX, maxX).also {
+            it.dataInset = with(LocalDensity.current) { dataInset.toPx() }
+        }.content()
+    }
+    Layout(measurePolicy = ChartMeasurePolicy(), content = layoutContent, modifier = modifier)
+}
+
+@Composable
+fun Chart(
+    modifier: Modifier = Modifier,
+    xRange: ChartRange,
+    dataInset: Dp = 0.dp,
+    content: @Composable ComposableChartScope.() -> Unit
+){
+    val layoutContent: @Composable () -> Unit = {
+        ComposableChartScope(xRange.start, xRange.end).also {
             it.dataInset = with(LocalDensity.current) { dataInset.toPx() }
         }.content()
     }

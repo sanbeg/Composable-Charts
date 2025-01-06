@@ -1,6 +1,6 @@
 package com.sanbeg.composable_chart_data
 
-import com.sanbeg.composable_chart_data.geometry.InclusiveFloatRange
+import com.sanbeg.composable_chart_data.geometry.ChartRange
 import com.sanbeg.composable_chart_data.geometry.Point
 import org.junit.Assert.*
 import org.junit.Test
@@ -96,15 +96,15 @@ class ImmutableDataSetTest {
 
     @Test
     fun testXRange() {
-        val range = ImmutableDataSet(list).xrange()
+        val range = ImmutableDataSet(list).xRange()
 
-        assertEquals(InclusiveFloatRange(12f, 56f), range)
+        assertEquals(ChartRange(12f, 56f), range)
     }
 
     @Test
     fun testYRange() {
-        val range = ImmutableDataSet(list).yrange()
+        val range = ImmutableDataSet(list).yRange()
 
-        assertEquals(InclusiveFloatRange(34f, 78f), range)
+        assertEquals(ChartRange(34f, 78f), range)
     }
 }
