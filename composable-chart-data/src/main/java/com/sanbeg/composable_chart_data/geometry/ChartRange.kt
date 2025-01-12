@@ -8,7 +8,11 @@ import kotlin.math.min
 @Immutable
 @JvmInline
 /**
- * An immutable floating point range.  The range is always inclusive.
+ * An immutable floating point range, used to represent a range of values in a chart.
+ * The range is always inclusive.
+ *
+ *  [start] and [end] should not be the same.  If [start] < [end], then increasing values
+ *  will be drawn closer to the top or left.  Reversing [start] and [end] would cause the graph to be reversed.
  */
 value class ChartRange internal constructor(private val packedValue: Long) {
     constructor(a: Float, b: Float) : this(packFloats(a, b))
@@ -27,6 +31,11 @@ value class ChartRange internal constructor(private val packedValue: Long) {
 
     @Stable
     fun isEmpty() = start == end
+
+    @Stable
+    companion object {
+        val Normal = ChartRange(0f, 1f)
+    }
 }
 
 val ChartRange.min get() = min(start, end)

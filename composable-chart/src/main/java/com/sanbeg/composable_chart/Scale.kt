@@ -1,5 +1,6 @@
 package com.sanbeg.composable_chart
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
@@ -14,11 +15,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.sanbeg.composable_chart.core.drawEach
 import com.sanbeg.composable_chart_data.asDataSet
+import com.sanbeg.composable_chart_data.geometry.ChartRange
 import com.sanbeg.composable_chart_data.geometry.Point
 import com.sanbeg.composable_chart_data.geometry.isSpecified
 
 class ComposableChartScaleScope internal constructor(
     private val matrix: Matrix,
+    @PublishedApi
+    internal val chartScope: ComposableChartScope,
     @PublishedApi
     internal val drawScope: DrawScope,
 ) {
@@ -37,7 +41,7 @@ class ComposableChartScaleScope internal constructor(
  * @param[minY] The Y value which will scale to the bottom of the chart.
  * @param[maxY] The Y value which will scale to the top of the chart.
  *
- * Note than [minY] and [maxY] should not be the same.  If [minY] < [maxY], then increasing values
+ * Note that [minY] and [maxY] should not be the same.  If [minY] < [maxY], then increasing values
  * will be drawn closer to the top.  Swapping [minY] and [maxY] would cause the graph to be inverted.
  *
  * @param[modifier] The modifier to apply to the scale.
@@ -64,8 +68,44 @@ fun ComposableChartScope.Scale(
                 y = -maxY,
             )
         }
-            //.let { ComposableChartScaleScope(it, this) }.content()
-        ComposableChartScaleScope(matrix, this).content()
+        ComposableChartScaleScope(matrix, this@Scale, this).content()
+    })
+}
+
+/**
+ * A composable which provides a scaling for its content.  The content is invoked in a scope which
+ * provides functionality to scale [Point]s in real-world units to [Offset]s in pixels.
+ *
+ * @param[yRange] The value which will scale [ChartRange.start] to the bottom and [ChartRange.end]
+ * to the top of the chart.
+ *
+ * Note than start and end should not be the same.  If start < end, then increasing values
+ * will be drawn closer to the top.  Reversing start and end would cause the graph to be inverted.
+ *
+ * @param[modifier] The modifier to apply to the scale.
+ * @param[content] The content of the Scale.
+ *
+ */
+@Composable
+fun ComposableChartScope.Plot(
+    yRange: ChartRange,
+    modifier: Modifier = Modifier,
+    content: ComposableChartScaleScope.() -> Unit
+) {
+    Box(modifier.asPlot().fillMaxSize().drawBehind {
+        val matrix = Matrix().apply {
+            translate(x = dataInset, y = dataInset)
+            val di2 = dataInset * 2
+            scale(
+                x = (size.width - di2) / (maxX - minX),
+                y = (size.height - di2) / -(yRange.end - yRange.start),
+            )
+            translate(
+                x = -minX,
+                y = -yRange.end,
+            )
+        }
+        ComposableChartScaleScope(matrix, this@Plot, this).content()
     })
 }
 
