@@ -33,6 +33,9 @@ value class ChartRange internal constructor(private val packedValue: Long) {
     fun isEmpty() = start == end
 
     @Stable
+    override fun toString() = "ChartRange($start ${if (start>end) ">=" else "<="} $end)"
+
+    @Stable
     companion object {
         val Normal = ChartRange(0f, 1f)
     }

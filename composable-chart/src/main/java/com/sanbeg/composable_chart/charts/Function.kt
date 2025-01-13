@@ -1,6 +1,5 @@
 package com.sanbeg.composable_chart.charts
 
-import androidx.compose.foundation.interaction.Interaction
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
@@ -27,6 +26,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.sanbeg.composable_chart.Chart
 import com.sanbeg.composable_chart.ComposableChartScope
+import com.sanbeg.composable_chart.makeScaleMatrix
 import com.sanbeg.composable_chart_data.geometry.ChartRange
 import kotlin.math.PI
 import kotlin.math.log
@@ -93,18 +93,9 @@ fun ComposableChartScope.Function(
             .fillMaxSize()
             .asPlot()
             .drawBehind {
-                val matrix = Matrix().apply {
-                    translate(x = dataInset, y = dataInset)
-                    val di2 = dataInset * 2
-                    scale(
-                        x = (size.width - di2) / (xRange.end - xRange.start),
-                        y = (size.height - di2) / -(yRange.end - yRange.start),
-                    )
-                    translate(
-                        x = -xRange.start,
-                        y = -yRange.end,
-                    )
-                }
+
+                val matrix = makeScaleMatrix(size, dataInset, xRange, yRange)
+
                 FunctionScope(
                     xRange,
                     this,
