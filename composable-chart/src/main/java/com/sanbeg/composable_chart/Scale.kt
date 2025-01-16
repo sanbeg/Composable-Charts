@@ -142,7 +142,7 @@ fun ComposableChartScope.Plot(
 ) {
     var xRange by remember { mutableStateOf(ChartRange.Normal) }
     var yRange by remember { mutableStateOf(ChartRange.Normal) }
-    var dataInset by remember { mutableFloatStateOf(0f) }
+    var dataInset by remember { mutableStateOf(0.dp) }
     var logScale by remember { mutableStateOf(FloatPair.Unspecified) }
     val matrix = remember { Matrix() }
 
@@ -156,7 +156,7 @@ fun ComposableChartScope.Plot(
             logScale = ModifierLocalLogBase.current
         }
         .drawBehind {
-            setScaleMatrix(matrix, size, dataInset, xRange, yRange)
+            setScaleMatrix(matrix, size, dataInset.toPx(), xRange, yRange)
             ComposableChartScaleScope(matrix, logScale, this).content()
         })
 }

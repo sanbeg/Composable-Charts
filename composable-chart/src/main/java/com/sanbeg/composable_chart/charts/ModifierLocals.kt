@@ -13,12 +13,13 @@ import androidx.compose.ui.modifier.modifierLocalOf
 import androidx.compose.ui.modifier.modifierLocalProvider
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import com.sanbeg.composable_chart_data.geometry.ChartRange
 import com.sanbeg.composable_chart_data.geometry.FloatPair
 
 internal val ModifierLocalRangeX = modifierLocalOf { ChartRange.Normal }
 internal val ModifierLocalRangeY = modifierLocalOf { ChartRange.Normal }
-internal val ModifierLocalDataInset = modifierLocalOf { 0f }
+internal val ModifierLocalDataInset = modifierLocalOf { 0.dp }
 internal val ModifierLocalLogBase = modifierLocalOf { FloatPair.Unspecified }
 
 /**
@@ -65,12 +66,6 @@ fun Modifier.yRange(range: ChartRange) = modifierLocalProvider(ModifierLocalRang
 fun Modifier.yRange(start: Float, end: Float) =
     modifierLocalProvider(ModifierLocalRangeY) { ChartRange(start, end) }
 
-fun Modifier.dataInset(inset: Float) = modifierLocalProvider(ModifierLocalDataInset) { inset }
-
-@Composable
-fun Modifier.dataInset(inset: Dp): Modifier {
-    val px = with(LocalDensity.current) { inset.toPx() }
-    return modifierLocalProvider(ModifierLocalDataInset) { px }
-}
+fun Modifier.dataInset(inset: Dp) = modifierLocalProvider(ModifierLocalDataInset) { inset }
 
 fun Modifier.logScale(x: Float = 0f, y: Float = 0f) = modifierLocalProvider(ModifierLocalLogBase) { FloatPair(x, y)}
