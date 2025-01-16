@@ -1,10 +1,5 @@
-@file:OptIn(
-    ExperimentalComposeUiApi::class,
-    ExperimentalComposeUiApi::class,
-    ExperimentalComposeUiApi::class
-)
 
-package com.sanbeg.composable_chart.plots
+package com.sanbeg.composable_chart.core
 
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -28,6 +23,7 @@ internal val ModifierLocalLogBase = modifierLocalOf { FloatPair.Unspecified }
  * Note than start and end should not be the same.  If start < end, then increasing values
  * will be drawn closer to the left.  Reversing start and end would cause the graph to be flipped.
  */
+@OptIn(ExperimentalComposeUiApi::class)
 fun Modifier.xRange(range: ChartRange) = modifierLocalProvider(ModifierLocalRangeX) { range }
 
 /**
@@ -39,6 +35,7 @@ fun Modifier.xRange(range: ChartRange) = modifierLocalProvider(ModifierLocalRang
  * Note than start and end should not be the same.  If start < end, then increasing values
  * will be drawn closer to the left.  Reversing start and end would cause the graph to be flipped.
  */
+@OptIn(ExperimentalComposeUiApi::class)
 fun Modifier.xRange(start: Float, end: Float) =
     modifierLocalProvider(ModifierLocalRangeX) { ChartRange(start, end) }
 
@@ -50,6 +47,7 @@ fun Modifier.xRange(start: Float, end: Float) =
  * Note than start and end should not be the same.  If start < end, then increasing values
  * will be drawn closer to the top.  Reversing start and end would cause the graph to be inverted.
  */
+@OptIn(ExperimentalComposeUiApi::class)
 fun Modifier.yRange(range: ChartRange) = modifierLocalProvider(ModifierLocalRangeY) { range }
 
 /**
@@ -61,9 +59,12 @@ fun Modifier.yRange(range: ChartRange) = modifierLocalProvider(ModifierLocalRang
  * Note than start and end should not be the same.  If start < end, then increasing values
  * will be drawn closer to the top.  Reversing start and end would cause the graph to be inverted.
  */
+@OptIn(ExperimentalComposeUiApi::class)
 fun Modifier.yRange(start: Float, end: Float) =
     modifierLocalProvider(ModifierLocalRangeY) { ChartRange(start, end) }
 
+@OptIn(ExperimentalComposeUiApi::class)
 fun Modifier.dataInset(inset: Dp) = modifierLocalProvider(ModifierLocalDataInset) { inset }
 
+@OptIn(ExperimentalComposeUiApi::class)
 fun Modifier.logScale(x: Float = 0f, y: Float = 0f) = modifierLocalProvider(ModifierLocalLogBase) { FloatPair(x, y)}

@@ -26,6 +26,10 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.sanbeg.composable_chart.Chart
 import com.sanbeg.composable_chart.ComposableChartScope
+import com.sanbeg.composable_chart.core.ModifierLocalRangeX
+import com.sanbeg.composable_chart.core.ModifierLocalRangeY
+import com.sanbeg.composable_chart.core.xRange
+import com.sanbeg.composable_chart.core.yRange
 import com.sanbeg.composable_chart.makeScaleMatrix
 import com.sanbeg.composable_chart_data.geometry.ChartRange
 import kotlin.math.PI

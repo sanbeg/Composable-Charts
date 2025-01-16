@@ -20,13 +20,13 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.sanbeg.composable_chart.plots.ModifierLocalDataInset
-import com.sanbeg.composable_chart.plots.ModifierLocalLogBase
-import com.sanbeg.composable_chart.plots.ModifierLocalRangeX
-import com.sanbeg.composable_chart.plots.ModifierLocalRangeY
-import com.sanbeg.composable_chart.plots.dataInset
-import com.sanbeg.composable_chart.plots.xRange
-import com.sanbeg.composable_chart.plots.yRange
+import com.sanbeg.composable_chart.core.ModifierLocalDataInset
+import com.sanbeg.composable_chart.core.ModifierLocalLogBase
+import com.sanbeg.composable_chart.core.ModifierLocalRangeX
+import com.sanbeg.composable_chart.core.ModifierLocalRangeY
+import com.sanbeg.composable_chart.core.dataInset
+import com.sanbeg.composable_chart.core.xRange
+import com.sanbeg.composable_chart.core.yRange
 import com.sanbeg.composable_chart.core.drawEach
 import com.sanbeg.composable_chart_data.asDataSet
 import com.sanbeg.composable_chart_data.geometry.ChartRange
@@ -43,7 +43,20 @@ sealed class PlotScope {
     internal abstract fun scale(point: Point): Offset
 }
 
-class ComposableChartScaleScope internal constructor(
+private class ComposableChartScaleScope(
+    private val matrix: Matrix,
+    @PublishedApi
+    override val drawScope: DrawScope,
+) : PlotScope() {
+    @PublishedApi
+    override fun scale(point: Point) = if (point.isSpecified) {
+        matrix.map(Offset(point.x, point.y))
+    } else {
+        Offset(point.x, point.y)
+    }
+}
+
+private class ComposableChartLogScaleScope(
     private val matrix: Matrix,
     private val logBase: FloatPair,
     @PublishedApi
@@ -77,12 +90,16 @@ class ComposableChartScaleScope internal constructor(
  * @param[content] The content of the Scale.
  *
  */
+@Deprecated(
+    message = "migrate to Plot",
+    replaceWith = ReplaceWith("Plot(modifier.yRange(minY, maxY), content)", "com.sanbeg.composable_chart.Plot")
+)
 @Composable
 fun ComposableChartScope.Scale(
     minY: Float = 0f,
     maxY: Float = 1f,
     modifier: Modifier = Modifier,
-    content: ComposableChartScaleScope.() -> Unit
+    content: PlotScope.() -> Unit
     ) {
     Spacer(
         modifier
@@ -101,7 +118,7 @@ fun ComposableChartScope.Scale(
                         y = -maxY,
                     )
                 }
-                ComposableChartScaleScope(matrix, FloatPair.Unspecified, this).content()
+                ComposableChartScaleScope(matrix, this).content()
             })
 }
 
@@ -133,8 +150,8 @@ internal fun setScaleMatrix(matrix: Matrix, size: Size, dataInset: Float, xRange
 }
 
 /**
- * A composable which provides a scaling for its content.  The content is invoked in a scope which
- * provides functionality to scale [Point]s in real-world units to [Offset]s in pixels.
+ * A composable which provides a drawing surface with scaling for its content.  The content is
+ * invoked in a scope with functionality to scale [Point]s in real-world units to [Offset]s in pixels.
  *
  * @param[modifier] The modifier to apply to the scale.
  * @param[content] The content of the Scale.
@@ -163,7 +180,11 @@ fun ComposableChartScope.Plot(
         }
         .drawBehind {
             setScaleMatrix(matrix, size, dataInset.toPx(), xRange, yRange)
-            ComposableChartScaleScope(matrix, logScale, this).content()
+            if (logScale.isSpecified) {
+                ComposableChartLogScaleScope(matrix, logScale, this)
+            } else {
+                ComposableChartScaleScope(matrix, this)
+            }.content()
         })
 }
 
@@ -171,7 +192,8 @@ fun ComposableChartScope.Plot(
 @Composable
 private fun PreviewChart() {
     Chart(maxX = 100f, dataInset = 3.dp, modifier = Modifier.size(100.dp)) {
-        Scale(maxY = 100f, modifier = Modifier) {
+        // drawScope.drawCircle(Color.Red, 4.dp.value)
+        Plot(Modifier.yRange(0f, 100f)) {
             // drawScope.drawCircle(Color.Red, 4.dp.value)
 
             drawEach(
