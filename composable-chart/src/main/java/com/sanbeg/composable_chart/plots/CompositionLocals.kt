@@ -1,4 +1,4 @@
-package com.sanbeg.composable_chart.charts
+package com.sanbeg.composable_chart.plots
 
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.compositionLocalWithComputedDefaultOf

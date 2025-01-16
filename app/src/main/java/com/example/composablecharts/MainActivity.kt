@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
@@ -26,8 +25,8 @@ import androidx.compose.ui.unit.dp
 import com.example.composablecharts.ui.theme.ComposableChartsTheme
 import com.sanbeg.composable_chart.Chart
 import com.sanbeg.composable_chart.Scale
-import com.sanbeg.composable_chart.charts.fastArea
-import com.sanbeg.composable_chart.charts.line
+import com.sanbeg.composable_chart.plots.fastArea
+import com.sanbeg.composable_chart.plots.line
 import com.sanbeg.composable_chart_data.DataSet
 import com.sanbeg.composable_chart_data.ImmutableDataSet
 import com.sanbeg.composable_chart_data.geometry.Point

@@ -1,4 +1,4 @@
-package com.sanbeg.composable_chart.charts
+package com.sanbeg.composable_chart.plots
 
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
@@ -13,7 +13,7 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.sanbeg.composable_chart.Chart
-import com.sanbeg.composable_chart.ComposableChartScaleScope
+import com.sanbeg.composable_chart.PlotScope
 import com.sanbeg.composable_chart.Scale
 import com.sanbeg.composable_chart.core.drawEach
 import com.sanbeg.composable_chart.core.drawEachSegment
@@ -21,7 +21,7 @@ import com.sanbeg.composable_chart_data.DataSet
 import com.sanbeg.composable_chart_data.dataSetOf
 import com.sanbeg.composable_chart_data.geometry.Point
 
-fun ComposableChartScaleScope.area(data: DataSet, content: DrawScope.(path: Path) -> Unit) {
+fun PlotScope.area(data: DataSet, content: DrawScope.(path: Path) -> Unit) {
     var prev: Offset? = null
     val path = Path()
     val height = drawScope.size.height
@@ -47,13 +47,13 @@ fun ComposableChartScaleScope.area(data: DataSet, content: DrawScope.(path: Path
     drawScope.content(path)
 }
 
-fun ComposableChartScaleScope.area(data: DataSet, brush: Brush) {
+fun PlotScope.area(data: DataSet, brush: Brush) {
     area(data) {path ->
         drawScope.drawPath(path, brush)
     }
 }
 
-fun ComposableChartScaleScope.fastArea(data: DataSet, brush: Brush) {
+fun PlotScope.fastArea(data: DataSet, brush: Brush) {
     val path = Path()
     val height = drawScope.size.height
 

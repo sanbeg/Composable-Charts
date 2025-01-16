@@ -4,14 +4,12 @@
     ExperimentalComposeUiApi::class
 )
 
-package com.sanbeg.composable_chart.charts
+package com.sanbeg.composable_chart.plots
 
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.modifier.modifierLocalOf
 import androidx.compose.ui.modifier.modifierLocalProvider
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.sanbeg.composable_chart_data.geometry.ChartRange

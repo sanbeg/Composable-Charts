@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -21,14 +20,13 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.sanbeg.composable_chart.charts.ModifierLocalDataInset
-import com.sanbeg.composable_chart.charts.ModifierLocalLogBase
-import com.sanbeg.composable_chart.charts.ModifierLocalRangeX
-import com.sanbeg.composable_chart.charts.ModifierLocalRangeY
-import com.sanbeg.composable_chart.charts.dataInset
-import com.sanbeg.composable_chart.charts.logScale
-import com.sanbeg.composable_chart.charts.xRange
-import com.sanbeg.composable_chart.charts.yRange
+import com.sanbeg.composable_chart.plots.ModifierLocalDataInset
+import com.sanbeg.composable_chart.plots.ModifierLocalLogBase
+import com.sanbeg.composable_chart.plots.ModifierLocalRangeX
+import com.sanbeg.composable_chart.plots.ModifierLocalRangeY
+import com.sanbeg.composable_chart.plots.dataInset
+import com.sanbeg.composable_chart.plots.xRange
+import com.sanbeg.composable_chart.plots.yRange
 import com.sanbeg.composable_chart.core.drawEach
 import com.sanbeg.composable_chart_data.asDataSet
 import com.sanbeg.composable_chart_data.geometry.ChartRange
@@ -37,14 +35,22 @@ import com.sanbeg.composable_chart_data.geometry.Point
 import com.sanbeg.composable_chart_data.geometry.isSpecified
 import kotlin.math.log
 
+sealed class PlotScope {
+    @PublishedApi
+    internal abstract val drawScope: DrawScope
+
+    @PublishedApi
+    internal abstract fun scale(point: Point): Offset
+}
+
 class ComposableChartScaleScope internal constructor(
     private val matrix: Matrix,
     private val logBase: FloatPair,
     @PublishedApi
-    internal val drawScope: DrawScope,
-) {
+    override val drawScope: DrawScope,
+): PlotScope() {
     @PublishedApi
-    internal fun scale(point: Point) = if (point.isSpecified) {
+    override fun scale(point: Point) = if (point.isSpecified) {
         if (logBase.isSpecified) {
             val x = if (logBase.first > 0) log(point.x, logBase.first) else point.x
             val y = if (logBase.second > 0) log(point.y, logBase.second) else point.y
@@ -138,7 +144,7 @@ internal fun setScaleMatrix(matrix: Matrix, size: Size, dataInset: Float, xRange
 @Composable
 fun ComposableChartScope.Plot(
     modifier: Modifier = Modifier,
-    content: ComposableChartScaleScope.() -> Unit
+    content: PlotScope.() -> Unit
 ) {
     var xRange by remember { mutableStateOf(ChartRange.Normal) }
     var yRange by remember { mutableStateOf(ChartRange.Normal) }

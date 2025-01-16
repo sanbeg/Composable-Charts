@@ -1,4 +1,4 @@
-package com.sanbeg.composable_chart.charts
+package com.sanbeg.composable_chart.plots
 
 import androidx.annotation.FloatRange
 import androidx.compose.foundation.layout.size
@@ -19,7 +19,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.sanbeg.composable_chart.Chart
-import com.sanbeg.composable_chart.ComposableChartScaleScope
+import com.sanbeg.composable_chart.PlotScope
 import com.sanbeg.composable_chart.Scale
 import com.sanbeg.composable_chart.core.drawEachSegment
 import com.sanbeg.composable_chart_data.DataSet
@@ -39,7 +39,7 @@ import com.sanbeg.composable_chart_data.geometry.Point
  * @param colorFilter ColorFilter to apply to the [brush] when drawn into the destination
  * @param blendMode the blending algorithm to apply to the [brush]
  */
-fun ComposableChartScaleScope.line(
+fun PlotScope.line(
     data: DataSet,
     width: Dp = Dp.Hairline,
     brush: Brush,
@@ -58,7 +58,7 @@ enum class StepVertical{
     Pre, Post
 }
 
-inline fun ComposableChartScaleScope.step(
+inline fun PlotScope.step(
     data: DataSet,
     where: StepVertical = StepVertical.Post,
     crossinline content: DrawScope.(start: Offset, end: Offset) -> Unit
@@ -73,7 +73,7 @@ inline fun ComposableChartScaleScope.step(
     }
 }
 
-fun ComposableChartScaleScope.step(
+fun PlotScope.step(
     data: DataSet,
     width: Dp = Dp.Hairline,
     brush: Brush,

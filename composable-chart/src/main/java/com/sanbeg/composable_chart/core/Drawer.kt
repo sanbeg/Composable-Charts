@@ -11,7 +11,7 @@ import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.sanbeg.composable_chart.Chart
-import com.sanbeg.composable_chart.ComposableChartScaleScope
+import com.sanbeg.composable_chart.PlotScope
 import com.sanbeg.composable_chart.Scale
 import com.sanbeg.composable_chart_data.DataSet
 import com.sanbeg.composable_chart_data.asDataSet
@@ -21,7 +21,7 @@ import com.sanbeg.composable_chart_data.geometry.Point
 import com.sanbeg.composable_chart_data.geometry.isFinite
 import com.sanbeg.composable_chart_data.geometry.isSpecified
 
-inline fun ComposableChartScaleScope.drawEach(
+inline fun PlotScope.drawEach(
     offsets: DataSet,
     crossinline content: DrawScope.(offset: Offset) -> Unit
 ) {
@@ -31,7 +31,7 @@ inline fun ComposableChartScaleScope.drawEach(
 }
 
 
-inline fun ComposableChartScaleScope.drawEachFinite(
+inline fun PlotScope.drawEachFinite(
     offsets: DataSet,
     crossinline content: DrawScope.(offset: Offset) -> Unit
 ) {
@@ -42,7 +42,7 @@ inline fun ComposableChartScaleScope.drawEachFinite(
     }
 }
 
-inline fun ComposableChartScaleScope.drawAtIndexed(
+inline fun PlotScope.drawAtIndexed(
     offsets: DataSet,
     crossinline content: DrawScope.(index: Int) -> Unit
 ) {
@@ -56,7 +56,7 @@ inline fun ComposableChartScaleScope.drawAtIndexed(
     }
 }
 
-inline fun ComposableChartScaleScope.drawEachSegment(
+inline fun PlotScope.drawEachSegment(
     offsets: DataSet,
     crossinline content: DrawScope.(a: Offset, b: Offset) -> Unit
 ) {

@@ -1,4 +1,4 @@
-package com.sanbeg.composable_chart.charts
+package com.sanbeg.composable_chart.plots
 
 import androidx.annotation.FloatRange
 import androidx.compose.foundation.layout.size
@@ -21,7 +21,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.sanbeg.composable_chart.Chart
-import com.sanbeg.composable_chart.ComposableChartScaleScope
+import com.sanbeg.composable_chart.PlotScope
 import com.sanbeg.composable_chart.Scale
 import com.sanbeg.composable_chart.core.drawEachFinite
 import com.sanbeg.composable_chart_data.DataSet
@@ -48,7 +48,7 @@ internal value class OriginCenteredDrawScope(
         get() = Offset.Zero
 }
 
-private fun ComposableChartScaleScope.drawAt(
+private fun PlotScope.drawAt(
     data: DataSet,
     content: DrawScope.() -> Unit
 ) {
@@ -65,7 +65,7 @@ private fun ComposableChartScaleScope.drawAt(
  * The content is called for each data point, and is bound to a [DrawScope] which
  * has both its origin and center at the location of the point.
  */
-inline fun ComposableChartScaleScope.scatter(
+inline fun PlotScope.scatter(
     data: DataSet,
     crossinline content: DrawScope.() -> Unit
 ) {
@@ -78,7 +78,7 @@ inline fun ComposableChartScaleScope.scatter(
     }
 }
 
-inline fun ComposableChartScaleScope.scatterWithIndexedValues(
+inline fun PlotScope.scatterWithIndexedValues(
     data: DataSet,
     crossinline content: DrawScope.(index: Int, offset: Point) -> Unit
 ) {
@@ -105,7 +105,7 @@ inline fun ComposableChartScaleScope.scatterWithIndexedValues(
  * @param colorFilter ColorFilter to apply to the [brush] when drawn into the destination
  * @param blendMode Blending algorithm to be applied to the brush
  */
-fun ComposableChartScaleScope.scatter(
+fun PlotScope.scatter(
     data: DataSet,
     radius: Dp,
     brush: Brush,
@@ -137,7 +137,7 @@ fun ComposableChartScaleScope.scatter(
  *  @param colorFilter ColorFilter to apply to the [color] when drawn into the destination
  *  @param blendMode Blending algorithm to be applied to the brush
  */
-fun ComposableChartScaleScope.scatter(
+fun PlotScope.scatter(
     data: DataSet,
     radius: Dp,
     color: Color,
