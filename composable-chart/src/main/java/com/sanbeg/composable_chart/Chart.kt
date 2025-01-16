@@ -136,7 +136,7 @@ fun Chart(
             it.dataInset = with(LocalDensity.current) { dataInset.toPx() }
         }.content()
     }
-    Layout(measurePolicy = ChartMeasurePolicy(), content = layoutContent, modifier = modifier)
+    Layout(measurePolicy = ChartMeasurePolicy, content = layoutContent, modifier = modifier)
 }
 
 @Composable
@@ -152,7 +152,7 @@ fun Chart(
         }.content()
     }
     Layout(
-        measurePolicy = ChartMeasurePolicy(),
+        measurePolicy = ChartMeasurePolicy,
         content = layoutContent,
         modifier = modifier
     )

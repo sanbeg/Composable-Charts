@@ -54,7 +54,7 @@ internal class ChartChildDataNode(
     override fun Density.modifyParentData(parentData: Any?) = this@ChartChildDataNode
 }
 
-internal class ChartMeasurePolicy : MeasurePolicy {
+internal object ChartMeasurePolicy : MeasurePolicy {
     override fun MeasureScope.measure(
         measurables: List<Measurable>,
         constraints: Constraints

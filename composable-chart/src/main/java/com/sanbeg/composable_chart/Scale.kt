@@ -156,6 +156,8 @@ internal fun setScaleMatrix(matrix: Matrix, size: Size, dataInset: Float, xRange
  * @param[modifier] The modifier to apply to the scale.
  * @param[content] The content of the Scale.
  *
+ * @see [xRange]
+ * @see [yRange]
  */
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
