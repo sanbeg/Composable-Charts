@@ -29,9 +29,6 @@ import androidx.compose.ui.graphics.drawscope.DrawStyle
 import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.modifier.modifierLocalConsumer
-import androidx.compose.ui.modifier.modifierLocalOf
-import androidx.compose.ui.modifier.modifierLocalProvider
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -67,21 +64,6 @@ class FunctionScope internal constructor(
     internal val xscale get() = matrix.values[Matrix.ScaleX]
     internal fun map(offset: Offset) = matrix.map(offset)
 
-}
-
-private val ModifierLocalResolution = modifierLocalOf {
-    3f
-}
-
-@OptIn(ExperimentalComposeUiApi::class)
-@Composable
-fun Modifier.resolution(resolution: Dp): Modifier {
-    val px = with(LocalDensity.current) {
-        resolution.toPx()
-    }
-    return modifierLocalProvider(ModifierLocalResolution) {
-        px
-    }
 }
 
 /**
