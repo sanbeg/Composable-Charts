@@ -1,5 +1,6 @@
 package com.sanbeg.composable_chart.plots
 
+import androidx.annotation.FloatRange
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
@@ -14,9 +15,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.isSpecified
+import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.Matrix
+import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.drawscope.DrawScope.Companion.DefaultBlendMode
 import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.modifier.modifierLocalOf
 import androidx.compose.ui.modifier.modifierLocalProvider
@@ -75,8 +83,7 @@ fun Modifier.resolution(resolution: Dp): Modifier {
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun ComposableChartScope.Function(
-    yRange2: ChartRange,
-    resolution: Dp,
+    resolution: Dp = 0.5.dp,
     content: FunctionScope.() -> Unit
 ) {
     //val step = with(LocalDensity.current){resolution.toPx()}
@@ -106,12 +113,12 @@ fun ComposableChartScope.Function(
                     xRange,
                     this,
                     matrix = matrix,
-                    resolution = step,
+                    //resolution = step,
+                    resolution = resolution.toPx()
                 ).content()
             }
     )
 }
-
 
 fun FunctionScope.plot(function: (x: Float) -> Float) {
     val step = resolution / xscale
@@ -127,6 +134,52 @@ fun FunctionScope.plot(function: (x: Float) -> Float) {
         x += step
     }
 }
+
+internal inline fun FunctionScope.drawEachSegment(
+    function: (x: Float) -> Float,
+    content: DrawScope.(Offset, Offset) -> Unit
+) {
+    val step = resolution / xscale
+    var x = minX
+    var prev = Offset.Unspecified
+    while (x < maxX) {
+        val y = function(x)
+        val cur = map(Offset(x,y))
+        if (prev.isSpecified) {
+            drawScope.content(prev, cur)
+        }
+        prev = cur
+        x += step
+    }
+}
+
+/**
+ * Draws a series of lines connecting the given points using the given paint. The lines
+ * are stroked.
+ *
+ * @param brush the color or fill to be applied to the line
+ * @param width stroke width to apply to the line
+ * @param pathEffect optional effect or pattern to apply to the line
+ * @param alpha opacity to be applied to the [brush] from 0.0f to 1.0f representing
+ * fully transparent to fully opaque respectively
+ * @param colorFilter ColorFilter to apply to the [brush] when drawn into the destination
+ * @param blendMode the blending algorithm to apply to the [brush]
+ * @param function the discrete function to draw
+ */
+fun FunctionScope.line(
+    width: Dp = Dp.Hairline,
+    brush: Brush = SolidColor(Color.Black),
+    pathEffect: PathEffect? = null,
+    @FloatRange(from = 0.0, to = 1.0) alpha: Float = 1.0f,
+    colorFilter: ColorFilter? = null,
+    blendMode: BlendMode = DefaultBlendMode,
+    function: (x: Float) -> Float,
+    ) {
+    drawEachSegment(function) { a, b ->
+        drawLine(brush, a, b, width.toPx(), StrokeCap.Round, pathEffect, alpha, colorFilter, blendMode)
+    }
+}
+
 /*
 fun ComposableChartScaleScope.plot(resolution: Float, function: (x: Float) -> Float) {
     val step = resolution / matrix.values[Matrix.ScaleX]
@@ -149,16 +202,16 @@ fun ComposableChartScaleScope.plot(resolution: Float, function: (x: Float) -> Fl
 private fun PreviewFunction() {
     Chart(minX = 0f, maxX = 100f, modifier = Modifier
         .size(150.dp)
-        .resolution(.5.dp)
+        //.resolution(.5.dp)
         .xRange(0f, 100f)
         .yRange(-1f, 1f)
 
     ) {
-        Function(ChartRange(-1f, 1f), resolution = 5.dp) {
-            plot { x -> sin(x / PI.toFloat().times(2)) }
+        Function {
+            line { x -> sin(x / PI.toFloat().times(2)) }
             //function2 { x -> x / 100f }
-            plot { x -> log(x+1f, 2f)/10f }
-            plot { _ -> 0f }
+            line { x -> log(x+1f, 2f)/10f }
+            line { _ -> 0f }
             //function2 { x -> (x/10f).mod(1f) }
         }
     }
@@ -173,11 +226,11 @@ private fun PreviewFunctionCL() {
         .xRange(0f, 100f)
     ) {
         CompositionLocalProvider(LocalFunctionResolution provides .5.dp) {
-            Function(ChartRange(-1f, 1f), resolution = 5.dp) {
-                plot { x -> sin(x / PI.toFloat().times(2)) }
+            Function(resolution = 5.dp) {
+                line { x -> sin(x / PI.toFloat().times(2)) }
                 //function2 { x -> x / 100f }
-                plot { x -> log(x + 1f, 2f) / 10f }
-                plot { _ -> 0f }
+                line { x -> log(x + 1f, 2f) / 10f }
+                line { _ -> 0f }
                 //function2 { x -> (x/10f).mod(1f) }
             }
         }

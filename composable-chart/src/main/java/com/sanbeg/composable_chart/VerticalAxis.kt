@@ -73,8 +73,8 @@ inline fun VerticalAxisScope.drawAt(y: Float, draw: DrawScope.(y: Float) -> Unit
 }
 
 fun VerticalAxisScope.drawTics(spacing: Float) {
-    var y = yRange.min
-    while (y <= yRange.max) {
+    var y = yRange.min()
+    while (y <= yRange.max()) {
         drawAt(y) {
             drawLine(Color.Black, Offset.Zero, Offset(size.width, 0f))
         }

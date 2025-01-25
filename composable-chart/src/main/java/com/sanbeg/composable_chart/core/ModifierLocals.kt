@@ -63,8 +63,21 @@ fun Modifier.yRange(range: ChartRange) = modifierLocalProvider(ModifierLocalRang
 fun Modifier.yRange(start: Float, end: Float) =
     modifierLocalProvider(ModifierLocalRangeY) { ChartRange(start, end) }
 
+/**
+ * Modifier which specifies an inset for plot data.
+ *
+ * By matching the chart range to the data range, and the plot inset to the circle radius, a scatter
+ * diagram could be drawn with the edges of the circles aligned with the axis lines.
+ */
 @OptIn(ExperimentalComposeUiApi::class)
 fun Modifier.plotInset(inset: Dp) = modifierLocalProvider(ModifierLocalDataInset) { inset }
 
+/**
+ * Sets the chart to be drawn in log scale on one or both axis.
+ *
+ * Currently both axis can be used for data, while only the Y axis can be used for functions.
+ * Drawing the axis tics in log scale isn't supported yet.
+ */
+@ExperimentalChartApi
 @OptIn(ExperimentalComposeUiApi::class)
 fun Modifier.logScale(x: Float = 0f, y: Float = 0f) = modifierLocalProvider(ModifierLocalLogBase) { FloatPair(x, y)}

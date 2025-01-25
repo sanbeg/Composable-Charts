@@ -39,9 +39,9 @@ class HorizontalAxisScope internal constructor(
     @PublishedApi
     internal val drawScope: DrawScope,
     val xRange: ChartRange,
-    val dataInset: Float,
+    private val dataInset: Float,
 ) {
-    private val scale = (drawScope.size.width - dataInset * 2) / xRange.length
+    private val scale = (drawScope.size.width - dataInset * 2) / xRange.length()
     fun scale(x: Float): Float = (x - xRange.start) * scale + dataInset
 }
 
@@ -79,8 +79,8 @@ inline fun HorizontalAxisScope.drawAt(x: Float, draw: DrawScope.(Float) -> Unit)
 }
 
 fun HorizontalAxisScope.drawTics(spacing: Float) {
-    var x = xRange.min
-    while (x <= xRange.max) {
+    var x = xRange.min()
+    while (x <= xRange.max()) {
         drawAt(x) {
             drawLine(Color.Black, Offset.Zero, Offset(0f, size.height))
         }
@@ -95,8 +95,8 @@ fun HorizontalAxisScope.drawTics(
     format: String = "%.2f",
     style: TextStyle = TextStyle(fontSize = 6.sp)
 ) {
-    var x = xRange.min
-    while (x <= xRange.max) {
+    var x = xRange.min()
+    while (x <= xRange.max()) {
         drawAt(x) { raw ->
             val s: String = String.format(format, raw)
             val mr = textMeasurer.measure(s, style)
