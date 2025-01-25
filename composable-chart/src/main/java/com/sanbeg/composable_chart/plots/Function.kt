@@ -25,6 +25,9 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.DrawScope.Companion.DefaultBlendMode
+import androidx.compose.ui.graphics.drawscope.DrawStyle
+import androidx.compose.ui.graphics.drawscope.Fill
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.modifier.modifierLocalOf
 import androidx.compose.ui.modifier.modifierLocalProvider
@@ -34,13 +37,18 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.sanbeg.composable_chart.Chart
 import com.sanbeg.composable_chart.ComposableChartScope
+import com.sanbeg.composable_chart.PlotScope
 import com.sanbeg.composable_chart.core.ModifierLocalDataInset
 import com.sanbeg.composable_chart.core.ModifierLocalRangeX
 import com.sanbeg.composable_chart.core.ModifierLocalRangeY
+import com.sanbeg.composable_chart.core.drawEachFinite
+import com.sanbeg.composable_chart.core.plotInset
 import com.sanbeg.composable_chart.core.xRange
 import com.sanbeg.composable_chart.core.yRange
 import com.sanbeg.composable_chart.makeScaleMatrix
+import com.sanbeg.composable_chart_data.DataSet
 import com.sanbeg.composable_chart_data.geometry.ChartRange
+import com.sanbeg.composable_chart_data.geometry.Point
 import kotlin.math.PI
 import kotlin.math.log
 import kotlin.math.sin
@@ -80,23 +88,35 @@ fun Modifier.resolution(resolution: Dp): Modifier {
     }
 }
 
+/**
+ * A composable which provides a drawing surface with scaling for its content.  The content is
+ * invoked in a scope with functionality to evaluate discrete functions.
+ *
+ * @param[modifier] The modifier to apply to the scale.
+ * @param[resolution] The resolution to evaluate the function; smaller values will give a smoother rendering.
+ * @param[content] The content of the Scale.
+ *
+ * @see [xRange]
+ * @see [yRange]
+ */
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun ComposableChartScope.Function(
+    modifier: Modifier = Modifier,
     resolution: Dp = 0.5.dp,
     content: FunctionScope.() -> Unit
 ) {
     //val step = with(LocalDensity.current){resolution.toPx()}
     //var step by remember { mutableFloatStateOf(0f) }
     //var step = with(LocalDensity.current) { 0.5.dp.toPx() }
-    val step = LocalFunctionResolutionPx.current
+    //val step = LocalFunctionResolutionPx.current
 
     var xRange by remember { mutableStateOf(ChartRange.Normal) }
     var yRange by remember { mutableStateOf(ChartRange.Normal) }
     var dataInset by remember{ mutableStateOf(0.dp) }
 
     Box(
-        Modifier
+        modifier
             .modifierLocalConsumer {
                 //val cur = ModifierLocalResolution.current
                 //if (cur > 0) step = cur
@@ -120,22 +140,7 @@ fun ComposableChartScope.Function(
     )
 }
 
-fun FunctionScope.plot(function: (x: Float) -> Float) {
-    val step = resolution / xscale
-    var x = minX
-    var prev = Offset.Unspecified
-    while (x < maxX) {
-        val y = function(x)
-        val cur = map(Offset(x,y))
-        if (prev.isSpecified) {
-            drawScope.drawLine(Color.Black, prev, cur)
-        }
-        prev = cur
-        x += step
-    }
-}
-
-internal inline fun FunctionScope.drawEachSegment(
+private inline fun FunctionScope.drawEachSegment(
     function: (x: Float) -> Float,
     content: DrawScope.(Offset, Offset) -> Unit
 ) {
@@ -153,8 +158,22 @@ internal inline fun FunctionScope.drawEachSegment(
     }
 }
 
+private inline fun FunctionScope.drawEach(
+    function: (x: Float) -> Float,
+    content: DrawScope.(Offset) -> Unit
+) {
+    val step = resolution / xscale
+    var x = minX
+    while (x < maxX) {
+        val y = function(x)
+        val cur = map(Offset(x, y))
+        drawScope.content(cur)
+        x += step
+    }
+}
+
 /**
- * Draws a series of lines connecting the given points using the given paint. The lines
+ * Draws a series of rendering the given function using the given paint. The lines
  * are stroked.
  *
  * @param brush the color or fill to be applied to the line
@@ -180,22 +199,35 @@ fun FunctionScope.line(
     }
 }
 
-/*
-fun ComposableChartScaleScope.plot(resolution: Float, function: (x: Float) -> Float) {
-    val step = resolution / matrix.values[Matrix.ScaleX]
-    var x = chartScope.minX
-    var prev = Offset.Unspecified
-    while (x < chartScope.maxX) {
-        val y = function(x)
-        val cur = scale(Point(x,y))
-        if (prev.isSpecified) {
-            drawScope.drawLine(Color.Black, prev, cur)
-        }
-        prev = cur
-        x += step
+/**
+ * Convenience function to draw a scatter diagram as circles.
+ *
+ * @param radius The radius of each circle
+ * @param brush The color or fill to be applied to each circle
+ * @param alpha Opacity to be applied to each circle from 0.0f to 1.0f representing
+ * fully transparent to fully opaque respectively
+ * @param style Whether or not the circles are stroked or filled in
+ * @param colorFilter ColorFilter to apply to the [brush] when drawn into the destination
+ * @param blendMode Blending algorithm to be applied to the brush
+ * @param function the discrete function to draw
+ */
+fun FunctionScope.scatter(
+    radius: Dp,
+    brush: Brush,
+    @FloatRange(from = 0.0, to = 1.0) alpha: Float = 1.0f,
+    style: DrawStyle = Fill,
+    colorFilter: ColorFilter? = null,
+    blendMode: BlendMode = DefaultBlendMode,
+    function: (x: Float) -> Float,
+
+    ) {
+    val r = with(drawScope) {
+        radius.toPx()
+    }
+    drawEach(function) { offset ->
+        drawCircle(brush, r, offset, alpha, style, colorFilter, blendMode)
     }
 }
-*/
 
 @Preview(showBackground = true)
 @Composable
@@ -220,19 +252,38 @@ private fun PreviewFunction() {
 @Preview(showBackground = true)
 @Composable
 private fun PreviewFunctionCL() {
-    Chart(minX = 0f, maxX = 100f, modifier = Modifier
-        .size(150.dp)
-        .yRange(-1f, 1f)
-        .xRange(0f, 100f)
+    Chart(
+        minX = 0f, maxX = 100f, modifier = Modifier
+            .size(150.dp)
+            .yRange(-1f, 1f)
+            .xRange(0f, 100f)
     ) {
-        CompositionLocalProvider(LocalFunctionResolution provides .5.dp) {
-            Function(resolution = 5.dp) {
-                line { x -> sin(x / PI.toFloat().times(2)) }
-                //function2 { x -> x / 100f }
-                line { x -> log(x + 1f, 2f) / 10f }
-                line { _ -> 0f }
-                //function2 { x -> (x/10f).mod(1f) }
-            }
+        Function(resolution = 5.dp) {
+            line { x -> sin(x / PI.toFloat().times(2)) }
+            //function2 { x -> x / 100f }
+            line { x -> log(x + 1f, 2f) / 10f }
+            line { _ -> 0f }
+            //function2 { x -> (x/10f).mod(1f) }
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun PreviewFunctionScatter() {
+    Chart(
+        minX = 0f, maxX = 100f, modifier = Modifier
+            .size(150.dp)
+            .yRange(-1f, 1f)
+            .xRange(0f, 100f)
+            .plotInset(2.dp)
+    ) {
+        Function(resolution = 4.dp) {
+            scatter(
+                1.dp,
+                SolidColor(Color.Blue),
+                style = Stroke(2f)
+            ) { x -> sin(x / PI.toFloat().times(2)) }
         }
     }
 }

@@ -112,9 +112,6 @@ fun PlotScope.scatter(
     val r = with(drawScope) {
         radius.toPx()
     }
-    //drawAt(data) {
-    //    drawCircle(brush, r, Offset.Zero, alpha, style, colorFilter, blendMode)
-    //}
     drawEachFinite(data) { offset ->
         drawCircle(brush, r, offset, alpha, style, colorFilter, blendMode)
     }
