@@ -7,12 +7,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.translate
+import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
@@ -20,41 +22,51 @@ import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.sanbeg.composable_chart.core.ModifierLocalDataInset
+import com.sanbeg.composable_chart.core.ModifierLocalRangeX
+import com.sanbeg.composable_chart.core.plotInset
 import com.sanbeg.composable_chart.core.drawEach
+import com.sanbeg.composable_chart.core.xRange
+import com.sanbeg.composable_chart.core.yRange
 import com.sanbeg.composable_chart_data.asDataSet
+import com.sanbeg.composable_chart_data.geometry.ChartRange
 import com.sanbeg.composable_chart_data.geometry.Point
-import kotlin.math.max
-import kotlin.math.min
+import com.sanbeg.composable_chart_data.geometry.length
+import com.sanbeg.composable_chart_data.geometry.max
+import com.sanbeg.composable_chart_data.geometry.min
 
 class HorizontalAxisScope internal constructor(
-    private val chartScope: ComposableChartScope,
     @PublishedApi
     internal val drawScope: DrawScope,
-    ) {
-
-    val minVal by chartScope::minX
-    val maxVal by chartScope::maxX
-
-    private val scale = (drawScope.size.width - chartScope.dataInset * 2) / (maxVal - minVal)
-
-    fun scale(x: Float): Float = (x - minVal) * scale + chartScope.dataInset
-
+    val xRange: ChartRange,
+    val dataInset: Float,
+) {
+    private val scale = (drawScope.size.width - dataInset * 2) / xRange.length
+    fun scale(x: Float): Float = (x - xRange.start) * scale + dataInset
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun ComposableChartScope.HorizontalAxis(
     modifier: Modifier,
     edge: Edge = Edge.BOTTOM,
     content: HorizontalAxisScope.() -> Unit
 ) {
+    var range = ChartRange.Normal
+    var inset = 0.dp
     Box(
         modifier
+            .modifierLocalConsumer {
+                range = ModifierLocalRangeX.current
+                inset = ModifierLocalDataInset.current
+            }
             .fillMaxWidth()
             .asAxis(edge)
             .drawBehind {
                 HorizontalAxisScope(
-                    this@HorizontalAxis,
-                    this
+                    this,
+                    range,
+                    inset.toPx()
                 ).content()
             }
     )
@@ -67,8 +79,8 @@ inline fun HorizontalAxisScope.drawAt(x: Float, draw: DrawScope.(Float) -> Unit)
 }
 
 fun HorizontalAxisScope.drawTics(spacing: Float) {
-    var x = min(minVal, maxVal)
-    while (x <= max(minVal, maxVal)) {
+    var x = xRange.min
+    while (x <= xRange.max) {
         drawAt(x) {
             drawLine(Color.Black, Offset.Zero, Offset(0f, size.height))
         }
@@ -83,8 +95,8 @@ fun HorizontalAxisScope.drawTics(
     format: String = "%.2f",
     style: TextStyle = TextStyle(fontSize = 6.sp)
 ) {
-    var x = min(minVal, maxVal)
-    while (x <= max(minVal, maxVal)) {
+    var x = xRange.min
+    while (x <= xRange.max) {
         drawAt(x) { raw ->
             val s: String = String.format(format, raw)
             val mr = textMeasurer.measure(s, style)
@@ -99,8 +111,11 @@ fun HorizontalAxisScope.drawTics(
 @Preview(showBackground = true)
 @Composable
 private fun PreviewHorizontalAxis() {
-    Chart(maxX = 100f, dataInset = 3.dp, modifier = Modifier.size(100.dp)) {
-        Scale(maxY = 100f, modifier = Modifier) {
+    Chart(modifier = Modifier
+        .size(100.dp)
+        .xRange(0f, 100f)
+        .plotInset(3.dp)) {
+        Plot(modifier = Modifier.yRange(0f, 100f)) {
             drawEach(
                 listOf(
                     Point(25f, 25f),
@@ -129,8 +144,12 @@ private fun PreviewHorizontalAxis() {
 @Preview(showBackground = true)
 @Composable
 private fun PreviewHorizontalAxisShift() {
-    Chart(minX = 100f, maxX = 200f, dataInset = 3.dp, modifier = Modifier.size(100.dp)) {
-        Scale(maxY = 100f, modifier = Modifier) {
+    Chart(modifier = Modifier
+        .size(100.dp)
+        .xRange(100f, 200f)
+        .plotInset(3.dp)
+    ) {
+        Plot(modifier = Modifier.yRange(0f, 100f)) {
             drawEach(
                 listOf(
                     Point(125f, 25f),
@@ -158,8 +177,12 @@ private fun PreviewHorizontalAxisShift() {
 @Preview(showBackground = true)
 @Composable
 private fun PreviewHorizontalAxisFlip() {
-    Chart(minX = 100f, maxX = 0f, dataInset = 3.dp, modifier = Modifier.size(100.dp)) {
-        Scale(maxY = 100f, modifier = Modifier) {
+    Chart(modifier = Modifier
+        .size(100.dp)
+        .xRange(100f, 0f)
+        .plotInset(3.dp)
+    ) {
+        Plot(modifier = Modifier.yRange(0f, 100f)) {
             drawEach(
                 listOf(
                     Point(25f, 25f),

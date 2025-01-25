@@ -43,6 +43,7 @@ value class ChartRange internal constructor(private val packedValue: Long) {
 
 val ChartRange.min get() = min(start, end)
 val ChartRange.max get() = max(start, end)
+val ChartRange.length get() = end - start
 fun ChartRange.reversed() = ChartRange(end, start)
 fun ChartRange.sorted() = ChartRange(min, max)
 fun ChartRange.toFloatRange(): ClosedFloatingPointRange<Float> = min.rangeTo(max)

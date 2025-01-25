@@ -19,9 +19,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.isSpecified
+import com.sanbeg.composable_chart.core.plotInset
 import com.sanbeg.composable_chart.core.drawEach
+import com.sanbeg.composable_chart.core.xRange
+import com.sanbeg.composable_chart.core.yRange
 import com.sanbeg.composable_chart_data.asDataSet
-import com.sanbeg.composable_chart_data.geometry.ChartRange
 import com.sanbeg.composable_chart_data.geometry.Point
 
 /**
@@ -60,11 +62,7 @@ private class ChartChildDataElement(
     }
 }
 
-class ComposableChartScope internal constructor(
-    internal val minX: Float,
-    internal val maxX: Float,
-    ) {
-    internal var dataInset: Float = 0f
+open class ComposableChartScope internal constructor() {
 
     /**
      * Renders the composable as an axis, on the specified edge.
@@ -123,16 +121,23 @@ class ComposableChartScope internal constructor(
     ))
 }
 
+class LegacyChartScope internal constructor(
+    internal val minX: Float,
+    internal val maxX: Float,
+): ComposableChartScope() {
+    internal var dataInset: Float = 0f
+}
+
 @Composable
 fun Chart(
     minX: Float = 0f,
     maxX: Float = 1f,
     dataInset: Dp = 0.dp,
     modifier: Modifier = Modifier,
-    content: @Composable ComposableChartScope.() -> Unit
+    content: @Composable LegacyChartScope.() -> Unit
 ) {
     val layoutContent: @Composable () -> Unit = {
-        ComposableChartScope(minX, maxX).also {
+        LegacyChartScope(minX, maxX).also {
             it.dataInset = with(LocalDensity.current) { dataInset.toPx() }
         }.content()
     }
@@ -141,15 +146,24 @@ fun Chart(
 
 @Composable
 fun Chart(
-    xRange: ChartRange,
+    minX: Float,
+    maxX: Float,
+    minY: Float,
+    maxY: Float,
     modifier: Modifier = Modifier,
-    dataInset: Dp = 0.dp,
+    content: @Composable ComposableChartScope.() -> Unit
+) = Chart(
+    modifier.xRange(minX, maxX).yRange(minY, maxY),
+    content
+)
+
+@Composable
+fun Chart(
+    modifier: Modifier = Modifier,
     content: @Composable ComposableChartScope.() -> Unit
 ){
     val layoutContent: @Composable () -> Unit = {
-        ComposableChartScope(xRange.start, xRange.end).also {
-            it.dataInset = with(LocalDensity.current) { dataInset.toPx() }
-        }.content()
+        ComposableChartScope().content()
     }
     Layout(
         measurePolicy = ChartMeasurePolicy,
@@ -161,8 +175,10 @@ fun Chart(
 @Preview(showBackground = true)
 @Composable
 private fun PreviewChart2() {
-    Chart(maxX = 100f, dataInset = 6.dp, modifier = Modifier.size(100.dp)) {
-        Scale(maxY = 100f, modifier = Modifier) {
+    Chart(
+        modifier = Modifier.size(100.dp).xRange(0f, 100f).yRange(0f,100f).plotInset(6.dp)
+    ) {
+        Plot(modifier = Modifier) {
             // drawScope.drawCircle(Color.Red, 4.dp.value)
 
             drawEach(

@@ -64,7 +64,7 @@ fun Modifier.yRange(start: Float, end: Float) =
     modifierLocalProvider(ModifierLocalRangeY) { ChartRange(start, end) }
 
 @OptIn(ExperimentalComposeUiApi::class)
-fun Modifier.dataInset(inset: Dp) = modifierLocalProvider(ModifierLocalDataInset) { inset }
+fun Modifier.plotInset(inset: Dp) = modifierLocalProvider(ModifierLocalDataInset) { inset }
 
 @OptIn(ExperimentalComposeUiApi::class)
 fun Modifier.logScale(x: Float = 0f, y: Float = 0f) = modifierLocalProvider(ModifierLocalLogBase) { FloatPair(x, y)}

@@ -24,7 +24,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.composablecharts.ui.theme.ComposableChartsTheme
 import com.sanbeg.composable_chart.Chart
-import com.sanbeg.composable_chart.Scale
+import com.sanbeg.composable_chart.Plot
+import com.sanbeg.composable_chart.core.xRange
+import com.sanbeg.composable_chart.core.yRange
 import com.sanbeg.composable_chart.plots.fastArea
 import com.sanbeg.composable_chart.plots.line
 import com.sanbeg.composable_chart_data.DataSet
@@ -75,9 +77,19 @@ fun Greeting(name: String, model: ViewModel, modifier: Modifier = Modifier) {
             modifier = modifier
         )
         var slideval by remember { mutableFloatStateOf(model.maxX) }
-        Slider(value = slideval, valueRange = 0f .. model.maxX, modifier = Modifier.fillMaxWidth(), onValueChange = {slideval = it})
-        Chart(minX = 0f, maxX = slideval, modifier = Modifier.height(150.dp).fillMaxWidth()) {
-            Scale(minY = model.minY, maxY = model.maxY) {
+        Slider(
+            value = slideval,
+            valueRange = 0f..model.maxX,
+            modifier = Modifier.fillMaxWidth(),
+            onValueChange = { slideval = it })
+        Chart(
+            modifier = Modifier
+                .xRange(0f, slideval)
+                .yRange(model.minY, model.maxY)
+                .height(150.dp)
+                .fillMaxWidth()
+        ) {
+            Plot {
                 line(model.data, brush = SolidColor(Color.Black))
                 fastArea(model.data, brush = SolidColor(Color.Cyan))
             }

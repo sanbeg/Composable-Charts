@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.sanbeg.composable_chart.Chart
 import com.sanbeg.composable_chart.ComposableChartScope
+import com.sanbeg.composable_chart.core.ModifierLocalDataInset
 import com.sanbeg.composable_chart.core.ModifierLocalRangeX
 import com.sanbeg.composable_chart.core.ModifierLocalRangeY
 import com.sanbeg.composable_chart.core.xRange
@@ -85,6 +86,7 @@ fun ComposableChartScope.Function(
 
     var xRange by remember { mutableStateOf(ChartRange.Normal) }
     var yRange by remember { mutableStateOf(ChartRange.Normal) }
+    var dataInset by remember{ mutableStateOf(0.dp) }
 
     Box(
         Modifier
@@ -93,12 +95,12 @@ fun ComposableChartScope.Function(
                 //if (cur > 0) step = cur
                 xRange = ModifierLocalRangeX.current
                 yRange = ModifierLocalRangeY.current
+                dataInset = ModifierLocalDataInset.current
             }
             .fillMaxSize()
             .asPlot()
             .drawBehind {
-
-                val matrix = makeScaleMatrix(size, dataInset, xRange, yRange)
+                val matrix = makeScaleMatrix(size, dataInset.toPx(), xRange, yRange)
 
                 FunctionScope(
                     xRange,

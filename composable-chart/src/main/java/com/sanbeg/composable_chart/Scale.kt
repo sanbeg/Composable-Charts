@@ -24,10 +24,10 @@ import com.sanbeg.composable_chart.core.ModifierLocalDataInset
 import com.sanbeg.composable_chart.core.ModifierLocalLogBase
 import com.sanbeg.composable_chart.core.ModifierLocalRangeX
 import com.sanbeg.composable_chart.core.ModifierLocalRangeY
-import com.sanbeg.composable_chart.core.dataInset
+import com.sanbeg.composable_chart.core.plotInset
+import com.sanbeg.composable_chart.core.drawEach
 import com.sanbeg.composable_chart.core.xRange
 import com.sanbeg.composable_chart.core.yRange
-import com.sanbeg.composable_chart.core.drawEach
 import com.sanbeg.composable_chart_data.asDataSet
 import com.sanbeg.composable_chart_data.geometry.ChartRange
 import com.sanbeg.composable_chart_data.geometry.FloatPair
@@ -95,7 +95,7 @@ private class ComposableChartLogScaleScope(
     replaceWith = ReplaceWith("Plot(modifier.yRange(minY, maxY), content)", "com.sanbeg.composable_chart.Plot")
 )
 @Composable
-fun ComposableChartScope.Scale(
+fun LegacyChartScope.Scale(
     minY: Float = 0f,
     maxY: Float = 1f,
     modifier: Modifier = Modifier,
@@ -193,9 +193,9 @@ fun ComposableChartScope.Plot(
 @Preview(showBackground = true)
 @Composable
 private fun PreviewChart() {
-    Chart(maxX = 100f, dataInset = 3.dp, modifier = Modifier.size(100.dp)) {
+    Chart(modifier = Modifier.size(100.dp).plotInset(3.dp)) {
         // drawScope.drawCircle(Color.Red, 4.dp.value)
-        Plot(Modifier.yRange(0f, 100f)) {
+        Plot(Modifier.xRange(0f, 100f).yRange(0f, 100f)) {
             // drawScope.drawCircle(Color.Red, 4.dp.value)
 
             drawEach(
@@ -219,7 +219,7 @@ private fun PreviewChartFlip() {
             .size(100.dp)
             .xRange(0f, 100f)
             .yRange(100f, 0f)
-            .dataInset(4.dp)
+            .plotInset(4.dp)
     ) {
         Plot {
             // drawScope.drawCircle(Color.Red, 4.dp.value)
@@ -245,7 +245,7 @@ private fun PreviewPlot() {
             .size(100.dp)
             .xRange(0f, 100f)
             .yRange(0f, 100f)
-            .dataInset(3.dp)
+            .plotInset(3.dp)
             //.logScale(y=2f)
     ) {
         Plot {
