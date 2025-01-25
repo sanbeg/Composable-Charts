@@ -1,4 +1,4 @@
-package com.sanbeg.composable_chart
+package com.sanbeg.composable_chart.axis
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -16,6 +16,10 @@ import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.sanbeg.composable_chart.Chart
+import com.sanbeg.composable_chart.ComposableChartScope
+import com.sanbeg.composable_chart.Edge
+import com.sanbeg.composable_chart.Plot
 import com.sanbeg.composable_chart.core.ModifierLocalDataInset
 import com.sanbeg.composable_chart.core.ModifierLocalRangeY
 import com.sanbeg.composable_chart.core.plotInset
@@ -108,7 +112,8 @@ private fun PreviewChartVerticalAxis() {
         VerticalAxis(
             Modifier
                 .width(4.dp)
-                .background(Color.Cyan), edge = Edge.RIGHT) {
+                .background(Color.Cyan), edge = Edge.RIGHT
+        ) {
             drawTics(15f)
         }
     }
@@ -178,7 +183,8 @@ private fun PreviewChartVerticalAxisFlip() {
         VerticalAxis(
             Modifier
                 .width(4.dp)
-                .background(Color.Cyan), edge = Edge.RIGHT) {
+                .background(Color.Cyan), edge = Edge.RIGHT
+        ) {
             drawTics(15f)
         }
     }

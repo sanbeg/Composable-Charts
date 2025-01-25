@@ -1,4 +1,4 @@
-package com.sanbeg.composable_chart
+package com.sanbeg.composable_chart.axis
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
@@ -22,6 +22,10 @@ import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.sanbeg.composable_chart.Chart
+import com.sanbeg.composable_chart.ComposableChartScope
+import com.sanbeg.composable_chart.Edge
+import com.sanbeg.composable_chart.Plot
 import com.sanbeg.composable_chart.core.ModifierLocalDataInset
 import com.sanbeg.composable_chart.core.ModifierLocalRangeX
 import com.sanbeg.composable_chart.core.plotInset
@@ -135,7 +139,8 @@ private fun PreviewHorizontalAxis() {
         HorizontalAxis(
             Modifier
                 .height(4.dp)
-                .background(Color.Cyan), edge = Edge.TOP) {
+                .background(Color.Cyan), edge = Edge.TOP
+        ) {
             drawTics(15f)
         }
     }
@@ -167,7 +172,8 @@ private fun PreviewHorizontalAxisShift() {
         HorizontalAxis(
             Modifier
                 .height(4.dp)
-                .background(Color.Cyan), edge = Edge.TOP) {
+                .background(Color.Cyan), edge = Edge.TOP
+        ) {
             drawTics(15f)
         }
     }
@@ -200,7 +206,8 @@ private fun PreviewHorizontalAxisFlip() {
         HorizontalAxis(
             Modifier
                 .height(4.dp)
-                .background(Color.Cyan), edge = Edge.TOP) {
+                .background(Color.Cyan), edge = Edge.TOP
+        ) {
             drawTics(15f)
         }
     }

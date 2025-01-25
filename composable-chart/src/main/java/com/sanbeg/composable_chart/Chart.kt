@@ -157,6 +157,16 @@ fun Chart(
     content
 )
 
+/**
+ * Composable which lays out the chart and axis.
+ *
+ * A range can specified in the chart's [modifier] so that all children will use
+ * the same range.
+ *
+ * @see [Modifier.xRange]
+ * @see [Modifier.yRange]
+ * @see [Modifier.plotInset]
+ */
 @Composable
 fun Chart(
     modifier: Modifier = Modifier,
