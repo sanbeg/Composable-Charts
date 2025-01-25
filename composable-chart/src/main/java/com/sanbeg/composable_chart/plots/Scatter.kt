@@ -48,18 +48,6 @@ internal value class OriginCenteredDrawScope(
         get() = Offset.Zero
 }
 
-private fun PlotScope.drawAt(
-    data: DataSet,
-    content: DrawScope.() -> Unit
-) {
-    data.forEach { point ->
-        if (point.isSpecified && point.isFinite) {
-            val scaled = scale(point)
-            drawScope.translate(scaled.x, scaled.y, content)
-        }
-    }
-}
-
 /**
  * Draw a scatter plot with the supplied content lambda.
  * The content is called for each data point, and is bound to a [DrawScope] which
@@ -78,9 +66,16 @@ inline fun PlotScope.scatter(
     }
 }
 
+/**
+ * Draw a scatter plot with the supplied content lambda.
+ * The content is called for each data point, and is bound to a [DrawScope] which
+ * has both its origin and center at the location of the point.  Additionally, it
+ * will receive both the index and the unscaled [Point], which could be used to
+ * render labels.
+ */
 inline fun PlotScope.scatterWithIndexedValues(
     data: DataSet,
-    crossinline content: DrawScope.(index: Int, offset: Point) -> Unit
+    crossinline content: DrawScope.(index: Int, point: Point) -> Unit
 ) {
     val scope = OriginCenteredDrawScope(drawScope)
     data.forEachIndexed { index, point ->
@@ -96,7 +91,7 @@ inline fun PlotScope.scatterWithIndexedValues(
 /**
  * Convenience function to draw a scatter diagram as circles.
  *
- * @param data The data which will be plotted, one circle per [Offset]
+ * @param data The data which will be plotted, one circle per [Point]
  * @param radius The radius of each circle
  * @param brush The color or fill to be applied to each circle
  * @param alpha Opacity to be applied to each circle from 0.0f to 1.0f representing
@@ -126,9 +121,9 @@ fun PlotScope.scatter(
 }
 
 /**
- * Convenience function to draw a scatter diagram as circles.
+ * Convenience function to draw a scatter diagram as solid colored circles.
  *
- *  @param data The data which will be plotted, one circle per [Offset]
+ *  @param data The data which will be plotted, one circle per [Point]
  *  @param radius The radius of each circle
  *  @param color The color to be applied to each circle
  *  @param alpha Opacity to be applied to each circle from 0.0f to 1.0f representing
@@ -219,7 +214,7 @@ private fun PreviewDrawAt() {
             Point(100f, 100f),
         ).asDataSet()
         Scale(maxY = 100f) {
-            drawAt(dataSet) {
+            scatter(dataSet) {
                 drawCircle(Color.Blue, 4.dp.value, Offset.Zero)
             }
         }

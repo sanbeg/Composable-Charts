@@ -21,7 +21,7 @@ import com.sanbeg.composable_chart_data.DataSet
 import com.sanbeg.composable_chart_data.dataSetOf
 import com.sanbeg.composable_chart_data.geometry.Point
 
-fun PlotScope.area(data: DataSet, content: DrawScope.(path: Path) -> Unit) {
+private fun PlotScope.area(data: DataSet, content: DrawScope.(path: Path) -> Unit) {
     var prev: Offset? = null
     val path = Path()
     val height = drawScope.size.height
@@ -47,13 +47,16 @@ fun PlotScope.area(data: DataSet, content: DrawScope.(path: Path) -> Unit) {
     drawScope.content(path)
 }
 
-fun PlotScope.area(data: DataSet, brush: Brush) {
-    area(data) {path ->
+fun PlotScope.legacyArea(data: DataSet, brush: Brush) {
+    area(data) { path ->
         drawScope.drawPath(path, brush)
     }
 }
 
-fun PlotScope.fastArea(data: DataSet, brush: Brush) {
+/**
+ * Draws the specified data as an area chart.
+ */
+fun PlotScope.area(data: DataSet, brush: Brush) {
     val path = Path()
     val height = drawScope.size.height
 
@@ -100,7 +103,7 @@ private fun PreviewFastArea() {
             )
         )
         Scale(maxY = 100f) {
-            fastArea(dataSet, SolidColor(Color.Blue))
+            area(dataSet, SolidColor(Color.Blue))
         }
     }
 }

@@ -27,7 +27,7 @@ import com.sanbeg.composable_chart.Chart
 import com.sanbeg.composable_chart.Plot
 import com.sanbeg.composable_chart.core.xRange
 import com.sanbeg.composable_chart.core.yRange
-import com.sanbeg.composable_chart.plots.fastArea
+import com.sanbeg.composable_chart.plots.area
 import com.sanbeg.composable_chart.plots.line
 import com.sanbeg.composable_chart_data.DataSet
 import com.sanbeg.composable_chart_data.ImmutableDataSet
@@ -91,7 +91,7 @@ fun Greeting(name: String, model: ViewModel, modifier: Modifier = Modifier) {
         ) {
             Plot {
                 line(model.data, brush = SolidColor(Color.Black))
-                fastArea(model.data, brush = SolidColor(Color.Cyan))
+                area(model.data, brush = SolidColor(Color.Cyan))
             }
         }
     }
