@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -20,6 +19,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.Matrix
+import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.StrokeCap
@@ -37,18 +37,14 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.sanbeg.composable_chart.Chart
 import com.sanbeg.composable_chart.ComposableChartScope
-import com.sanbeg.composable_chart.PlotScope
 import com.sanbeg.composable_chart.core.ModifierLocalDataInset
 import com.sanbeg.composable_chart.core.ModifierLocalRangeX
 import com.sanbeg.composable_chart.core.ModifierLocalRangeY
-import com.sanbeg.composable_chart.core.drawEachFinite
 import com.sanbeg.composable_chart.core.plotInset
 import com.sanbeg.composable_chart.core.xRange
 import com.sanbeg.composable_chart.core.yRange
 import com.sanbeg.composable_chart.makeScaleMatrix
-import com.sanbeg.composable_chart_data.DataSet
 import com.sanbeg.composable_chart_data.geometry.ChartRange
-import com.sanbeg.composable_chart_data.geometry.Point
 import kotlin.math.PI
 import kotlin.math.log
 import kotlin.math.sin
@@ -200,6 +196,24 @@ fun FunctionScope.line(
 }
 
 /**
+ * Draws the specified function as an area chart.
+ */
+fun FunctionScope.area(brush: Brush, function: (x: Float) -> Float) {
+    val path = Path()
+    val height = drawScope.size.height
+
+    drawEachSegment(function) {a, b ->
+        path.reset()
+        path.moveTo(a.x, height)
+        path.lineTo(a.x, a.y)
+        path.lineTo(b.x, b.y)
+        path.lineTo(b.x, height)
+        path.close()
+        drawScope.drawPath(path, brush)
+    }
+}
+
+/**
  * Convenience function to draw a scatter diagram as circles.
  *
  * @param radius The radius of each circle
@@ -283,6 +297,24 @@ private fun PreviewFunctionScatter() {
                 1.dp,
                 SolidColor(Color.Blue),
                 style = Stroke(2f)
+            ) { x -> sin(x / PI.toFloat().times(2)) }
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun PreviewFunctionArea() {
+    Chart(
+        minX = 0f, maxX = 100f, modifier = Modifier
+            .size(150.dp)
+            .yRange(-1f, 1f)
+            .xRange(0f, 100f)
+            .plotInset(2.dp)
+    ) {
+        Function(resolution = 1.dp) {
+            area(
+                SolidColor(Color.Blue),
             ) { x -> sin(x / PI.toFloat().times(2)) }
         }
     }
