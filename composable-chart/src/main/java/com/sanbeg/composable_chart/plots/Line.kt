@@ -54,8 +54,13 @@ fun PlotScope.line(
 }
 
 // see https://matplotlib.org/stable/gallery/lines_bars_and_markers/stairs_demo.html
-enum class StepVertical{
-    Pre, Post
+/**
+ * Enum specifying whether the step function should be drawn with the vertical line
+ * before or after the horizontal
+ */
+enum class StepVertical {
+    Pre,
+    Post,
 }
 
 inline fun PlotScope.step(
@@ -73,14 +78,32 @@ inline fun PlotScope.step(
     }
 }
 
+/**
+ * Draws a series of lines connecting the given points with horizontal and vertical lines using the
+ * given paint. The lines are stroked.
+ *
+ * @param data the set of points
+ * @param brush the color or fill to be applied to the line
+ * @param where where to draw the vertical line
+ * @param width stroke width to apply to the line
+ * @param pathEffect optional effect or pattern to apply to the line
+ * @param alpha opacity to be applied to the [brush] from 0.0f to 1.0f representing
+ * fully transparent to fully opaque respectively
+ * @param colorFilter ColorFilter to apply to the [brush] when drawn into the destination
+ * @param blendMode the blending algorithm to apply to the [brush]
+ */
 fun PlotScope.step(
     data: DataSet,
     width: Dp = Dp.Hairline,
     brush: Brush,
     where: StepVertical = StepVertical.Post,
+    pathEffect: PathEffect? = null,
+    @FloatRange(from = 0.0, to = 1.0) alpha: Float = 1.0f,
+    colorFilter: ColorFilter? = null,
+    blendMode: BlendMode = DefaultBlendMode
 ) {
-    step(data, where) {a, b ->
-        drawLine(brush, a, b, width.toPx(), StrokeCap.Round)
+    step(data, where) { a, b ->
+        drawLine(brush, a, b, width.toPx(), StrokeCap.Round, pathEffect, alpha, colorFilter, blendMode)
     }
 }
 

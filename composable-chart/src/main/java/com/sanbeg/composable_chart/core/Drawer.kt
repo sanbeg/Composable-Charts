@@ -21,7 +21,7 @@ import com.sanbeg.composable_chart_data.geometry.Point
 import com.sanbeg.composable_chart_data.geometry.isFinite
 import com.sanbeg.composable_chart_data.geometry.isSpecified
 
-inline fun PlotScope.drawEach(
+internal inline fun PlotScope.drawEach(
     offsets: DataSet,
     crossinline content: DrawScope.(offset: Offset) -> Unit
 ) {
@@ -30,19 +30,19 @@ inline fun PlotScope.drawEach(
     }
 }
 
-
-inline fun PlotScope.drawEachFinite(
-    offsets: DataSet,
+internal inline fun PlotScope.drawEachFinite(
+    points: DataSet,
     crossinline content: DrawScope.(offset: Offset) -> Unit
 ) {
-    offsets.forEach { offset ->
+    points.forEach { offset ->
         if (offset.isSpecified && offset.isFinite) {
             drawScope.content(scale(offset))
         }
     }
 }
 
-inline fun PlotScope.drawAtIndexed(
+// can replace with scatterWithIndexedValues
+private inline fun PlotScope.drawAtIndexed(
     offsets: DataSet,
     crossinline content: DrawScope.(index: Int) -> Unit
 ) {
@@ -51,6 +51,20 @@ inline fun PlotScope.drawAtIndexed(
             val scaled = scale(offset)
             drawScope.translate(scaled.x, scaled.y) {
                 content(index)
+            }
+        }
+    }
+}
+
+inline fun PlotScope.drawAtEach(
+    points: DataSet,
+    crossinline content: DrawScope.(point: Point) -> Unit
+) {
+    points.forEach {point ->
+        if (point.isFinite) {
+            val scaled = scale(point)
+            drawScope.translate(scaled.x, scaled.y) {
+                content(point)
             }
         }
     }
