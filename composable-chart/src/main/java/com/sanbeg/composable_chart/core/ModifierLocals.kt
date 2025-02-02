@@ -9,6 +9,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.sanbeg.composable_chart_data.geometry.ChartRange
 import com.sanbeg.composable_chart_data.geometry.FloatPair
+import com.sanbeg.composable_chart_data.geometry.chartRangeOf
 
 internal val ModifierLocalRangeX = modifierLocalOf { ChartRange.Normal }
 internal val ModifierLocalRangeY = modifierLocalOf { ChartRange.Normal }
@@ -37,7 +38,7 @@ fun Modifier.xRange(range: ChartRange) = modifierLocalProvider(ModifierLocalRang
  */
 @OptIn(ExperimentalComposeUiApi::class)
 fun Modifier.xRange(start: Float, end: Float) =
-    modifierLocalProvider(ModifierLocalRangeX) { ChartRange(start, end) }
+    modifierLocalProvider(ModifierLocalRangeX) { chartRangeOf(start, end) }
 
 /**
  * Modifier which specifies the Y range of the chart.
@@ -61,7 +62,7 @@ fun Modifier.yRange(range: ChartRange) = modifierLocalProvider(ModifierLocalRang
  */
 @OptIn(ExperimentalComposeUiApi::class)
 fun Modifier.yRange(start: Float, end: Float) =
-    modifierLocalProvider(ModifierLocalRangeY) { ChartRange(start, end) }
+    modifierLocalProvider(ModifierLocalRangeY) { chartRangeOf(start, end) }
 
 /**
  * Modifier which specifies an inset for plot data.

@@ -1,7 +1,7 @@
 package com.sanbeg.composable_chart_data
 
 import androidx.compose.runtime.Stable
-import com.sanbeg.composable_chart_data.geometry.ChartRange
+import com.sanbeg.composable_chart_data.geometry.IncreasingChartRange
 import com.sanbeg.composable_chart_data.geometry.Point
 import kotlin.math.max
 import kotlin.math.min
@@ -144,19 +144,19 @@ inline fun DataSet.minBy(selector: (Point) -> Float): Point = reduce { acc, cur 
     if (selector(cur) < selector(acc)) cur else acc
 }
 
-fun DataSet.xRange(): ChartRange {
+fun DataSet.xRange(): IncreasingChartRange {
     val init = get(0).x
-    return fold(ChartRange(init, init)) { range, point ->
+    return fold(IncreasingChartRange(init, init)) { range, point ->
         val cur = point.x
-        ChartRange(min(range.start, cur), max(range.end, cur))
+        IncreasingChartRange(min(range.start, cur), max(range.end, cur))
     }
 }
 
-fun DataSet.yRange(): ChartRange {
+fun DataSet.yRange(): IncreasingChartRange {
     val init = get(0).y
-    return fold(ChartRange(init, init)) { range, point ->
+    return fold(IncreasingChartRange(init, init)) { range, point ->
         val cur = point.y
-        ChartRange(min(range.start, cur), max(range.end, cur))
+        IncreasingChartRange(min(range.start, cur), max(range.end, cur))
     }
 }
 
