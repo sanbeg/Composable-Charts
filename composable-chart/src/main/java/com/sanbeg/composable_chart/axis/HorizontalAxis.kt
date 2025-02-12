@@ -132,7 +132,7 @@ fun HorizontalAxisScope.drawPlotLine(
     drawLine(
         color,
         Offset.Zero,
-        Offset(0f, size.width),
+        Offset(size.width, 0f),
         strokeWidth,
         cap,
         pathEffect,
@@ -163,9 +163,7 @@ fun HorizontalAxisScope.drawBottomTics(
     format: String = "%.2f",
     style: TextStyle = TextStyle(fontSize = 6.sp)
 ) {
-    atPlotLine {
-        drawLine(Color.Black, Offset(x=0f, y=0f), Offset(x=size.width, y=0f))
-    }
+    drawPlotLine(color)
     var x = xRange.min()
     while (x <= xRange.max()) {
         val s: String = String.format(format, x)
@@ -192,9 +190,11 @@ fun HorizontalAxisScope.drawBottomTics(
 fun HorizontalAxisScope.drawTopTics(
     spacing: Float,
     textMeasurer: TextMeasurer,
+    color: Color = Color.Black,
     format: String = "%.2f",
     style: TextStyle = TextStyle(fontSize = 6.sp)
 ) {
+    drawPlotLine(color)
     var x = xRange.min()
     while (x <= xRange.max()) {
         val s: String = String.format(format, x)
@@ -205,8 +205,8 @@ fun HorizontalAxisScope.drawTopTics(
                 xRange.max() -> -mr.size.width.toFloat() + min(dataInset, mr.size.width / 2f)
                 else -> -mr.size.width / 2f
             }
-            drawLine(Color.Black, Offset(0f, size.height), Offset(0f, mr.size.height.toFloat()))
-            drawText(mr, Color.Black, topLeft = Offset(left, 0f))
+            drawLine(color, Offset(0f, size.height), Offset(0f, mr.size.height.toFloat()))
+            drawText(mr, color, topLeft = Offset(left, 0f))
         }
         x += spacing
     }
@@ -243,10 +243,6 @@ private fun PreviewHorizontalAxis() {
                 .background(Color.Cyan),
             edge = Edge.TOP
         ) {
-            //drawTics(15f)
-            atPlotLine {
-                drawLine(Color.Black, Offset(x = 0f, y = 0f), Offset(x = size.width, y = 0f))
-            }
             drawTopTics(20f, measurer, format = "%.0f")
         }
     }
