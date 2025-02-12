@@ -36,7 +36,8 @@ class VerticalAxisScope internal constructor(
     @PublishedApi
     internal val drawScope: DrawScope,
     internal val yRange: ChartRange,
-    private val dataInset: Float
+    private val dataInset: Float,
+    internal val left: Float,
 ) {
     private val scale = (drawScope.size.height - dataInset * 2) / -(yRange.end - yRange.start)
 
@@ -65,9 +66,16 @@ fun ComposableChartScope.VerticalAxis(
                     this,
                     yrange,
                     inset.toPx(),
+                    if (edge == Edge.LEFT) size.width else 0f
                 ).content()
             }
     )
+}
+
+fun VerticalAxisScope.atPlotLine(draw: DrawScope.() -> Unit) {
+    drawScope.translate(left = left) {
+        draw()
+    }
 }
 
 inline fun VerticalAxisScope.drawAt(y: Float, draw: DrawScope.(y: Float) -> Unit) {
@@ -107,6 +115,9 @@ private fun PreviewChartVerticalAxis() {
         }
 
         VerticalAxis(Modifier.width(8.dp)) {
+            atPlotLine {
+                drawLine(Color.Black, Offset.Zero, Offset(0f, size.height))
+            }
             drawTics(10f)
         }
         VerticalAxis(
@@ -114,6 +125,9 @@ private fun PreviewChartVerticalAxis() {
                 .width(4.dp)
                 .background(Color.Cyan), edge = Edge.RIGHT
         ) {
+            atPlotLine {
+                drawLine(Color.Black, Offset.Zero, Offset(0f, size.height))
+            }
             drawTics(15f)
         }
     }
