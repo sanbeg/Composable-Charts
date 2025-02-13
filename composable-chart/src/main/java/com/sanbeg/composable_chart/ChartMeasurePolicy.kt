@@ -64,14 +64,6 @@ internal object ChartMeasurePolicy : MeasurePolicy {
         }
         val contentConstraints = constraints.copy(minWidth = 0, minHeight = 0)
 
-        if (measurables.size == 1) {
-            val measurable = measurables[0]
-            val placeable = measurable.measure(contentConstraints)
-            return layout(placeable.width, placeable.height) {
-                placeable.place(0, 0)
-            }
-        }
-
         var topReservation = 0
         var bottomReservation = 0
         var leftReservation = 0
@@ -139,6 +131,9 @@ internal object ChartMeasurePolicy : MeasurePolicy {
         var plotWidth = 0
         var plotHeight = 0
 
+        var miscWidth = 0
+        var miscHeight = 0
+
         // pass 2 - measure axis & plots
         val placeables = Array(measurables.size) {index ->
             val measurable = measurables[index]
@@ -148,18 +143,28 @@ internal object ChartMeasurePolicy : MeasurePolicy {
                     else -> vertAxisConstraint
                 }
                 measurable.measure(axisConstraint)
-            } else if (measurable.chartRole == Role.Plot) { // TODO - separate plot from random non-slot children?
+            } else if (measurable.chartRole == Role.Plot) {
                 val placeable = measurable.measure(plotAreaConstraints)
                 plotWidth = max(plotWidth, placeable.width)
                 plotHeight = max(plotHeight, placeable.height)
                 placeable
-            } else {
+            } else if (measurable.chartRole is Role.Overlay) {
+                // overlays don't affect chart size
                 measurable.measure(plotAreaConstraints)
-            }
+            } else {
+                // todo - test this weird edge case
+                val placeable = measurable.measure(plotAreaConstraints)
+                miscWidth = max(miscWidth, placeable.width)
+                miscHeight = max(miscHeight, placeable.height)
+                placeable            }
         }
 
-        val chartWidth = plotWidth + horizontalReservation
-        val chartHeight = plotHeight + verticalReservation
+        // if no plot, just axis, leave space where plot would be
+        if (plotHeight == 0) plotHeight = plotAreaConstraints.minHeight
+        if (plotWidth == 0) plotWidth = plotAreaConstraints.minWidth
+
+        val chartWidth = max(plotWidth + horizontalReservation, miscWidth)
+        val chartHeight = max(plotHeight + verticalReservation, miscHeight)
 
         // pass 3 - determine position for each child
         val positions = Array(measurables.size) { index ->
@@ -177,13 +182,23 @@ internal object ChartMeasurePolicy : MeasurePolicy {
                 val size: IntSize
                 measurable.axisRole?.edge.let {
                     when(it) {
-                        Edge.TOP, Edge.BOTTOM -> {
-                            offset = IntOffset(leftReservation, 0)
+                        Edge.TOP -> {
+                            offset = IntOffset(leftReservation, +(topReservation - placeable.height))
                             space = IntSize(plotWidth, chartHeight)
                             size = IntSize(plotWidth, placeable.height)
                         }
-                        Edge.LEFT, Edge.RIGHT -> {
-                            offset = IntOffset(0, topReservation)
+                        Edge.BOTTOM -> {
+                            offset = IntOffset(leftReservation, -(bottomReservation - placeable.height))
+                            space = IntSize(plotWidth, chartHeight)
+                            size = IntSize(plotWidth, placeable.height)
+                        }
+                        Edge.LEFT -> {
+                            offset = IntOffset(+(leftReservation - placeable.width), topReservation)
+                            space = IntSize(chartWidth, plotHeight)
+                            size = IntSize(placeable.width, plotHeight)
+                        }
+                        Edge.RIGHT -> {
+                            offset = IntOffset(-(rightReservation - placeable.width), topReservation)
                             space = IntSize(chartWidth, plotHeight)
                             size = IntSize(placeable.width, plotHeight)
                         }
@@ -202,8 +217,10 @@ internal object ChartMeasurePolicy : MeasurePolicy {
                 val space = IntSize(plotWidth, plotHeight)
                 val offset = IntOffset(leftReservation, topReservation)
                 alignment.align(size, space, LayoutDirection.Ltr).plus(offset)
-            } else {
+            } else if (measurable.chartRole == Role.Plot) {
                 IntOffset(leftReservation, topReservation)
+            } else {
+                IntOffset.Zero
             }
         }
 
@@ -244,6 +261,18 @@ private fun TestChartWrap1() {
         Spacer(modifier = Modifier
             .size(50.dp)
             .background(Color.Blue))
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun TestChartWrap1AsPlot() {
+    Chart(modifier = Modifier.wrapContentSize()) {
+        Spacer(modifier = Modifier
+            .size(50.dp)
+            .background(Color.Blue)
+            .asPlot()
+        )
     }
 }
 
@@ -367,6 +396,47 @@ private fun TestChartInBox() {
                     .size(10.dp)
                     .background(Color.Red)
                     .asAxis(Edge.BOTTOM)
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun PreviewOnlyAxis() {
+    Chart(Modifier.size(50.dp)) {
+        // TODO - currently layout breaks if there's no plot
+        Spacer(
+            modifier = Modifier
+                .size(20.dp)
+                .background(Color.Red)
+                .asAxis(Edge.BOTTOM)
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun PreviewOverlapAxis() {
+    Chart(Modifier.size(75.dp)) {
+        // TODO - currently layout breaks if there's no plot
+        Spacer(modifier = Modifier
+            .asPlot()
+            .fillMaxSize()
+            .background(Color.LightGray))
+
+        Edge.entries.forEach { edge ->
+            Spacer(
+                modifier = Modifier
+                    .size(10.dp)
+                    .background(Color.Red)
+                    .asAxis(edge)
+            )
+            Spacer(
+                modifier = Modifier
+                    .size(5.dp)
+                    .background(Color.Green)
+                    .asAxis(edge)
             )
         }
     }

@@ -169,8 +169,38 @@ fun HorizontalAxisScope.drawBottomTics(
         val s: String = String.format(format, x)
         val mr = textMeasurer.measure(s, style)
         drawAt(x) {
-            val ticLength = size.height - mr.size.height
+            // val ticLength = size.height - mr.size.height
+            val ticLength = 3.dp.toPx()
             drawLine(color, Offset.Zero, Offset(0f, ticLength))
+            val left = when (x) {
+                // if we have vertical axis dataInset may not be needed.
+                xRange.min() -> -min(dataInset, mr.size.width / 2f)
+                xRange.max() -> -mr.size.width.toFloat() + min(dataInset, mr.size.width / 2f)
+                else -> -mr.size.width / 2f
+            }
+            drawText(mr, color, topLeft = Offset(left, ticLength))
+        }
+        x += spacing
+    }
+}
+
+@SuppressLint("DefaultLocale")
+fun HorizontalAxisScope.drawBottomTicsInside(
+    spacing: Float,
+    textMeasurer: TextMeasurer,
+    color: Color = Color.Black,
+    format: String = "%.2f",
+    style: TextStyle = TextStyle(fontSize = 6.sp)
+) {
+    drawPlotLine(color)
+    var x = xRange.min()
+    while (x <= xRange.max()) {
+        val s: String = String.format(format, x)
+        val mr = textMeasurer.measure(s, style)
+        drawAt(x) {
+            // val ticLength = size.height - mr.size.height
+            val ticLength = 3.dp.toPx()
+            drawLine(color, Offset.Zero, Offset(0f, -ticLength))
             val left = when (x) {
                 // if we have vertical axis dataInset may not be needed.
                 xRange.min() -> -min(dataInset, mr.size.width / 2f)
@@ -200,13 +230,49 @@ fun HorizontalAxisScope.drawTopTics(
         val s: String = String.format(format, x)
         val mr = textMeasurer.measure(s, style)
         drawAt(x) {
+            val ticLength = 3.dp.toPx()
             val left = when (x) {
                 xRange.min() -> -min(dataInset, mr.size.width / 2f)
                 xRange.max() -> -mr.size.width.toFloat() + min(dataInset, mr.size.width / 2f)
                 else -> -mr.size.width / 2f
             }
-            drawLine(color, Offset(0f, size.height), Offset(0f, mr.size.height.toFloat()))
-            drawText(mr, color, topLeft = Offset(left, 0f))
+            //drawLine(color, Offset(0f, size.height), Offset(0f, mr.size.height.toFloat()))
+            drawLine(color, Offset(0f, size.height), Offset(0f, size.height - ticLength))
+
+            drawText(mr, color, topLeft = Offset(left, size.height - mr.size.height - ticLength))
+        }
+        x += spacing
+    }
+}
+
+/**
+ * Draw a set of top tics with text labels
+ */
+@SuppressLint("DefaultLocale")
+fun HorizontalAxisScope.drawTopTicsInside(
+    spacing: Float,
+    textMeasurer: TextMeasurer,
+    color: Color = Color.Black,
+    format: String = "%.2f",
+    style: TextStyle = TextStyle(fontSize = 6.sp)
+) {
+    drawPlotLine(color)
+    var x = xRange.min()
+    while (x <= xRange.max()) {
+        val s: String = String.format(format, x)
+        val mr = textMeasurer.measure(s, style)
+        drawAt(x) {
+            val ticLength = 3.dp.toPx()
+
+            val left = when (x) {
+                xRange.min() -> -min(dataInset, mr.size.width / 2f)
+                xRange.max() -> -mr.size.width.toFloat() + min(dataInset, mr.size.width / 2f)
+                else -> -mr.size.width / 2f
+            }
+            //drawLine(color, Offset(0f, size.height), Offset(0f, mr.size.height.toFloat()))
+            drawLine(color, Offset(0f, size.height), Offset(0f, size.height + ticLength))
+
+            drawText(mr, color, topLeft = Offset(left, size.height - mr.size.height - ticLength))
         }
         x += spacing
     }
@@ -244,6 +310,42 @@ private fun PreviewHorizontalAxis() {
             edge = Edge.TOP
         ) {
             drawTopTics(20f, measurer, format = "%.0f")
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun PreviewHorizontalAxisInside() {
+    Chart(modifier = Modifier
+        .size(100.dp)
+        .xRange(0f, 100f)
+        .plotInset(3.dp)) {
+        Plot(modifier = Modifier.yRange(0f, 100f)) {
+            drawEach(
+                listOf(
+                    Point(25f, 25f),
+                    Point(0f, 0f),
+                    Point(100f, 100f),
+                ).asDataSet()
+            ) {
+                drawCircle(Color.Blue, 3.dp.toPx(), it)
+            }
+        }
+
+        val measurer = rememberTextMeasurer()
+
+        HorizontalAxis(Modifier.height(12.dp)) {
+
+            drawBottomTicsInside(20f, measurer, format = "%.0f")
+        }
+        HorizontalAxis(
+            Modifier
+                .height(12.dp)
+                .background(Color.Cyan),
+            edge = Edge.TOP
+        ) {
+            drawTopTicsInside(20f, measurer, format = "%.0f")
         }
     }
 }
