@@ -48,7 +48,7 @@ import com.sanbeg.composable_chart_data.geometry.min
 import kotlin.math.min
 
 // todo - add log scale?
-sealed class HorizontalAxisScope constructor(
+sealed class HorizontalAxisScope(
     @PublishedApi
     internal val drawScope: DrawScope,
     val xRange: ChartRange,
@@ -60,16 +60,14 @@ sealed class HorizontalAxisScope constructor(
     fun scale(x: Float): Float = (x - xRange.start) * scale + dataInset
 }
 
-class BottomAxisScope(drawScope: DrawScope, xRange: ChartRange, dataInset: Float, top: Float) :
-    HorizontalAxisScope(drawScope, xRange, dataInset, top)
+class BottomAxisScope internal constructor(drawScope: DrawScope, xRange: ChartRange, dataInset: Float) :
+    HorizontalAxisScope(drawScope, xRange, dataInset, 0f)
 
-class TopAxisScope(drawScope: DrawScope, xRange: ChartRange, dataInset: Float, top: Float) :
+class TopAxisScope internal constructor(drawScope: DrawScope, xRange: ChartRange, dataInset: Float, top: Float) :
     HorizontalAxisScope(drawScope, xRange, dataInset, top)
-
 
 /**
  * Composable for a horizontal axis
- * @param[edge] which edge to place the axis, defaults to [Edge.BOTTOM], but can also specify [Edge.TOP]
  * @param[content] the content which will be drawn.
  */
 @OptIn(ExperimentalComposeUiApi::class)
@@ -93,8 +91,7 @@ fun ComposableChartScope.BottomAxis(
                 BottomAxisScope(
                     this,
                     range,
-                    inset.toPx(),
-                    0f
+                    inset.toPx()
                 ).content()
             }
     )
@@ -103,7 +100,6 @@ fun ComposableChartScope.BottomAxis(
 
 /**
  * Composable for a horizontal axis
- * @param[edge] which edge to place the axis, defaults to [Edge.BOTTOM], but can also specify [Edge.TOP]
  * @param[content] the content which will be drawn.
  */
 @OptIn(ExperimentalComposeUiApi::class)

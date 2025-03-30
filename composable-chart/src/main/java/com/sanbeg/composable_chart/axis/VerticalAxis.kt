@@ -61,8 +61,8 @@ sealed class VerticalAxisScope(
 class LeftAxisScope internal constructor(drawScope: DrawScope, yRange: ChartRange, dataInset: Float, left: Float) :
     VerticalAxisScope(drawScope, yRange, dataInset, left)
 
-class RightAxisScope internal constructor(drawScope: DrawScope, yRange: ChartRange, dataInset: Float, left: Float) :
-    VerticalAxisScope(drawScope, yRange, dataInset, left)
+class RightAxisScope internal constructor(drawScope: DrawScope, yRange: ChartRange, dataInset: Float) :
+    VerticalAxisScope(drawScope, yRange, dataInset, 0f)
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -111,8 +111,7 @@ fun ComposableChartScope.RightAxis(
                 RightAxisScope(
                     this,
                     yrange,
-                    inset.toPx(),
-                    0f
+                    inset.toPx()
                 ).content()
             }
     )
