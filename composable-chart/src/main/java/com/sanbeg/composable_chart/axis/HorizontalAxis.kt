@@ -181,11 +181,14 @@ fun HorizontalAxisScope.drawPlotLine(
     )
 }
 
-fun HorizontalAxisScope.drawTics(spacing: Float) {
+fun HorizontalAxisScope.drawFullTics(
+    spacing: Float,
+    color: Color = Color.Black,
+    ) {
     var x = xRange.min()
     while (x <= xRange.max()) {
         drawAt(x) {
-            drawLine(Color.Black, Offset.Zero, Offset(0f, size.height))
+            drawLine(color, Offset.Zero, Offset(0f, size.height))
         }
         x += spacing
     }
@@ -432,14 +435,14 @@ private fun PreviewHorizontalAxisShift() {
         }
 
         BottomAxis(Modifier.height(8.dp)) {
-            drawTics(10f)
+            drawFullTics(10f)
         }
         TopAxis(
             Modifier
                 .height(4.dp)
                 .background(Color.Cyan)
         ) {
-            drawTics(15f)
+            drawFullTics(15f)
         }
     }
 }
@@ -466,14 +469,14 @@ private fun PreviewHorizontalAxisFlip() {
         }
 
         BottomAxis(Modifier.height(8.dp)) {
-            drawTics(10f)
+            drawFullTics(10f)
         }
         TopAxis(
             Modifier
                 .height(4.dp)
                 .background(Color.Cyan)
         ) {
-            drawTics(15f)
+            drawFullTics(15f)
         }
     }
 }

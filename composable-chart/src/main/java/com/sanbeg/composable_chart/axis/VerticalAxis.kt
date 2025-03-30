@@ -46,7 +46,7 @@ import com.sanbeg.composable_chart_data.geometry.max
 import com.sanbeg.composable_chart_data.geometry.min
 import kotlin.math.min
 
-private const val DEFAULT_STRING_FORMAT = "%0.f"
+private const val DEFAULT_STRING_FORMAT = "%.0f"
 
 sealed class VerticalAxisScope(
     @PublishedApi
@@ -139,11 +139,14 @@ inline fun VerticalAxisScope.drawAt(y: Float, draw: DrawScope.(y: Float) -> Unit
     }
 }
 
-fun VerticalAxisScope.drawTics(spacing: Float) {
+fun VerticalAxisScope.drawFullTics(
+    spacing: Float,
+    color: Color = Color.Black,
+) {
     var y = yRange.min()
     while (y <= yRange.max()) {
         drawAt(y) {
-            drawLine(Color.Black, Offset.Zero, Offset(size.width, 0f))
+            drawLine(color, Offset.Zero, Offset(size.width, 0f))
         }
         y += spacing
     }
@@ -358,7 +361,7 @@ private fun PreviewChartVerticalAxis() {
             atPlotLine {
                 drawLine(Color.Black, Offset.Zero, Offset(0f, size.height))
             }
-            drawTics(10f)
+            drawFullTics(10f)
         }
         RightAxis(
             Modifier
@@ -368,7 +371,7 @@ private fun PreviewChartVerticalAxis() {
             atPlotLine {
                 drawLine(Color.Black, Offset.Zero, Offset(0f, size.height))
             }
-            drawTics(15f)
+            drawFullTics(15f)
         }
     }
 }
@@ -398,13 +401,13 @@ private fun PreviewChartVerticalAxisShift() {
         }
 
         LeftAxis(Modifier.width(8.dp)) {
-            drawTics(10f)
+            drawFullTics(10f)
         }
         val modifier = Modifier
             .width(4.dp)
             .background(Color.Cyan)
         val content = fun VerticalAxisScope.() {
-            drawTics(15f)
+            drawFullTics(15f)
         }
         RightAxis(modifier, content)
     }
@@ -432,14 +435,14 @@ private fun PreviewChartVerticalAxisFlip() {
         }
 
         LeftAxis(Modifier.width(8.dp)) {
-            drawTics(10f)
+            drawFullTics(10f)
         }
         RightAxis(
             Modifier
                 .width(4.dp)
                 .background(Color.Cyan)
         ) {
-            drawTics(15f)
+            drawFullTics(15f)
         }
     }
 }
