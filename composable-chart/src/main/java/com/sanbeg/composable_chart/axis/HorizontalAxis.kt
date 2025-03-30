@@ -193,6 +193,11 @@ fun HorizontalAxisScope.drawTics(spacing: Float) {
 
 /**
  * Draw a set of bottom tics with text labels
+ *  @param[spacing] the spacing between tics.  The chart range should be evenly divisible by the spacing
+ *  @param[textMeasurer] the [TextMeasurer] used to measure the text labels
+ *  @param[color] the color used to draw the tic lines
+ *  @param[format] used to convert the floating point to text
+ *  @see[String.format]
  */
 @SuppressLint("DefaultLocale")
 fun BottomAxisScope.drawLabelledTics(
@@ -223,6 +228,14 @@ fun BottomAxisScope.drawLabelledTics(
     }
 }
 
+/**
+ * Draw a set of bottom tics with text labels
+ *  @param[spacing] the spacing between tics.  The chart range should be evenly divisible by the spacing
+ *  @param[textMeasurer] the [TextMeasurer] used to measure the text labels
+ *  @param[color] the color used to draw the tic lines
+ *  @param[format] used to convert the floating point to text
+ *  @see[String.format]
+ */
 @SuppressLint("DefaultLocale")
 fun BottomAxisScope.drawLabelledTicsInside(
     spacing: Float,
@@ -254,6 +267,11 @@ fun BottomAxisScope.drawLabelledTicsInside(
 
 /**
  * Draw a set of top tics with text labels
+ *  @param[spacing] the spacing between tics.  The chart range should be evenly divisible by the spacing
+ *  @param[textMeasurer] the [TextMeasurer] used to measure the text labels
+ *  @param[color] the color used to draw the tic lines
+ *  @param[format] used to convert the floating point to text
+ *  @see[String.format]
  */
 @SuppressLint("DefaultLocale")
 fun TopAxisScope.drawLabelledTics(
@@ -286,6 +304,11 @@ fun TopAxisScope.drawLabelledTics(
 
 /**
  * Draw a set of top tics with text labels
+ * @param[spacing] the spacing between tics.  The chart range should be evenly divisible by the spacing
+ * @param[textMeasurer] the [TextMeasurer] used to measure the text labels
+ * @param[color] the color used to draw the tic lines
+ * @param[format] used to convert the floating point to text
+ * @see[String.format]
  */
 @SuppressLint("DefaultLocale")
 fun TopAxisScope.drawLabelledTicsInside(

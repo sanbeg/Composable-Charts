@@ -186,6 +186,11 @@ fun VerticalAxisScope.drawPlotLine(
 
 /**
  * Draw a set of left tics with text labels
+ * @param[spacing] the spacing between tics.  The chart range should be evenly divisible by the spacing
+ * @param[textMeasurer] the [TextMeasurer] used to measure the text labels
+ * @param[color] the color used to draw the tic lines
+ * @param[format] used to convert the floating point to text
+ * @see[String.format]
  */
 @SuppressLint("DefaultLocale")
 fun LeftAxisScope.drawLabelledTics(
@@ -220,6 +225,11 @@ fun LeftAxisScope.drawLabelledTics(
 
 /**
  * Draw a set of right tics with text labels
+ *  @param[spacing] the spacing between tics.  The chart range should be evenly divisible by the spacing
+ *  @param[textMeasurer] the [TextMeasurer] used to measure the text labels
+ *  @param[color] the color used to draw the tic lines
+ *  @param[format] used to convert the floating point to text
+ *  @see[String.format]
  */
 @SuppressLint("DefaultLocale")
 fun RightAxisScope.drawLabelledTics(
