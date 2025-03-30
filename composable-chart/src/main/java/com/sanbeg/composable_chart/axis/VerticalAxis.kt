@@ -46,7 +46,7 @@ import com.sanbeg.composable_chart_data.geometry.max
 import com.sanbeg.composable_chart_data.geometry.min
 import kotlin.math.min
 
-class VerticalAxisScope internal constructor(
+sealed class VerticalAxisScope(
     @PublishedApi
     internal val drawScope: DrawScope,
     internal val yRange: ChartRange,
@@ -58,12 +58,17 @@ class VerticalAxisScope internal constructor(
     fun scale(y: Float): Float = (y - yRange.end) * scale + dataInset
 }
 
+class LeftAxisScope internal constructor(drawScope: DrawScope, yRange: ChartRange, dataInset: Float, left: Float) :
+    VerticalAxisScope(drawScope, yRange, dataInset, left)
+
+class RightAxisScope internal constructor(drawScope: DrawScope, yRange: ChartRange, dataInset: Float, left: Float) :
+    VerticalAxisScope(drawScope, yRange, dataInset, left)
+
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun ComposableChartScope.VerticalAxis(
+fun ComposableChartScope.LeftAxis(
     modifier: Modifier = Modifier,
-    edge: Edge = Edge.LEFT,
-    content: VerticalAxisScope.() -> Unit
+    content: LeftAxisScope.() -> Unit
 ) {
     var yrange = ChartRange.Normal
     var inset = 0.dp
@@ -74,13 +79,40 @@ fun ComposableChartScope.VerticalAxis(
                 inset = ModifierLocalDataInset.current
             }
             .fillMaxHeight()
-            .asAxis(edge)
+            .asAxis(Edge.LEFT)
             .drawBehind {
-                VerticalAxisScope(
+                LeftAxisScope(
                     this,
                     yrange,
                     inset.toPx(),
-                    if (edge == Edge.LEFT) size.width else 0f
+                    size.width
+                ).content()
+            }
+    )
+}
+
+@OptIn(ExperimentalComposeUiApi::class)
+@Composable
+fun ComposableChartScope.RightAxis(
+    modifier: Modifier = Modifier,
+    content: RightAxisScope.() -> Unit
+) {
+    var yrange = ChartRange.Normal
+    var inset = 0.dp
+    Box(
+        modifier
+            .modifierLocalConsumer {
+                yrange = ModifierLocalRangeY.current
+                inset = ModifierLocalDataInset.current
+            }
+            .fillMaxHeight()
+            .asAxis(Edge.RIGHT)
+            .drawBehind {
+                RightAxisScope(
+                    this,
+                    yrange,
+                    inset.toPx(),
+                    0f
                 ).content()
             }
     )
@@ -147,7 +179,7 @@ fun VerticalAxisScope.drawPlotLine(
  * Draw a set of left tics with text labels
  */
 @SuppressLint("DefaultLocale")
-fun VerticalAxisScope.drawLeftTics(
+fun LeftAxisScope.drawLabelledTics(
     spacing: Float,
     textMeasurer: TextMeasurer,
     color: Color = Color.Black,
@@ -181,7 +213,7 @@ fun VerticalAxisScope.drawLeftTics(
  * Draw a set of right tics with text labels
  */
 @SuppressLint("DefaultLocale")
-fun VerticalAxisScope.drawRightTics(
+fun RightAxisScope.drawLabelledTics(
     spacing: Float,
     textMeasurer: TextMeasurer,
     color: Color = Color.Black,
@@ -229,14 +261,52 @@ private fun PreviewLeftTics() {
             }
         }
         val measurer = rememberTextMeasurer()
-        VerticalAxis(Modifier.width(12.dp)) {
-            drawLeftTics(
+        LeftAxis(Modifier.width(12.dp)) {
+            drawLabelledTics(
                 spacing = 30f,
                 textMeasurer = measurer,
             )
         }
-        VerticalAxis(Modifier.width(12.dp), edge = Edge.RIGHT) {
-            drawRightTics(
+        RightAxis(Modifier.width(12.dp)) {
+            drawLabelledTics(
+                spacing = 30f,
+                textMeasurer = measurer,
+            )
+        }
+
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun PreviewLeftRightTics() {
+    Chart(
+        modifier = Modifier
+            .size(100.dp)
+            .xRange(0f, 100f)
+            .yRange(0f, 100f)
+            .plotInset(3.dp)
+    ) {
+        Plot {
+            drawEach(
+                listOf(
+                    Point(25f, 25f),
+                    Point(0f, 0f),
+                    Point(100f, 100f),
+                ).asDataSet()
+            ) {
+                drawCircle(Color.Blue, 3.dp.toPx(), it)
+            }
+        }
+        val measurer = rememberTextMeasurer()
+        LeftAxis(Modifier.width(12.dp)) {
+            drawLabelledTics(
+                spacing = 30f,
+                textMeasurer = measurer,
+            )
+        }
+        RightAxis(Modifier.width(12.dp)) {
+            drawLabelledTics(
                 spacing = 30f,
                 textMeasurer = measurer,
             )
@@ -265,16 +335,16 @@ private fun PreviewChartVerticalAxis() {
             }
         }
 
-        VerticalAxis(Modifier.width(8.dp)) {
+        LeftAxis(Modifier.width(8.dp)) {
             atPlotLine {
                 drawLine(Color.Black, Offset.Zero, Offset(0f, size.height))
             }
             drawTics(10f)
         }
-        VerticalAxis(
+        RightAxis(
             Modifier
                 .width(4.dp)
-                .background(Color.Cyan), edge = Edge.RIGHT
+                .background(Color.Cyan)
         ) {
             atPlotLine {
                 drawLine(Color.Black, Offset.Zero, Offset(0f, size.height))
@@ -308,16 +378,16 @@ private fun PreviewChartVerticalAxisShift() {
             }
         }
 
-        VerticalAxis(Modifier.width(8.dp)) {
+        LeftAxis(Modifier.width(8.dp)) {
             drawTics(10f)
         }
-        VerticalAxis(
-            Modifier
-                .width(4.dp)
-                .background(Color.Cyan), edge = Edge.RIGHT
-        ) {
+        val modifier = Modifier
+            .width(4.dp)
+            .background(Color.Cyan)
+        val content = fun VerticalAxisScope.() {
             drawTics(15f)
         }
+        RightAxis(modifier, content)
     }
 }
 
@@ -342,13 +412,13 @@ private fun PreviewChartVerticalAxisFlip() {
             }
         }
 
-        VerticalAxis(Modifier.width(8.dp)) {
+        LeftAxis(Modifier.width(8.dp)) {
             drawTics(10f)
         }
-        VerticalAxis(
+        RightAxis(
             Modifier
                 .width(4.dp)
-                .background(Color.Cyan), edge = Edge.RIGHT
+                .background(Color.Cyan)
         ) {
             drawTics(15f)
         }

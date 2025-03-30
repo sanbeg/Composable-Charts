@@ -48,7 +48,7 @@ import com.sanbeg.composable_chart_data.geometry.min
 import kotlin.math.min
 
 // todo - add log scale?
-class HorizontalAxisScope internal constructor(
+sealed class HorizontalAxisScope constructor(
     @PublishedApi
     internal val drawScope: DrawScope,
     val xRange: ChartRange,
@@ -60,6 +60,13 @@ class HorizontalAxisScope internal constructor(
     fun scale(x: Float): Float = (x - xRange.start) * scale + dataInset
 }
 
+class BottomAxisScope(drawScope: DrawScope, xRange: ChartRange, dataInset: Float, top: Float) :
+    HorizontalAxisScope(drawScope, xRange, dataInset, top)
+
+class TopAxisScope(drawScope: DrawScope, xRange: ChartRange, dataInset: Float, top: Float) :
+    HorizontalAxisScope(drawScope, xRange, dataInset, top)
+
+
 /**
  * Composable for a horizontal axis
  * @param[edge] which edge to place the axis, defaults to [Edge.BOTTOM], but can also specify [Edge.TOP]
@@ -67,10 +74,9 @@ class HorizontalAxisScope internal constructor(
  */
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun ComposableChartScope.HorizontalAxis(
+fun ComposableChartScope.BottomAxis(
     modifier: Modifier,
-    edge: Edge = Edge.BOTTOM,
-    content: HorizontalAxisScope.() -> Unit
+    content: BottomAxisScope.() -> Unit
 ) {
     // todo - support reserve height
     var range = ChartRange.Normal
@@ -82,13 +88,48 @@ fun ComposableChartScope.HorizontalAxis(
                 inset = ModifierLocalDataInset.current
             }
             .fillMaxWidth()
-            .asAxis(edge)
+            .asAxis(Edge.BOTTOM)
             .drawBehind {
-                HorizontalAxisScope(
+                BottomAxisScope(
                     this,
                     range,
                     inset.toPx(),
-                    if (edge == Edge.TOP) size.height else 0f
+                    0f
+                ).content()
+            }
+    )
+}
+
+
+/**
+ * Composable for a horizontal axis
+ * @param[edge] which edge to place the axis, defaults to [Edge.BOTTOM], but can also specify [Edge.TOP]
+ * @param[content] the content which will be drawn.
+ */
+@OptIn(ExperimentalComposeUiApi::class)
+@Composable
+fun ComposableChartScope.TopAxis(
+    modifier: Modifier,
+    content: TopAxisScope.() -> Unit
+) {
+
+    // todo - support reserve height
+    var range = ChartRange.Normal
+    var inset = 0.dp
+    Box(
+        modifier
+            .modifierLocalConsumer {
+                range = ModifierLocalRangeX.current
+                inset = ModifierLocalDataInset.current
+            }
+            .fillMaxWidth()
+            .asAxis(Edge.TOP)
+            .drawBehind {
+                TopAxisScope(
+                    this,
+                    range,
+                    inset.toPx(),
+                    size.height
                 ).content()
             }
     )
@@ -156,7 +197,7 @@ fun HorizontalAxisScope.drawTics(spacing: Float) {
  * Draw a set of bottom tics with text labels
  */
 @SuppressLint("DefaultLocale")
-fun HorizontalAxisScope.drawBottomTics(
+fun BottomAxisScope.drawLabelledTics(
     spacing: Float,
     textMeasurer: TextMeasurer,
     color: Color = Color.Black,
@@ -185,7 +226,7 @@ fun HorizontalAxisScope.drawBottomTics(
 }
 
 @SuppressLint("DefaultLocale")
-fun HorizontalAxisScope.drawBottomTicsInside(
+fun BottomAxisScope.drawLabelledTicsInside(
     spacing: Float,
     textMeasurer: TextMeasurer,
     color: Color = Color.Black,
@@ -217,7 +258,7 @@ fun HorizontalAxisScope.drawBottomTicsInside(
  * Draw a set of top tics with text labels
  */
 @SuppressLint("DefaultLocale")
-fun HorizontalAxisScope.drawTopTics(
+fun TopAxisScope.drawLabelledTics(
     spacing: Float,
     textMeasurer: TextMeasurer,
     color: Color = Color.Black,
@@ -249,7 +290,7 @@ fun HorizontalAxisScope.drawTopTics(
  * Draw a set of top tics with text labels
  */
 @SuppressLint("DefaultLocale")
-fun HorizontalAxisScope.drawTopTicsInside(
+fun TopAxisScope.drawLabelledTicsInside(
     spacing: Float,
     textMeasurer: TextMeasurer,
     color: Color = Color.Black,
@@ -299,18 +340,17 @@ private fun PreviewHorizontalAxis() {
 
         val measurer = rememberTextMeasurer()
 
-        HorizontalAxis(Modifier.height(12.dp)) {
+        BottomAxis(Modifier.height(12.dp)) {
 
-            drawBottomTics(20f, measurer, format = "%.0f")
+            drawLabelledTics(20f, measurer, format = "%.0f")
         }
-        HorizontalAxis(
+        TopAxis(
             Modifier
                 .height(12.dp)
                 .background(Color.Cyan),
-            edge = Edge.TOP
         ) {
             drawPlotLine(Color.Black)
-            drawTopTics(20f, measurer, format = "%.0f")
+            drawLabelledTics(20f, measurer, format = "%.0f")
         }
     }
 }
@@ -336,17 +376,16 @@ private fun PreviewHorizontalAxisInside() {
 
         val measurer = rememberTextMeasurer()
 
-        HorizontalAxis(Modifier.height(12.dp)) {
+        BottomAxis(Modifier.height(12.dp)) {
 
-            drawBottomTicsInside(20f, measurer, format = "%.0f")
+            drawLabelledTicsInside(20f, measurer, format = "%.0f")
         }
-        HorizontalAxis(
+        TopAxis(
             Modifier
                 .height(12.dp)
                 .background(Color.Cyan),
-            edge = Edge.TOP
         ) {
-            drawTopTicsInside(20f, measurer, format = "%.0f")
+            drawLabelledTicsInside(20f, measurer, format = "%.0f")
         }
     }
 }
@@ -371,13 +410,13 @@ private fun PreviewHorizontalAxisShift() {
             }
         }
 
-        HorizontalAxis(Modifier.height(8.dp)) {
+        BottomAxis(Modifier.height(8.dp)) {
             drawTics(10f)
         }
-        HorizontalAxis(
+        TopAxis(
             Modifier
                 .height(4.dp)
-                .background(Color.Cyan), edge = Edge.TOP
+                .background(Color.Cyan)
         ) {
             drawTics(15f)
         }
@@ -405,13 +444,13 @@ private fun PreviewHorizontalAxisFlip() {
             }
         }
 
-        HorizontalAxis(Modifier.height(8.dp)) {
+        BottomAxis(Modifier.height(8.dp)) {
             drawTics(10f)
         }
-        HorizontalAxis(
+        TopAxis(
             Modifier
                 .height(4.dp)
-                .background(Color.Cyan), edge = Edge.TOP
+                .background(Color.Cyan)
         ) {
             drawTics(15f)
         }
