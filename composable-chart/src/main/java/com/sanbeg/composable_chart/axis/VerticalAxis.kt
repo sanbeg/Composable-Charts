@@ -64,6 +64,10 @@ class LeftAxisScope internal constructor(drawScope: DrawScope, yRange: ChartRang
 class RightAxisScope internal constructor(drawScope: DrawScope, yRange: ChartRange, dataInset: Float) :
     VerticalAxisScope(drawScope, yRange, dataInset, 0f)
 
+/**
+ * Composable for a vertical axis
+ * @param[content] the content which will be drawn.
+ */
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun ComposableChartScope.LeftAxis(
@@ -91,6 +95,10 @@ fun ComposableChartScope.LeftAxis(
     )
 }
 
+/**
+ * Composable for a vertical axis
+ * @param[content] the content which will be drawn.
+ */
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun ComposableChartScope.RightAxis(
