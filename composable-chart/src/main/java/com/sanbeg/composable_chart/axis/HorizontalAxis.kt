@@ -309,6 +309,7 @@ private fun PreviewHorizontalAxis() {
                 .background(Color.Cyan),
             edge = Edge.TOP
         ) {
+            drawPlotLine(Color.Black)
             drawTopTics(20f, measurer, format = "%.0f")
         }
     }
