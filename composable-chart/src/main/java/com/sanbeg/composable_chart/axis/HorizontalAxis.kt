@@ -47,6 +47,8 @@ import com.sanbeg.composable_chart_data.geometry.max
 import com.sanbeg.composable_chart_data.geometry.min
 import kotlin.math.min
 
+private const val DEFAULT_STRING_FORMAT = "%.0f"
+
 // todo - add log scale?
 sealed class HorizontalAxisScope(
     @PublishedApi
@@ -197,7 +199,7 @@ fun BottomAxisScope.drawLabelledTics(
     spacing: Float,
     textMeasurer: TextMeasurer,
     color: Color = Color.Black,
-    format: String = "%.2f",
+    format: String = DEFAULT_STRING_FORMAT,
     style: TextStyle = TextStyle(fontSize = 6.sp)
 ) {
     drawPlotLine(color)
@@ -226,7 +228,7 @@ fun BottomAxisScope.drawLabelledTicsInside(
     spacing: Float,
     textMeasurer: TextMeasurer,
     color: Color = Color.Black,
-    format: String = "%.2f",
+    format: String = DEFAULT_STRING_FORMAT,
     style: TextStyle = TextStyle(fontSize = 6.sp)
 ) {
     drawPlotLine(color)
@@ -258,7 +260,7 @@ fun TopAxisScope.drawLabelledTics(
     spacing: Float,
     textMeasurer: TextMeasurer,
     color: Color = Color.Black,
-    format: String = "%.2f",
+    format: String = DEFAULT_STRING_FORMAT,
     style: TextStyle = TextStyle(fontSize = 6.sp)
 ) {
     drawPlotLine(color)
@@ -290,7 +292,7 @@ fun TopAxisScope.drawLabelledTicsInside(
     spacing: Float,
     textMeasurer: TextMeasurer,
     color: Color = Color.Black,
-    format: String = "%.2f",
+    format: String = DEFAULT_STRING_FORMAT,
     style: TextStyle = TextStyle(fontSize = 6.sp)
 ) {
     drawPlotLine(color)

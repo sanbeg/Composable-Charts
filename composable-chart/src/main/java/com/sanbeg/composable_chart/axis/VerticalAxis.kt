@@ -46,6 +46,8 @@ import com.sanbeg.composable_chart_data.geometry.max
 import com.sanbeg.composable_chart_data.geometry.min
 import kotlin.math.min
 
+private const val DEFAULT_STRING_FORMAT = "%0.f"
+
 sealed class VerticalAxisScope(
     @PublishedApi
     internal val drawScope: DrawScope,
@@ -190,7 +192,7 @@ fun LeftAxisScope.drawLabelledTics(
     spacing: Float,
     textMeasurer: TextMeasurer,
     color: Color = Color.Black,
-    format: String = "%.0f",
+    format: String = DEFAULT_STRING_FORMAT,
     style: TextStyle = TextStyle(fontSize = 6.sp)
 ) {
     drawPlotLine(color)
@@ -224,7 +226,7 @@ fun RightAxisScope.drawLabelledTics(
     spacing: Float,
     textMeasurer: TextMeasurer,
     color: Color = Color.Black,
-    format: String = "%.0f",
+    format: String = DEFAULT_STRING_FORMAT,
     style: TextStyle = TextStyle(fontSize = 6.sp)
 ) {
     drawPlotLine(color)
