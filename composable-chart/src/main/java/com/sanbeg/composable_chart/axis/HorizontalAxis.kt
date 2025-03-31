@@ -27,6 +27,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.sanbeg.composable_chart.Chart
@@ -48,6 +49,7 @@ import com.sanbeg.composable_chart_data.geometry.min
 import kotlin.math.min
 
 private const val DEFAULT_STRING_FORMAT = "%.0f"
+private val default_tic_length = 3.dp
 
 // todo - add log scale?
 sealed class HorizontalAxisScope(
@@ -200,6 +202,8 @@ fun HorizontalAxisScope.drawFullTics(
  *  @param[textMeasurer] the [TextMeasurer] used to measure the text labels
  *  @param[color] the color used to draw the tic lines
  *  @param[format] used to convert the floating point to text
+ *  @param[style] the style to render the text
+ *  @param[length] the length to draw the tic lines
  *  @see[String.format]
  */
 @SuppressLint("DefaultLocale")
@@ -208,16 +212,16 @@ fun BottomAxisScope.drawLabelledTics(
     textMeasurer: TextMeasurer,
     color: Color = Color.Black,
     format: String = DEFAULT_STRING_FORMAT,
-    style: TextStyle = TextStyle(fontSize = 6.sp)
+    style: TextStyle = TextStyle(fontSize = 6.sp),
+    length: Dp = default_tic_length,
 ) {
+    val ticLength = with(drawScope) {length.toPx()}
     drawPlotLine(color)
     var x = xRange.min()
     while (x <= xRange.max()) {
         val s: String = String.format(format, x)
         val mr = textMeasurer.measure(s, style)
         drawAt(x) {
-            // val ticLength = size.height - mr.size.height
-            val ticLength = 3.dp.toPx()
             drawLine(color, Offset.Zero, Offset(0f, ticLength))
             val left = when (x) {
                 // if we have vertical axis dataInset may not be needed.
@@ -237,7 +241,8 @@ fun BottomAxisScope.drawLabelledTics(
  *  @param[textMeasurer] the [TextMeasurer] used to measure the text labels
  *  @param[color] the color used to draw the tic lines
  *  @param[format] used to convert the floating point to text
- *  @see[String.format]
+ *  @param[style] the style to render the text
+ *  @param[length] the length to draw the tic lines *  @see[String.format]
  */
 @SuppressLint("DefaultLocale")
 fun BottomAxisScope.drawLabelledTicsInside(
@@ -245,16 +250,16 @@ fun BottomAxisScope.drawLabelledTicsInside(
     textMeasurer: TextMeasurer,
     color: Color = Color.Black,
     format: String = DEFAULT_STRING_FORMAT,
-    style: TextStyle = TextStyle(fontSize = 6.sp)
-) {
+    style: TextStyle = TextStyle(fontSize = 6.sp),
+    length: Dp = default_tic_length,
+    ) {
     drawPlotLine(color)
     var x = xRange.min()
+    val ticLength = with(drawScope){ length.toPx() }
     while (x <= xRange.max()) {
         val s: String = String.format(format, x)
         val mr = textMeasurer.measure(s, style)
         drawAt(x) {
-            // val ticLength = size.height - mr.size.height
-            val ticLength = 3.dp.toPx()
             drawLine(color, Offset.Zero, Offset(0f, -ticLength))
             val left = when (x) {
                 // if we have vertical axis dataInset may not be needed.
@@ -274,6 +279,8 @@ fun BottomAxisScope.drawLabelledTicsInside(
  *  @param[textMeasurer] the [TextMeasurer] used to measure the text labels
  *  @param[color] the color used to draw the tic lines
  *  @param[format] used to convert the floating point to text
+ *  @param[style] the style to render the text
+ *  @param[length] the length to draw the tic lines
  *  @see[String.format]
  */
 @SuppressLint("DefaultLocale")
@@ -282,15 +289,16 @@ fun TopAxisScope.drawLabelledTics(
     textMeasurer: TextMeasurer,
     color: Color = Color.Black,
     format: String = DEFAULT_STRING_FORMAT,
-    style: TextStyle = TextStyle(fontSize = 6.sp)
-) {
+    style: TextStyle = TextStyle(fontSize = 6.sp),
+    length: Dp = default_tic_length,
+    ) {
     drawPlotLine(color)
     var x = xRange.min()
+    val ticLength = with(drawScope){ length.toPx() }
     while (x <= xRange.max()) {
         val s: String = String.format(format, x)
         val mr = textMeasurer.measure(s, style)
         drawAt(x) {
-            val ticLength = 3.dp.toPx()
             val left = when (x) {
                 xRange.min() -> -min(dataInset, mr.size.width / 2f)
                 xRange.max() -> -mr.size.width.toFloat() + min(dataInset, mr.size.width / 2f)
@@ -311,6 +319,8 @@ fun TopAxisScope.drawLabelledTics(
  * @param[textMeasurer] the [TextMeasurer] used to measure the text labels
  * @param[color] the color used to draw the tic lines
  * @param[format] used to convert the floating point to text
+ *  @param[style] the style to render the text
+ *  @param[length] the length to draw the tic lines
  * @see[String.format]
  */
 @SuppressLint("DefaultLocale")
@@ -319,16 +329,16 @@ fun TopAxisScope.drawLabelledTicsInside(
     textMeasurer: TextMeasurer,
     color: Color = Color.Black,
     format: String = DEFAULT_STRING_FORMAT,
-    style: TextStyle = TextStyle(fontSize = 6.sp)
+    style: TextStyle = TextStyle(fontSize = 6.sp),
+    length: Dp = default_tic_length,
 ) {
     drawPlotLine(color)
     var x = xRange.min()
+    val ticLength = with(drawScope){ length.toPx() }
     while (x <= xRange.max()) {
         val s: String = String.format(format, x)
         val mr = textMeasurer.measure(s, style)
         drawAt(x) {
-            val ticLength = 3.dp.toPx()
-
             val left = when (x) {
                 xRange.min() -> -min(dataInset, mr.size.width / 2f)
                 xRange.max() -> -mr.size.width.toFloat() + min(dataInset, mr.size.width / 2f)
