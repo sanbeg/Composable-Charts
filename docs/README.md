@@ -44,4 +44,4 @@ Once we have this data, we can render it in a chart, like this:
 
 This would produce something like
 
-!(../composable-chart/src/debug/screenshotTest/reference/com/sanbeg/composable_chart/ExamplePreviewsScreenshots/GreetingPreview_748aa731_0.png)
+![sample chart](../composable-chart/src/debug/screenshotTest/reference/com/sanbeg/composable_chart/ExamplePreviewsScreenshots/GreetingPreview_748aa731_0.png)
