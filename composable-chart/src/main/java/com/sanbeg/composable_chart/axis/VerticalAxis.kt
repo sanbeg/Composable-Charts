@@ -40,6 +40,7 @@ import com.sanbeg.composable_chart.core.plotInset
 import com.sanbeg.composable_chart.core.drawEach
 import com.sanbeg.composable_chart.core.xRange
 import com.sanbeg.composable_chart.core.yRange
+import com.sanbeg.composable_chart.plots.line
 import com.sanbeg.composable_chart_data.asDataSet
 import com.sanbeg.composable_chart_data.geometry.ChartRange
 import com.sanbeg.composable_chart_data.geometry.Point
@@ -219,8 +220,8 @@ fun LeftAxisScope.drawLabelledTics(
             drawLine(color, Offset(size.width, 0f), Offset(size.width - ticLength, 0f))
             val top = when (y) {
                 // if we have vertical axis dataInset may not be needed.
-                yRange.min() -> -min(dataInset, textHeight / 2f)
-                yRange.max() -> -textHeight.toFloat() + min(dataInset, textHeight / 2f)
+                yRange.max() -> -min(dataInset, textHeight / 2f)
+                yRange.min() -> -textHeight.toFloat() + min(dataInset, textHeight / 2f)
                 else -> -textHeight / 2f
             }
             drawText(mr, color, topLeft = Offset(size.width - mr.size.width - ticLength, top))
@@ -258,8 +259,8 @@ fun RightAxisScope.drawLabelledTics(
             drawLine(color, Offset.Zero, Offset(ticLength, 0f))
             val top = when (y) {
                 // if we have vertical axis dataInset may not be needed.
-                yRange.min() -> -min(dataInset, mr.size.height / 2f)
-                yRange.max() -> -mr.size.height.toFloat() + min(dataInset, mr.size.height / 2f)
+                yRange.max() -> -min(dataInset, mr.size.height / 2f)
+                yRange.min() -> -mr.size.height.toFloat() + min(dataInset, mr.size.height / 2f)
                 else -> -mr.size.height / 2f
             }
             drawText(mr, color, topLeft = Offset(ticLength, top))
@@ -303,6 +304,41 @@ private fun PreviewLeftTics() {
 
     }
 }
+
+@Preview(showBackground = true)
+@Composable
+private fun PreviewTicsFullRange() {
+    Chart(modifier = Modifier
+        .size(100.dp)
+        .xRange(0f, 100f)
+        .yRange(0f, 100f)
+    ) {
+        Plot {
+            line(
+                listOf(
+                    Point(0f, 0f),
+                    Point(40f, 25f),
+                    Point(100f, 100f),
+                ).asDataSet()
+            )
+        }
+        val measurer = rememberTextMeasurer()
+        LeftAxis(Modifier.width(12.dp)) {
+            drawLabelledTics(
+                spacing = 25f,
+                textMeasurer = measurer,
+            )
+        }
+        RightAxis(Modifier.width(12.dp)) {
+            drawLabelledTics(
+                spacing = 25f,
+                textMeasurer = measurer,
+            )
+        }
+
+    }
+}
+
 
 @Preview(showBackground = true)
 @Composable

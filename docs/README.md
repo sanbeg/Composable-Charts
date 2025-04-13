@@ -4,6 +4,8 @@ This library provides a toolkit to generate data charts with Jetpack Compose.
 
 # Usage
 
+## Basic Example
+
 To create a chart, we'll start with an example data set.
 
 ```kotlin
@@ -51,7 +53,7 @@ import com.sanbeg.composable_chart_data.yRange
     }
 ```
 
-This would produce something like
+This would produce
 
 ![sample chart](../composable-chart/src/debug/screenshotTest/reference/com/sanbeg/composable_chart/ExamplePreviewsScreenshots/GreetingPreview_748aa731_0.png)
 
@@ -82,3 +84,31 @@ in multiple styles, such as with lines and points.
 We can also have multiple Plots within a chart, such as if we want to
 compare data sets with different scales, we could create another Plot,
 and specify a seperate `Modifier.yRange`.
+
+## Axis
+
+As noted, the charts can also be aligned with an axis.  For example,
+
+```kotlin
+        Chart(
+            Modifier
+                .size(150.dp)
+                .xRange(chartData.xRange())
+                .yRange(chartData.yRange())
+        ) {
+            Plot {
+                line(chartData)
+            }
+            val measurer = rememberTextMeasurer()
+            LeftAxis(Modifier.width(12.dp)) {
+                drawLabelledTics(spacing = 10f, textMeasurer = measurer,)
+            }
+            BottomAxis(Modifier.height(12.dp)) {
+                drawLabelledTics(10f, measurer, format = "%.0f")
+            }
+        }
+```
+
+Would render as
+![Axis example](../composable-chart/src/debug/screenshotTest/reference/com/sanbeg/composable_chart/ExamplePreviewsScreenshots/AxisPreview_748aa731_0.png)
+
