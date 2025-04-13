@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace = "com.sanbeg.composable_chart"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         minSdk = 24
@@ -35,7 +35,7 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
+        kotlinCompilerExtensionVersion = "1.5.15"
     }
     experimentalProperties["android.experimental.enableScreenshotTest"] = true
 }

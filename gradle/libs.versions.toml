@@ -2,7 +2,7 @@
 agp = "8.6.1"
 androidDocumentationPlugin = "1.9.20"
 composeStableMarker = "1.0.5"
-kotlin = "1.9.20"
+kotlin = "1.9.25"
 coreKtx = "1.16.0"
 dokka = "1.9.20"
 junit = "4.13.2"
@@ -14,7 +14,7 @@ composeBom = "2025.04.00"
 appcompat = "1.7.0"
 material = "1.12.0"
 jetbrainsKotlinJvm = "1.9.0"
-screenshot = "0.0.1-alpha07"
+screenshot = "0.0.1-alpha09"
 
 [libraries]
 android-documentation-plugin = { module = "org.jetbrains.dokka:android-documentation-plugin", version.ref = "androidDocumentationPlugin" }
