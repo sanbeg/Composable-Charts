@@ -53,7 +53,7 @@ import com.sanbeg.composable_chart_data.yRange
     }
 ```
 
-This would produce
+This produces
 
 ![sample chart](../composable-chart/src/debug/screenshotTest/reference/com/sanbeg/composable_chart/ExamplePreviewsScreenshots/GreetingPreview_748aa731_0.png)
 
@@ -109,6 +109,7 @@ As noted, the charts can also be aligned with an axis.  For example,
         }
 ```
 
-Would render as
+produces
+
 ![Axis example](../composable-chart/src/debug/screenshotTest/reference/com/sanbeg/composable_chart/ExamplePreviewsScreenshots/AxisPreview_748aa731_0.png)
 
