@@ -45,3 +45,31 @@ Once we have this data, we can render it in a chart, like this:
 This would produce something like
 
 ![sample chart](../composable-chart/src/debug/screenshotTest/reference/com/sanbeg/composable_chart/ExamplePreviewsScreenshots/GreetingPreview_748aa731_0.png)
+
+
+`Chart` is the layout that ties all of our components together.  You
+can think of it sort of like a `Box` with 5 slots.  The center slot
+contains our chart data, and is matched to the size of the chart,
+either by setting the Chart size and letting its child expand to fit
+it, or by specify the size of the plot and allowing the Chart to wrap
+it.  The 4 edge slots match the center slot in one direction, to
+ensure any axis we draw in those slots can align with the data.
+
+The `xRange` and `yRange` modifiers specify the logical range of the
+chart; i.e. which values would correspond to the lower left and upper
+right corners of the chart.  The data will then be auto-scaled to
+match the data.
+
+A `Plot` is the component which performs the scaling, as well as
+providing a drawing surface on which our chart is drawn.  Note that
+the Plots contents are not `@Composable`; rather, this is a type of
+immediate-mode interface, where each function within the plot is drawn
+directly onto its surface.
+
+Note that we can call multiple plotting functions from within each
+`Plot`, either to draw multiple data sets, or draw the same data set
+in multiple styles, such as with lines and points.
+
+We can also have multiple Plots within a chart, such as if we want to
+compare data sets with different scales, we could create another Plot,
+and specify a seperate `Modifier.yRange`.
