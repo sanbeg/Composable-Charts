@@ -7,6 +7,9 @@ This library provides a toolkit to generate data charts with Jetpack Compose.
 To create a chart, we'll start with an example data set.
 
 ```kotlin
+import com.sanbeg.composable_chart_data.asDataSet
+import com.sanbeg.composable_chart_data.geometry.Point
+
 private val chartData = listOf(
         Point(0f, 0f),
         Point(10f, 10f),
@@ -28,6 +31,12 @@ performant implementations which avoids boxing our data.
 Once we have this data, we can render it in a chart, like this:
 
 ```kotlin
+import com.sanbeg.composable_chart.core.xRange
+import com.sanbeg.composable_chart.core.yRange
+import com.sanbeg.composable_chart.plots.line
+import com.sanbeg.composable_chart_data.xRange
+import com.sanbeg.composable_chart_data.yRange
+
        Chart(
             Modifier
                 .size(150.dp)
