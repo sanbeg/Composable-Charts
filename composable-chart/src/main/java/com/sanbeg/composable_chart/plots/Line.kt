@@ -42,7 +42,7 @@ import com.sanbeg.composable_chart_data.geometry.Point
 fun PlotScope.line(
     data: DataSet,
     width: Dp = Dp.Hairline,
-    brush: Brush,
+    brush: Brush = SolidColor(Color.Black),
     pathEffect: PathEffect? = null,
     @FloatRange(from = 0.0, to = 1.0) alpha: Float = 1.0f,
     colorFilter: ColorFilter? = null,
