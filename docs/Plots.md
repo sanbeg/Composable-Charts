@@ -6,19 +6,19 @@ The library supports several plot types.
 
 `line(dataSet, Color.Black)`
 
-![line](composable-chart/src/debug/screenshotTest/reference/com/sanbeg/composable_chart/PreviewPlotTypes/PlotPreview_748aa731_4f59fc0b_0.png)
+![line](../composable-chart/src/debug/screenshotTest/reference/com/sanbeg/composable_chart/PreviewPlotTypes/PlotPreview_748aa731_4f59fc0b_0.png)
 
 ## scatter
 
 `scatter(dataSet, radius=1.dp, color=Color.Black)`
 
-![scatter](composable-chart/src/debug/screenshotTest/reference/com/sanbeg/composable_chart/PreviewPlotTypes/PlotPreview_748aa731_4f59fc0b_1.png)
+![scatter](../composable-chart/src/debug/screenshotTest/reference/com/sanbeg/composable_chart/PreviewPlotTypes/PlotPreview_748aa731_4f59fc0b_1.png)
 
 ## area
 
 `area(dataSet, SolidColor(Color.Cyan))`
 
-![scatter](composable-chart/src/debug/screenshotTest/reference/com/sanbeg/composable_chart/PreviewPlotTypes/PlotPreview_748aa731_4f59fc0b_2.png)
+![scatter](../composable-chart/src/debug/screenshotTest/reference/com/sanbeg/composable_chart/PreviewPlotTypes/PlotPreview_748aa731_4f59fc0b_2.png)
 
 
 ## step
@@ -32,11 +32,11 @@ step(it, color=Color.Blue)
 scatter(it, radius=1.dp, color=Color.Black)
 ```
 
-![step](composable-chart/src/debug/screenshotTest/reference/com/sanbeg/composable_chart/PreviewPlotTypes/PlotPreview_748aa731_4f59fc0b_4.png)
+![step](../composable-chart/src/debug/screenshotTest/reference/com/sanbeg/composable_chart/PreviewPlotTypes/PlotPreview_748aa731_4f59fc0b_4.png)
 
 ```kotlin
 step(it, color=Color.Blue)
 scatter(it, radius=1.dp, color=Color.Black, where=StepVertical.Pre)
 ```
 
-![scatter](composable-chart/src/debug/screenshotTest/reference/com/sanbeg/composable_chart/PreviewPlotTypes/PlotPreview_748aa731_4f59fc0b_5.png)
+![scatter](../composable-chart/src/debug/screenshotTest/reference/com/sanbeg/composable_chart/PreviewPlotTypes/PlotPreview_748aa731_4f59fc0b_5.png)
