@@ -12,9 +12,11 @@ import androidx.compose.ui.unit.dp
 import com.sanbeg.composable_chart.core.plotInset
 import com.sanbeg.composable_chart.core.xRange
 import com.sanbeg.composable_chart.core.yRange
+import com.sanbeg.composable_chart.plots.StepVertical
 import com.sanbeg.composable_chart.plots.area
 import com.sanbeg.composable_chart.plots.line
 import com.sanbeg.composable_chart.plots.scatter
+import com.sanbeg.composable_chart.plots.step
 import com.sanbeg.composable_chart_data.DataSet
 import com.sanbeg.composable_chart_data.asDataSet
 import com.sanbeg.composable_chart_data.geometry.Point
@@ -27,7 +29,20 @@ private class PlotProvider: PreviewParameterProvider<PlotScope.(DataSet) -> Unit
     override val values: Sequence<PlotScope.(DataSet) -> Unit> = sequenceOf(
         { line(it, Color.Black) },
         { scatter(it, 1.dp, Color.Black) },
-        { area(it, SolidColor(Color.Cyan)) }
+        { area(it, SolidColor(Color.Cyan)) },
+        {
+            area(it, SolidColor(Color.Cyan))
+            line(it, Color.Blue)
+            scatter(it, 1.dp, Color.Black)
+        },
+        {
+            step(it, color = Color.Blue)
+            scatter(it, 1.dp, Color.Black)
+        },
+        {
+            step(it, color = Color.Blue, where = StepVertical.Pre)
+            scatter(it, 1.dp, Color.Black)
+        },
     )
 
 }
