@@ -144,6 +144,7 @@ class LegacyChartScope internal constructor(
     internal var dataInset: Float = 0f
 }
 
+@Deprecated
 @Composable
 fun Chart(
     minX: Float = 0f,
@@ -160,6 +161,7 @@ fun Chart(
     Layout(measurePolicy = ChartMeasurePolicy, content = layoutContent, modifier = modifier)
 }
 
+@Deprecated
 @Composable
 fun Chart(
     minX: Float,

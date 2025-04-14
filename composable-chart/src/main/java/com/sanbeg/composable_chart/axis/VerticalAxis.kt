@@ -319,7 +319,8 @@ private fun PreviewTicsFullRange() {
                     Point(0f, 0f),
                     Point(40f, 25f),
                     Point(100f, 100f),
-                ).asDataSet()
+                ).asDataSet(),
+                color = Color.Black
             )
         }
         val measurer = rememberTextMeasurer()

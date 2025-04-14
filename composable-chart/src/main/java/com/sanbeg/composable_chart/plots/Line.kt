@@ -41,8 +41,8 @@ import com.sanbeg.composable_chart_data.geometry.Point
  */
 fun PlotScope.line(
     data: DataSet,
+    brush: Brush,
     width: Dp = Dp.Hairline,
-    brush: Brush = SolidColor(Color.Black),
     pathEffect: PathEffect? = null,
     @FloatRange(from = 0.0, to = 1.0) alpha: Float = 1.0f,
     colorFilter: ColorFilter? = null,
@@ -52,6 +52,29 @@ fun PlotScope.line(
         drawLine(brush, a, b, width.toPx(), StrokeCap.Round, pathEffect, alpha, colorFilter, blendMode)
     }
 }
+
+/**
+ * Draws a series of lines connecting the given points using the given paint. The lines
+ * are stroked.
+ *
+ * @param data the set of points
+ * @param color the color to be applied to the line
+ * @param width stroke width to apply to the line
+ * @param pathEffect optional effect or pattern to apply to the line
+ * @param alpha opacity to be applied to the [brush] from 0.0f to 1.0f representing
+ * fully transparent to fully opaque respectively
+ * @param colorFilter ColorFilter to apply to the [brush] when drawn into the destination
+ * @param blendMode the blending algorithm to apply to the [brush]
+ */
+fun PlotScope.line(
+    data: DataSet,
+    color: Color,
+    width: Dp = Dp.Hairline,
+    pathEffect: PathEffect? = null,
+    @FloatRange(from = 0.0, to = 1.0) alpha: Float = 1.0f,
+    colorFilter: ColorFilter? = null,
+    blendMode: BlendMode = DefaultBlendMode
+) = line(data, SolidColor(color), width, pathEffect, alpha, colorFilter, blendMode)
 
 // see https://matplotlib.org/stable/gallery/lines_bars_and_markers/stairs_demo.html
 /**
@@ -84,8 +107,8 @@ inline fun PlotScope.step(
  *
  * @param data the set of points
  * @param brush the color or fill to be applied to the line
- * @param where where to draw the vertical line
  * @param width stroke width to apply to the line
+ * @param where where to draw the vertical line
  * @param pathEffect optional effect or pattern to apply to the line
  * @param alpha opacity to be applied to the [brush] from 0.0f to 1.0f representing
  * fully transparent to fully opaque respectively
@@ -94,8 +117,8 @@ inline fun PlotScope.step(
  */
 fun PlotScope.step(
     data: DataSet,
-    width: Dp = Dp.Hairline,
     brush: Brush,
+    width: Dp = Dp.Hairline,
     where: StepVertical = StepVertical.Post,
     pathEffect: PathEffect? = null,
     @FloatRange(from = 0.0, to = 1.0) alpha: Float = 1.0f,
@@ -106,6 +129,31 @@ fun PlotScope.step(
         drawLine(brush, a, b, width.toPx(), StrokeCap.Round, pathEffect, alpha, colorFilter, blendMode)
     }
 }
+
+/**
+ * Draws a series of lines connecting the given points with horizontal and vertical lines using the
+ * given paint. The lines are stroked.
+ *
+ * @param data the set of points
+ * @param color the color to be applied to the line
+ * @param width stroke width to apply to the line
+ * @param where where to draw the vertical line
+ * @param pathEffect optional effect or pattern to apply to the line
+ * @param alpha opacity to be applied to the [brush] from 0.0f to 1.0f representing
+ * fully transparent to fully opaque respectively
+ * @param colorFilter ColorFilter to apply to the [brush] when drawn into the destination
+ * @param blendMode the blending algorithm to apply to the [brush]
+ */
+fun PlotScope.step(
+    data: DataSet,
+    color: Color,
+    width: Dp = Dp.Hairline,
+    where: StepVertical = StepVertical.Post,
+    pathEffect: PathEffect? = null,
+    @FloatRange(from = 0.0, to = 1.0) alpha: Float = 1.0f,
+    colorFilter: ColorFilter? = null,
+    blendMode: BlendMode = DefaultBlendMode
+) = step(data, SolidColor(color), width, where, pathEffect, alpha, colorFilter, blendMode)
 
 @Preview(showBackground = true)
 @Composable
@@ -120,7 +168,7 @@ private fun PreviewLine() {
             )
         )
         Scale(maxY = 100f) {
-            line(dataSet, 1.dp, SolidColor(Color.Blue))
+            line(dataSet, width=1.dp, brush=SolidColor(Color.Blue))
         }
     }
 }
@@ -143,7 +191,7 @@ private fun PreviewStep() {
                 drawLine(Color.Cyan, a, b,
                     pathEffect = dashPathEffect(floatArrayOf(6f, 3f)))
             }
-            step(dataSet, 1.dp, SolidColor(Color.Blue))
+            step(dataSet, width=1.dp, brush=SolidColor(Color.Blue))
         }
     }
 }
@@ -161,8 +209,8 @@ private fun PreviewStepPre() {
             )
         )
         Scale(maxY = 100f) {
-            line(dataSet, 1.dp, SolidColor(Color.Cyan))
-            step(dataSet, 1.dp, SolidColor(Color.Blue), where=StepVertical.Pre)
+            line(dataSet, width=1.dp, brush=SolidColor(Color.Cyan))
+            step(dataSet, width=1.dp, brush=SolidColor(Color.Blue), where=StepVertical.Pre)
         }
     }
 }
