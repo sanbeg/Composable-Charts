@@ -99,7 +99,7 @@ As noted, the charts can also be aligned with an axis.  For example,
                 .yRange(chartData.yRange())
         ) {
             Plot {
-                line(chartData)
+                line(chartData, color=Color.Black)
             }
             val measurer = rememberTextMeasurer()
             LeftAxis(Modifier.width(12.dp)) {
