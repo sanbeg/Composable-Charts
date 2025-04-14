@@ -1,7 +1,6 @@
 package com.sanbeg.composable_chart
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
@@ -74,52 +73,6 @@ private class ComposableChartLogScaleScope(
     } else {
         Offset(point.x, point.y)
     }
-}
-
-/**
- * A composable which provides a scaling for its content.  The content is invoked in a scope which
- * provides functionality to scale [Point]s in real-world units to [Offset]s in pixels.
- *
- * @param[minY] The Y value which will scale to the bottom of the chart.
- * @param[maxY] The Y value which will scale to the top of the chart.
- *
- * Note that [minY] and [maxY] should not be the same.  If [minY] < [maxY], then increasing values
- * will be drawn closer to the top.  Swapping [minY] and [maxY] would cause the graph to be inverted.
- *
- * @param[modifier] The modifier to apply to the scale.
- * @param[content] The content of the Scale.
- *
- */
-@Deprecated(
-    message = "migrate to Plot",
-    replaceWith = ReplaceWith("Plot(modifier.yRange(minY, maxY), content)", "com.sanbeg.composable_chart.Plot")
-)
-@Composable
-fun LegacyChartScope.Scale(
-    minY: Float = 0f,
-    maxY: Float = 1f,
-    modifier: Modifier = Modifier,
-    content: PlotScope.() -> Unit
-    ) {
-    Spacer(
-        modifier
-            .asPlot()
-            .fillMaxSize()
-            .drawBehind {
-                val matrix = Matrix().apply {
-                    translate(x = dataInset, y = dataInset)
-                    val di2 = dataInset * 2
-                    scale(
-                        x = (size.width - di2) / (maxX - minX),
-                        y = (size.height - di2) / -(maxY - minY),
-                    )
-                    translate(
-                        x = -minX,
-                        y = -maxY,
-                    )
-                }
-                ComposableChartScaleScope(matrix, this).content()
-            })
 }
 
 internal fun makeScaleMatrix(size: Size, dataInset: Float, xRange: ChartRange, yRange: ChartRange) = Matrix().apply {
@@ -214,7 +167,7 @@ private fun PreviewChart() {
 @Preview(showBackground = true)
 @Composable
 private fun PreviewChartFlip() {
-    Chart(maxX = 100f, dataInset = 4.dp,
+    Chart(
         modifier = Modifier
             .size(100.dp)
             .xRange(0f, 100f)
@@ -222,7 +175,6 @@ private fun PreviewChartFlip() {
             .plotInset(4.dp)
     ) {
         Plot {
-            // drawScope.drawCircle(Color.Red, 4.dp.value)
             drawEach(
                 listOf(
                     Point(25f, 25f),
@@ -240,7 +192,7 @@ private fun PreviewChartFlip() {
 @Preview(showBackground = true)
 @Composable
 private fun PreviewPlot() {
-    Chart(maxX = 100f, dataInset = 3.dp,
+    Chart(
         modifier = Modifier
             .size(100.dp)
             .xRange(0f, 100f)
@@ -249,8 +201,6 @@ private fun PreviewPlot() {
             //.logScale(y=2f)
     ) {
         Plot {
-            // drawScope.drawCircle(Color.Red, 4.dp.value)
-
             drawEach(
                 listOf(
                     Point(25f, 25f),

@@ -228,7 +228,7 @@ fun FunctionScope.scatter(
 @Preview(showBackground = true)
 @Composable
 private fun PreviewFunction() {
-    Chart(minX = 0f, maxX = 100f, modifier = Modifier
+    Chart(modifier = Modifier
         .size(150.dp)
         //.resolution(.5.dp)
         .xRange(0f, 100f)
@@ -249,7 +249,7 @@ private fun PreviewFunction() {
 @Composable
 private fun PreviewFunctionCL() {
     Chart(
-        minX = 0f, maxX = 100f, modifier = Modifier
+        modifier = Modifier
             .size(150.dp)
             .yRange(-1f, 1f)
             .xRange(0f, 100f)
@@ -268,7 +268,7 @@ private fun PreviewFunctionCL() {
 @Composable
 private fun PreviewFunctionScatter() {
     Chart(
-        minX = 0f, maxX = 100f, modifier = Modifier
+        modifier = Modifier
             .size(150.dp)
             .yRange(-1f, 1f)
             .xRange(0f, 100f)
@@ -288,7 +288,7 @@ private fun PreviewFunctionScatter() {
 @Composable
 private fun PreviewFunctionArea() {
     Chart(
-        minX = 0f, maxX = 100f, modifier = Modifier
+        modifier = Modifier
             .size(150.dp)
             .yRange(-1f, 1f)
             .xRange(0f, 100f)

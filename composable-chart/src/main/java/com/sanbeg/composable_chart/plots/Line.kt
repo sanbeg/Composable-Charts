@@ -19,9 +19,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.sanbeg.composable_chart.Chart
+import com.sanbeg.composable_chart.Plot
 import com.sanbeg.composable_chart.PlotScope
-import com.sanbeg.composable_chart.Scale
 import com.sanbeg.composable_chart.core.drawEachSegment
+import com.sanbeg.composable_chart.core.plotInset
+import com.sanbeg.composable_chart.core.xRange
+import com.sanbeg.composable_chart.core.yRange
 import com.sanbeg.composable_chart_data.DataSet
 import com.sanbeg.composable_chart_data.dataSetOf
 import com.sanbeg.composable_chart_data.geometry.Point
@@ -158,7 +161,7 @@ fun PlotScope.step(
 @Preview(showBackground = true)
 @Composable
 private fun PreviewLine() {
-    Chart(maxX = 100f, dataInset = 6.dp, modifier = Modifier.size(100.dp)) {
+    Chart(Modifier.size(100.dp).xRange(0f, 100f).plotInset(6.dp)) {
         val dataSet = dataSetOf(
             listOf(
                 Point(0f, 0f),
@@ -167,7 +170,7 @@ private fun PreviewLine() {
                 Point(100f, 100f),
             )
         )
-        Scale(maxY = 100f) {
+        Plot(Modifier.yRange(0f, 100f)) {
             line(dataSet, width=1.dp, brush=SolidColor(Color.Blue))
         }
     }
@@ -176,7 +179,7 @@ private fun PreviewLine() {
 @Preview(showBackground = true)
 @Composable
 private fun PreviewStep() {
-    Chart(maxX = 100f, dataInset = 6.dp, modifier = Modifier.size(100.dp)) {
+    Chart(Modifier.size(100.dp).xRange(0f, 100f).plotInset(6.dp)) {
         val dataSet = dataSetOf(
             listOf(
                 Point(0f, 0f),
@@ -185,7 +188,7 @@ private fun PreviewStep() {
                 Point(100f, 100f),
             )
         )
-        Scale(maxY = 100f) {
+        Plot(Modifier.yRange(0f, 100f)) {
             //line(dataSet, 1.dp, SolidColor(Color.Cyan))
             drawEachSegment(dataSet) {a, b ->
                 drawLine(Color.Cyan, a, b,
@@ -199,7 +202,7 @@ private fun PreviewStep() {
 @Preview(showBackground = true)
 @Composable
 private fun PreviewStepPre() {
-    Chart(maxX = 100f, dataInset = 6.dp, modifier = Modifier.size(100.dp)) {
+    Chart(Modifier.size(100.dp).xRange(0f, 100f).plotInset(6.dp)) {
         val dataSet = dataSetOf(
             listOf(
                 Point(0f, 0f),
@@ -208,7 +211,7 @@ private fun PreviewStepPre() {
                 Point(100f, 100f),
             )
         )
-        Scale(maxY = 100f) {
+        Plot(Modifier.yRange(0f, 100f)) {
             line(dataSet, width=1.dp, brush=SolidColor(Color.Cyan))
             step(dataSet, width=1.dp, brush=SolidColor(Color.Blue), where=StepVertical.Pre)
         }

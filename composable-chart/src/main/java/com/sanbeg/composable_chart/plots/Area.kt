@@ -13,10 +13,13 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.sanbeg.composable_chart.Chart
+import com.sanbeg.composable_chart.Plot
 import com.sanbeg.composable_chart.PlotScope
-import com.sanbeg.composable_chart.Scale
 import com.sanbeg.composable_chart.core.drawEach
 import com.sanbeg.composable_chart.core.drawEachSegment
+import com.sanbeg.composable_chart.core.plotInset
+import com.sanbeg.composable_chart.core.xRange
+import com.sanbeg.composable_chart.core.yRange
 import com.sanbeg.composable_chart_data.DataSet
 import com.sanbeg.composable_chart_data.dataSetOf
 import com.sanbeg.composable_chart_data.geometry.Point
@@ -74,7 +77,7 @@ fun PlotScope.area(data: DataSet, brush: Brush) {
 @Preview(showBackground = true)
 @Composable
 private fun PreviewArea() {
-    Chart(maxX = 100f, dataInset = 6.dp, modifier = Modifier.size(100.dp)) {
+    Chart(Modifier.size(100.dp).xRange(0f, 100f).plotInset(6.dp)) {
         val dataSet = dataSetOf(
             listOf(
                 Point(0f, 0f),
@@ -83,7 +86,7 @@ private fun PreviewArea() {
                 Point(100f, 100f),
             )
         )
-        Scale(maxY = 100f) {
+        Plot(Modifier.yRange(0f, 100f)) {
             area(dataSet, SolidColor(Color.Blue))
         }
     }
@@ -93,7 +96,7 @@ private fun PreviewArea() {
 @Preview(showBackground = true)
 @Composable
 private fun PreviewFastArea() {
-    Chart(maxX = 100f, dataInset = 6.dp, modifier = Modifier.size(100.dp)) {
+    Chart(Modifier.size(100.dp).xRange(0f, 100f).plotInset(6.dp)) {
         val dataSet = dataSetOf(
             listOf(
                 Point(0f, 0f),
@@ -102,7 +105,7 @@ private fun PreviewFastArea() {
                 Point(100f, 100f),
             )
         )
-        Scale(maxY = 100f) {
+        Plot(Modifier.yRange(0f, 100f)) {
             area(dataSet, SolidColor(Color.Blue))
         }
     }
@@ -112,7 +115,7 @@ private fun PreviewFastArea() {
 @Preview(showBackground = true)
 @Composable
 private fun PreviewAreaGap() {
-    Chart(maxX = 100f, dataInset = 6.dp, modifier = Modifier.size(100.dp)) {
+    Chart(Modifier.size(100.dp).xRange(0f, 100f).plotInset(6.dp)) {
         val dataSet = dataSetOf(
             listOf(
                 Point(0f, 0f),
@@ -122,7 +125,7 @@ private fun PreviewAreaGap() {
                 Point(100f, 100f),
             )
         )
-        Scale(maxY = 100f) {
+        Plot(Modifier.yRange(0f, 100f)) {
             area(dataSet, SolidColor(Color.Blue))
         }
     }

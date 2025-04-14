@@ -21,9 +21,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.sanbeg.composable_chart.Chart
+import com.sanbeg.composable_chart.Plot
 import com.sanbeg.composable_chart.PlotScope
-import com.sanbeg.composable_chart.Scale
 import com.sanbeg.composable_chart.core.drawEachFinite
+import com.sanbeg.composable_chart.core.plotInset
+import com.sanbeg.composable_chart.core.xRange
+import com.sanbeg.composable_chart.core.yRange
 import com.sanbeg.composable_chart_data.DataSet
 import com.sanbeg.composable_chart_data.asDataSet
 import com.sanbeg.composable_chart_data.dataSetOf
@@ -142,7 +145,7 @@ fun PlotScope.scatter(
 @Preview(showBackground = true)
 @Composable
 private fun PreviewScatter() {
-    Chart(maxX = 100f, dataInset = 6.dp, modifier = Modifier.size(100.dp)) {
+    Chart(Modifier.size(100.dp).xRange(0f, 100f).plotInset(6.dp)) {
         val dataSet = dataSetOf(
             listOf(
                 Point(0f, 0f),
@@ -151,7 +154,7 @@ private fun PreviewScatter() {
                 Point(100f, 100f),
             )
         )
-        Scale(maxY = 100f) {
+        Plot(Modifier.yRange(0f, 100f)) {
             scatter(dataSet, 3.dp, SolidColor(Color.Blue), style=Stroke(2f))
         }
     }
@@ -160,7 +163,7 @@ private fun PreviewScatter() {
 @Preview(showBackground = true)
 @Composable
 private fun PreviewScatter2() {
-    Chart(maxX = 100f, dataInset = 6.dp, modifier = Modifier.size(100.dp)) {
+    Chart(Modifier.size(100.dp).xRange(0f, 100f).plotInset(6.dp)) {
         val dataSet = dataSetOf(
             listOf(
                 Point(0f, 0f),
@@ -169,7 +172,7 @@ private fun PreviewScatter2() {
                 Point(100f, 100f),
             )
         )
-        Scale(maxY = 100f) {
+        Plot(Modifier.yRange(0f, 100f)) {
             scatter(dataSet) {
                 drawCircle(Color.Blue, 3.dp.toPx())
             }
@@ -180,7 +183,7 @@ private fun PreviewScatter2() {
 @Preview(showBackground = true)
 @Composable
 private fun PreviewScatter3() {
-    Chart(maxX = 100f, dataInset = 6.dp, modifier = Modifier.size(100.dp)) {
+    Chart(Modifier.size(100.dp).xRange(0f, 100f).plotInset(6.dp)) {
         val dataSet = dataSetOf(
             listOf(
                 Point(0f, 0f),
@@ -189,7 +192,7 @@ private fun PreviewScatter3() {
                 Point(100f, 100f),
             )
         )
-        Scale(maxY = 100f) {
+        Plot(Modifier.yRange(0f, 100f)) {
             scatter(dataSet) {
                 drawRect(Color.Blue,
                     topLeft = Offset(-2.dp.toPx(), -2.dp.toPx()),
@@ -204,13 +207,13 @@ private fun PreviewScatter3() {
 @Preview(showBackground = true)
 @Composable
 private fun PreviewDrawAt() {
-    Chart(maxX = 100f, dataInset = 6.dp, modifier = Modifier.size(100.dp)) {
+    Chart(Modifier.size(100.dp).xRange(0f, 100f).plotInset(6.dp)) {
         val dataSet = listOf(
             Point(25f, 25f),
             Point(0f, 0f),
             Point(100f, 100f),
         ).asDataSet()
-        Scale(maxY = 100f) {
+        Plot(Modifier.yRange(0f, 100f)) {
             scatter(dataSet) {
                 drawCircle(Color.Blue, 4.dp.value, Offset.Zero)
             }

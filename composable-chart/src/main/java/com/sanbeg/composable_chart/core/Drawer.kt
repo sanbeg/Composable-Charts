@@ -11,8 +11,8 @@ import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.sanbeg.composable_chart.Chart
+import com.sanbeg.composable_chart.Plot
 import com.sanbeg.composable_chart.PlotScope
-import com.sanbeg.composable_chart.Scale
 import com.sanbeg.composable_chart_data.DataSet
 import com.sanbeg.composable_chart_data.asDataSet
 import com.sanbeg.composable_chart_data.forEach
@@ -91,8 +91,8 @@ inline fun PlotScope.drawEachSegment(
 @Preview(showBackground = true)
 @Composable
 private fun PreviewChart() {
-    Chart(maxX = 100f, dataInset = 6.dp, modifier = Modifier.size(100.dp)) {
-        Scale(maxY = 100f) {
+    Chart(Modifier.size(100.dp).xRange(0f, 100f).plotInset(6.dp)) {
+        Plot(Modifier.yRange(0f, 100f)) {
             // drawScope.drawCircle(Color.Red, 4.dp.value)
             drawEach(
                 listOf(
@@ -110,13 +110,13 @@ private fun PreviewChart() {
 @Preview(showBackground = true)
 @Composable
 private fun PreviewDrawEachData() {
-    Chart(maxX = 100f, dataInset = 6.dp, modifier = Modifier.size(100.dp)) {
+    Chart(modifier = Modifier.size(100.dp).plotInset(6.dp).xRange(0f, 100f)) {
         val dataSet = listOf(
             Point(25f, 25f),
             Point(0f, 0f),
             Point(100f, 100f),
         ).asDataSet()
-        Scale(maxY = 100f) {
+        Plot(Modifier.yRange(0f, 100f)) {
             // drawScope.drawCircle(Color.Red, 4.dp.value)
             drawEach(dataSet) {
                 drawCircle(Color.Blue, 4.dp.value, it)

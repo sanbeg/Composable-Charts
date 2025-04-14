@@ -422,13 +422,11 @@ private fun PreviewChartVerticalAxis() {
 @Composable
 private fun PreviewChartVerticalAxisShift() {
     Chart(
-        minX = 0f,
-        maxX = 100f,
-        minY = 100f,
-        maxY = 200f,
         modifier = Modifier
             .size(100.dp)
             .plotInset(3.dp)
+            .xRange(0f, 100f)
+            .yRange(100f, 200f)
     ) {
         Plot {
             drawEach(

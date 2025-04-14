@@ -137,44 +137,6 @@ open class ComposableChartScope internal constructor() {
     ))
 }
 
-class LegacyChartScope internal constructor(
-    internal val minX: Float,
-    internal val maxX: Float,
-): ComposableChartScope() {
-    internal var dataInset: Float = 0f
-}
-
-@Deprecated
-@Composable
-fun Chart(
-    minX: Float = 0f,
-    maxX: Float = 1f,
-    dataInset: Dp = 0.dp,
-    modifier: Modifier = Modifier,
-    content: @Composable LegacyChartScope.() -> Unit
-) {
-    val layoutContent: @Composable () -> Unit = {
-        LegacyChartScope(minX, maxX).also {
-            it.dataInset = with(LocalDensity.current) { dataInset.toPx() }
-        }.content()
-    }
-    Layout(measurePolicy = ChartMeasurePolicy, content = layoutContent, modifier = modifier)
-}
-
-@Deprecated
-@Composable
-fun Chart(
-    minX: Float,
-    maxX: Float,
-    minY: Float,
-    maxY: Float,
-    modifier: Modifier = Modifier,
-    content: @Composable ComposableChartScope.() -> Unit
-) = Chart(
-    modifier.xRange(minX, maxX).yRange(minY, maxY),
-    content
-)
-
 /**
  * Composable which lays out the chart and axis.
  *
