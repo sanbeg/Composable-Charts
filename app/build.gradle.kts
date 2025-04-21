@@ -60,8 +60,10 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
 
-    implementation(project(":composable-chart"))
-    implementation(project(":composable-chart-data"))
+    //implementation(project(":composable-chart"))
+    //implementation(project(":composable-chart-data"))
+
+    implementation("com.sanbeg:Composable-Charts:main-SNAPSHOT")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

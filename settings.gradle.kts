@@ -16,6 +16,10 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        maven {
+            url = uri("https://jitpack.io")
+            content { includeGroup("com.sanbeg") }
+        }
     }
 }
 
@@ -23,4 +27,3 @@ rootProject.name = "Composable Charts"
 include(":app")
 include(":composable-chart")
 include(":composable-chart-data")
-include(":offset-data")

@@ -12,7 +12,6 @@
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/composable-chart" />
             <option value="$PROJECT_DIR$/composable-chart-data" />
-            <option value="$PROJECT_DIR$/offset-data" />
           </set>
         </option>
         <option name="resolveExternalAnnotations" value="false" />

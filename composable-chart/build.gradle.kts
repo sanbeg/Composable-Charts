@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.screenshot)
+    `maven-publish`
 }
 
 android {
@@ -38,6 +39,13 @@ android {
         kotlinCompilerExtensionVersion = "1.5.15"
     }
     experimentalProperties["android.experimental.enableScreenshotTest"] = true
+
+    publishing {
+        singleVariant("release") {
+            withSourcesJar()
+            withJavadocJar()
+        }
+    }
 }
 
 dependencies {
@@ -52,7 +60,6 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(project(":composable-chart-data"))
-    //implementation(project(":offset-data"))
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
@@ -62,4 +69,25 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
     screenshotTestImplementation(libs.androidx.compose.ui.tooling)
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            create<MavenPublication>("release") {
+                groupId = "com.sanbeg"
+                artifactId = "composable-chart"
+                version = "0.1.0"
+                /*
+                pom {
+                    name.set("Android library for chart data")
+                    description.set("Data collections for composable charts")
+                }
+                 */
+                afterEvaluate {
+                    from(components["release"])
+                }
+            }
+        }
+    }
 }
