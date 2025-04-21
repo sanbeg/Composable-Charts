@@ -25,7 +25,7 @@ dependencies {
 publishing {
     publications {
         create<MavenPublication>("maven") {
-            groupId = "com.sanbeg"
+            groupId = "com.sanbeg.Composable-Charts"
             artifactId = "composable-chart-data"
             version = "0.1.0"
 

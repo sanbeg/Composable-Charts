@@ -75,7 +75,7 @@ afterEvaluate {
     publishing {
         publications {
             create<MavenPublication>("release") {
-                groupId = "com.sanbeg"
+                groupId = "com.sanbeg.Composable-Charts"
                 artifactId = "composable-chart"
                 version = "0.1.0"
                 /*
