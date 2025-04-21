@@ -1,8 +1,10 @@
 package com.sanbeg.composable_chart_data
 
-import com.sanbeg.composable_chart_data.geometry.ChartRange
 import com.sanbeg.composable_chart_data.geometry.Point
-import org.junit.Assert.*
+import com.sanbeg.composable_chart_data.geometry.chartRangeOf
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class ImmutableDataSetTest {
@@ -98,13 +100,13 @@ class ImmutableDataSetTest {
     fun testXRange() {
         val range = ImmutableDataSet(list).xRange()
 
-        assertEquals(ChartRange(12f, 56f), range)
+        assertEquals(chartRangeOf(12f, 56f), range)
     }
 
     @Test
     fun testYRange() {
         val range = ImmutableDataSet(list).yRange()
 
-        assertEquals(ChartRange(34f, 78f), range)
+        assertEquals(chartRangeOf(34f, 78f), range)
     }
 }
