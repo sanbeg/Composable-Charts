@@ -1,3 +1,6 @@
+
+[![](https://jitpack.io/v/com.sanbeg/Composable-Charts.svg)](https://jitpack.io/#com.sanbeg/Composable-Charts)
+
 # Composable Charts
 
 This library provides a toolkit to generate data charts with Jetpack Compose.
