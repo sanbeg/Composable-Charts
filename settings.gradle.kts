@@ -18,7 +18,9 @@ dependencyResolutionManagement {
         mavenCentral()
         maven {
             url = uri("https://jitpack.io")
-            //content { includeGroup("com.sanbeg") }
+            content {
+                includeGroup("com.sanbeg.Composable-Charts")
+            }
         }
     }
 }
