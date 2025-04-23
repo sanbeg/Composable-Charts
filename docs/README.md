@@ -7,6 +7,37 @@ This library provides a toolkit to generate data charts with Jetpack Compose.
 
 # Usage
 
+## Building
+
+First, make sure the jitpack repository is included in your build; the
+current recommendation is to add that in your `settings.gradle`.  If
+it's not already included, and you want to include it for only this
+library, you could include it as follows:
+
+```kotlin
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+        maven {
+            url = uri("https://jitpack.io")
+            content {
+                includeGroup("com.sanbeg.Composable-Charts")
+            }
+        }
+    }
+}
+```
+
+Then, add the dependency to your project in the usual way.  The
+simplest would simply be to add a line like:
+
+`implementation("com.sanbeg.Composable-Charts:composable-chart:+")`
+
+Of course, you can get the latest version from the badge at the top of
+this file, and add it to your version catalog in the usual way.
+
 ## Basic Example
 
 To create a chart, we'll start with an example data set.
