@@ -1,6 +1,7 @@
 [versions]
 agp = "8.6.1"
 androidDocumentationPlugin = "1.9.20"
+composableChart = "v0.0.1"
 composeStableMarker = "1.0.5"
 kotlin = "1.9.25"
 coreKtx = "1.16.0"
@@ -19,6 +20,8 @@ screenshot = "0.0.1-alpha09"
 [libraries]
 android-documentation-plugin = { module = "org.jetbrains.dokka:android-documentation-plugin", version.ref = "androidDocumentationPlugin" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+composable-chart = { module = "com.sanbeg.Composable-Charts:composable-chart", version.ref = "composableChart" }
+composable-chart-data = { module = "com.sanbeg.Composable-Charts:composable-chart-data", version.ref = "composableChart" }
 compose-stable-marker = { module = "com.github.skydoves:compose-stable-marker", version.ref = "composeStableMarker" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }

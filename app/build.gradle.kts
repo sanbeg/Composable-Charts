@@ -63,9 +63,8 @@ dependencies {
     //implementation(project(":composable-chart"))
     //implementation(project(":composable-chart-data"))
 
-    implementation("com.sanbeg.Composable-Charts:composable-chart:v0.0.1")
-    implementation("com.sanbeg.Composable-Charts:composable-chart-data:v0.0.1")
-
+    implementation(libs.composable.chart)
+    implementation(libs.composable.chart.data)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
