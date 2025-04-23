@@ -33,7 +33,9 @@ dependencyResolutionManagement {
 Then, add the dependency to your project in the usual way.  The
 simplest would simply be to add a line like:
 
-`implementation("com.sanbeg.Composable-Charts:composable-chart:+")`
+```kotlin
+implementation("com.sanbeg.Composable-Charts:composable-chart:+")
+```
 
 Of course, you can get the latest version from the badge at the top of
 this file, and add it to your version catalog in the usual way.
