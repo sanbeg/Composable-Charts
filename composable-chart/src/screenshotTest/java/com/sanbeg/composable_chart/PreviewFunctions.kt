@@ -38,7 +38,7 @@ class PreviewFunctions {
                 .yRange(-1f, 1f)
                 .xRange(0f, 100f)
         ) {
-            Function() {
+            Function {
                 line { x -> sin(x / PI.toFloat().times(2)) }
             }
         }
