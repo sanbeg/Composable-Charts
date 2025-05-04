@@ -117,7 +117,7 @@ Note that we can call multiple plotting functions from within each
 `Plot`, either to draw multiple data sets, or draw the same data set
 in multiple styles, such as with lines and points.
 
-In this example we're plotting a line, but we support [several types](Plots.md).
+In this example we're plotting a line, but we support [several types](https://github.com/sanbeg/Composable-Charts/wiki/Plot-tpes).
 
 We can also have multiple Plots within a chart, such as if we want to
 compare data sets with different scales, we could create another Plot,
@@ -151,3 +151,6 @@ produces
 
 ![Axis example](../composable-chart/src/debug/screenshotTest/reference/com/sanbeg/composable_chart/ExamplePreviewsScreenshots/AxisPreview_748aa731_0.png)
 
+##Further Reading
+
+Additonal documentation is in the [wiki](https://github.com/sanbeg/Composable-Charts/wiki) and [kdocs](https://javadoc.jitpack.io/com/github/sanbeg/Composable-Charts/composable-chart/v0.0.2/javadoc/index.html)
