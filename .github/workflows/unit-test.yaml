@@ -1,0 +1,22 @@
+on: pull_request
+
+
+permissions:
+  contents: write 
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: 17
+          distribution: 'adopt'
+
+      - name: run tests
+        run: ./gradlew testDebugUnitTest
