@@ -5,7 +5,7 @@ permissions:
   contents: read
 
 jobs:
-  unit test:
+  unit_test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -24,7 +24,7 @@ jobs:
       - name: run tests
         run: ./gradlew testDebugUnitTest
 
-  screenshot test:
+  screenshot_test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
