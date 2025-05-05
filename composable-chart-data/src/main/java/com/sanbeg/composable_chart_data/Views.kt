@@ -54,14 +54,13 @@ private class DataSetSubset(
 fun DataSet.asList(): List<Point> = DataSetListView(this)
 
 /**
- * Convert this DataSet into an [Iterable].  The returned Iterable view would be implemented
- * as a value class, this doesn't require allocation a new object.  Its iterator provides a
+ * Convert this DataSet into an [Iterable].  Its iterator provides a
  * nextPoint method which allows it to iterate through the points without boxing.
  */
 fun DataSet.asIterable(): PointIterable = DataSetIterableView(this)
 
-fun DataSet.asit2() = object : PointIterable {
-    override fun iterator()= DataSetIterator(this@asit2)
+fun DataSet.asIterator() = object : PointIterable {
+    override fun iterator()= DataSetIterator(this@asIterator)
 }
 
 fun DataSet.asSequence() = Sequence { DataSetIterator(this) }
