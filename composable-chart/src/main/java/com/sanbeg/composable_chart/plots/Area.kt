@@ -50,12 +50,6 @@ private fun PlotScope.area(data: DataSet, content: DrawScope.(path: Path) -> Uni
     drawScope.content(path)
 }
 
-fun PlotScope.legacyArea(data: DataSet, brush: Brush) {
-    area(data) { path ->
-        drawScope.drawPath(path, brush)
-    }
-}
-
 /**
  * Draws the specified data as an area chart.
  */
