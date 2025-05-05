@@ -21,4 +21,4 @@ jobs:
         uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
 
       - name: run tests
-        run: ./gradlew ./gradlew validateDebugScreenshotTest
+        run: ./gradlew validateDebugScreenshotTest
