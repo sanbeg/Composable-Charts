@@ -1,0 +1,1 @@
+sourceset_dependencies = '{":app:dokkaHtmlPartial/debug":[],":app:dokkaHtmlPartial/main":[],":app:dokkaHtmlPartial/release":[],":composable-chart:dokkaHtmlPartial/debug":[],":composable-chart:dokkaHtmlPartial/main":[],":composable-chart:dokkaHtmlPartial/release":[],":composable-chart-data:dokkaHtmlPartial/main":[]}'

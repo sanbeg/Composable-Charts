@@ -1,0 +1,15 @@
+$dokka.format:html-v1
+$dokka.linkExtension:html
+
+module:app
+com.example.composablecharts
+com.example.composablecharts.ui.theme
+module:composable-chart
+com.sanbeg.composable_chart
+com.sanbeg.composable_chart.axis
+com.sanbeg.composable_chart.core
+com.sanbeg.composable_chart.plots
+module:composable-chart-data
+com.sanbeg.composable_chart_data
+com.sanbeg.composable_chart_data.function
+com.sanbeg.composable_chart_data.geometry
