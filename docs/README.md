@@ -151,6 +151,6 @@ produces
 
 ![Axis example](../composable-chart/src/debug/screenshotTest/reference/com/sanbeg/composable_chart/ExamplePreviewsScreenshots/AxisPreview_748aa731_0.png)
 
-##Further Reading
+## Further Reading
 
-Additonal documentation is in the [wiki](https://github.com/sanbeg/Composable-Charts/wiki) and [kdocs](https://javadoc.jitpack.io/com/github/sanbeg/Composable-Charts/composable-chart/v0.0.2/javadoc/index.html)
+Additonal documentation is in the [wiki](https://github.com/sanbeg/Composable-Charts/wiki) and [kdocs](https://sanbeg.github.io/Composable-Charts/)
