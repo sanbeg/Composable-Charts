@@ -7,7 +7,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.sanbeg.composable_chart.core.xRange
 import com.sanbeg.composable_chart.core.yRange
-import com.sanbeg.composable_chart.plots.Function
 import com.sanbeg.composable_chart.plots.line
 import kotlin.math.PI
 import kotlin.math.sin
