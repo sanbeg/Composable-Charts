@@ -7,7 +7,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
@@ -51,7 +50,6 @@ class FunctionScope internal constructor(
  * @see [xRange]
  * @see [yRange]
  */
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun ComposableChartScope.Function(
     modifier: Modifier = Modifier,

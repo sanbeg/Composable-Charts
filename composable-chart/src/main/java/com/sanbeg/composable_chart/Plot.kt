@@ -8,7 +8,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
@@ -112,7 +111,6 @@ internal fun setScaleMatrix(matrix: Matrix, size: Size, dataInset: Float, xRange
  * @see [xRange]
  * @see [yRange]
  */
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun ComposableChartScope.Plot(
     modifier: Modifier = Modifier,
