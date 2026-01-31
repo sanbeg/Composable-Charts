@@ -6,12 +6,13 @@ plugins {
 
 android {
     namespace = "com.example.composablecharts"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.example.composablecharts"
         minSdk = 24
-        targetSdk = 35
+        //noinspection EditedTargetSdkVersion
+        targetSdk = 36
         versionCode = 1
         versionName = "1.0"
 
@@ -31,8 +32,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlin {
         compilerOptions {
@@ -60,10 +61,10 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
 
-    //implementation(project(":composable-chart"))
-    //implementation(project(":composable-chart-data"))
+    implementation(project(":composable-chart"))
+    implementation(project(":composable-chart-data"))
 
-    implementation(libs.composable.chart)
+    //implementation(libs.composable.chart)
     //implementation("com.sanbeg.Composable-Charts:composable-chart:+")
 
     testImplementation(libs.junit)
