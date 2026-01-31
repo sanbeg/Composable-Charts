@@ -2,7 +2,6 @@
 agp = "8.13.2"
 androidDocumentationPlugin = "2.1.0"
 composableChart = "v0.0.2"
-composeStableMarker = "1.0.5"
 kotlin = "2.3.0"
 coreKtx = "1.17.0"
 dokka = "2.1.0"
@@ -24,7 +23,6 @@ androidx-compose-runtime-annotation = { module = "androidx.compose.runtime:runti
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 composable-chart = { module = "com.sanbeg.Composable-Charts:composable-chart", version.ref = "composableChart" }
 composable-chart-data = { module = "com.sanbeg.Composable-Charts:composable-chart-data", version.ref = "composableChart" }
-compose-stable-marker = { module = "com.github.skydoves:compose-stable-marker", version.ref = "composeStableMarker" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
