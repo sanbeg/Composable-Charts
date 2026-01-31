@@ -16,6 +16,15 @@ subprojects {
 }
 
 subprojects {
+    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+        compilerOptions {
+            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)        }
+    }
+    //plugins.withType<org.jetbrains.kotlin.gradle.plugin.KotlinBasePluginWrapper> {
+    //    configure<org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension> {
+    //        jvmToolchain(17)
+    //    }
+    //}
     tasks.withType<DokkaTaskPartial>().configureEach {
         dokkaSourceSets.configureEach {
             // contains descriptions for the module and the packages
